@@ -40,14 +40,18 @@ jobs:
           BUNDLE_PATH: ${{ steps.build.outputs.bundle_path }}
           MANIFEST_PATH: ${{ steps.build.outputs.manifest_path }}
           VERSIONED_KEY: ${{ steps.build.outputs.versioned_key }}
+          LATEST_KEY: ${{ steps.build.outputs.latest_key }}
         run: |
           set -euo pipefail
+          # Serve as opaque gzipped bytes — the client decompresses
+          # explicitly. (Setting Content-Encoding: gzip would trigger
+          # browser auto-decompression and clash with that.)
           aws s3 cp "$BUNDLE_PATH" "s3://$R2_BUCKET/$VERSIONED_KEY" \
             --endpoint-url "$R2_ENDPOINT" \
-            --content-type application/x-sqlite3
-          aws s3 cp "$BUNDLE_PATH" "s3://$R2_BUCKET/cards-latest.sqlite.gz" \
+            --content-type application/gzip
+          aws s3 cp "$BUNDLE_PATH" "s3://$R2_BUCKET/$LATEST_KEY" \
             --endpoint-url "$R2_ENDPOINT" \
-            --content-type application/x-sqlite3
+            --content-type application/gzip
           aws s3 cp "$MANIFEST_PATH" "s3://$R2_BUCKET/latest.json" \
             --endpoint-url "$R2_ENDPOINT" \
             --content-type application/json \

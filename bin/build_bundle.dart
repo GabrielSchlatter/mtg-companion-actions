@@ -1,12 +1,17 @@
-/// Weekly job: download MTGJSON's AllPrintings.json.gz, run the same parser
-/// the mobile app uses (mirrored from `mtgjson_sync_service.dart`), write
-/// the result into a SQLite file matching the app's Drift `cards` schema,
-/// gzip it, and write a manifest. The R2 upload is handled by the GitHub
+/// Weekly job: download MTGJSON's AllPrintings.json.gz, run the same
+/// parser the mobile app uses (mirrored from `mtgjson_sync_service.dart`),
+/// emit one JSON object per English card to a single NDJSON file, gzip
+/// it, and write a manifest. The R2 upload is handled by the GitHub
 /// Actions workflow (via `aws s3 cp`).
 ///
+/// NDJSON (newline-delimited JSON) is used instead of a pre-built SQLite
+/// because the web client can stream-parse + bulk-insert via Drift in one
+/// pass, without needing a separate sqlite3.wasm load to extract rows
+/// from a binary database file.
+///
 /// Outputs (in WORK_DIR):
-///   - cards.sqlite       — uncompressed bundle DB
-///   - cards.sqlite.gz    — what we ship
+///   - cards.ndjson       — one JSON object per line, mapper output shape
+///   - cards.ndjson.gz    — what we ship
 ///   - latest.json        — manifest the web client polls
 
 import 'dart:async';
@@ -15,12 +20,12 @@ import 'dart:io';
 
 import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
-import 'package:sqlite3/sqlite3.dart';
 
 import '../lib/cards_schema.dart';
 import '../lib/mtgjson_card_mapper.dart';
 
 const mtgjsonUrl = 'https://mtgjson.com/api/v5/AllPrintings.json.gz';
+const bundleFormat = 'ndjson';
 
 Future<void> main(List<String> args) async {
   final workDir = Directory(
@@ -30,14 +35,14 @@ Future<void> main(List<String> args) async {
   final today = DateTime.now().toUtc().toIso8601String().substring(0, 10);
   final downloadGz = File('${workDir.path}/AllPrintings.json.gz');
   final downloadJson = File('${workDir.path}/AllPrintings.json');
-  final outDb = File('${workDir.path}/cards.sqlite');
-  final outGz = File('${workDir.path}/cards.sqlite.gz');
+  final outNdjson = File('${workDir.path}/cards.ndjson');
+  final outGz = File('${workDir.path}/cards.ndjson.gz');
   final manifestFile = File('${workDir.path}/latest.json');
 
   await _download(mtgjsonUrl, downloadGz);
   await _gunzip(downloadGz, downloadJson);
-  final rows = await _buildBundle(downloadJson, outDb);
-  await _gzip(outDb, outGz);
+  final rows = await _writeNdjson(downloadJson, outNdjson);
+  await _gzip(outNdjson, outGz);
 
   final digest = await _sha256Of(outGz);
   final size = await outGz.length();
@@ -47,16 +52,19 @@ Future<void> main(List<String> args) async {
   final manifest = {
     'version': today,
     'schema_version': schemaVersion,
-    'url': '$publicBaseUrl/cards-$today.sqlite.gz',
-    'latest_url': '$publicBaseUrl/cards-latest.sqlite.gz',
+    'format': bundleFormat,
+    'url': '$publicBaseUrl/cards-$today.ndjson.gz',
+    'latest_url': '$publicBaseUrl/cards-latest.ndjson.gz',
     'sha256': digest,
     'size_bytes': size,
     'row_count': rows,
     'generated_at': DateTime.now().toUtc().toIso8601String(),
   };
-  await manifestFile.writeAsString(const JsonEncoder.withIndent('  ').convert(manifest));
+  await manifestFile.writeAsString(
+    const JsonEncoder.withIndent('  ').convert(manifest),
+  );
 
-  // Emit GitHub Actions outputs so the workflow can name files / upload.
+  // GitHub Actions step outputs so the workflow knows the names to upload.
   final ghOutput = Platform.environment['GITHUB_OUTPUT'];
   if (ghOutput != null) {
     File(ghOutput).writeAsStringSync(
@@ -65,7 +73,8 @@ Future<void> main(List<String> args) async {
         'workdir=${workDir.path}',
         'bundle_path=${outGz.path}',
         'manifest_path=${manifestFile.path}',
-        'versioned_key=cards-$today.sqlite.gz',
+        'versioned_key=cards-$today.ndjson.gz',
+        'latest_key=cards-latest.ndjson.gz',
       ].join('\n') + '\n',
       mode: FileMode.append,
     );
@@ -83,7 +92,6 @@ void _log(String msg) {
 
 Future<void> _download(String url, File dst) async {
   _log('Downloading $url → ${dst.path}');
-  // MTGJSON's CDN 403s the bare default UA — set a real one.
   final req = http.Request('GET', Uri.parse(url))
     ..headers['User-Agent'] =
         'mtg-companion-bundle-builder/1.0 (+https://github.com/GabrielSchlatter/mtg-companion-actions)';
@@ -123,11 +131,10 @@ Future<String> _sha256Of(File f) async {
   return sha256.convert(bytes).toString();
 }
 
-/// Read the AllPrintings.json file, run [mapMtgjsonCard] over every English
-/// card, and write the results to the output SQLite. Returns the number of
-/// rows inserted.
-Future<int> _buildBundle(File jsonFile, File outDb) async {
-  if (outDb.existsSync()) outDb.deleteSync();
+/// Read AllPrintings.json, run [mapMtgjsonCard] over every English card,
+/// and write one JSON object per line to [out]. Returns the row count.
+Future<int> _writeNdjson(File jsonFile, File out) async {
+  if (out.existsSync()) out.deleteSync();
 
   _log('Parsing JSON (this loads ~700 MB into memory — fine on a 16 GB CI runner)');
   final raw = await jsonFile.readAsString();
@@ -135,23 +142,11 @@ Future<int> _buildBundle(File jsonFile, File outDb) async {
   final data = root['data'] as Map<String, dynamic>;
   _log('  sets: ${data.length}');
 
-  final db = sqlite3.open(outDb.path);
-  // Speed up the bulk import without breaking VACUUM. journal_mode=OFF
-  // makes VACUUM undefined (it produced a 1.6 KiB file in the previous
-  // run); synchronous=NORMAL is plenty for a CI-disposable build.
-  db.execute('PRAGMA synchronous = NORMAL');
-  db.execute('PRAGMA temp_store = MEMORY');
-  db.execute(createCardsSql);
-  for (final stmt in createIndexesSql) {
-    db.execute(stmt);
-  }
-
-  final insert = db.prepare(insertSql);
-  var inserted = 0;
+  final sink = out.openWrite();
+  var rows = 0;
   var skipped = 0;
   var setIdx = 0;
 
-  db.execute('BEGIN');
   try {
     for (final entry in data.entries) {
       final setObj = entry.value as Map<String, dynamic>;
@@ -160,7 +155,8 @@ Future<int> _buildBundle(File jsonFile, File outDb) async {
       final releaseDate = setObj['releaseDate'] as String? ?? '';
       final cards = setObj['cards'] as List<dynamic>? ?? const [];
 
-      // Build the per-set uuid map once so DFC face resolution works.
+      // Per-set uuid → card map, used by mapMtgjsonCard for DFC face
+      // resolution.
       final uuidMap = <String, Map<String, dynamic>>{};
       for (final c in cards) {
         final m = c as Map<String, dynamic>;
@@ -178,36 +174,26 @@ Future<int> _buildBundle(File jsonFile, File outDb) async {
           skipped++;
           continue;
         }
-        insert.execute(insertParametersFor(mapped));
-        inserted++;
+        sink.writeln(jsonEncode(mapped));
+        rows++;
       }
 
       setIdx++;
       if (setIdx % 50 == 0) {
         _log('  processed $setIdx/${data.length} sets · '
-            '$inserted inserted · $skipped skipped');
+            '$rows rows · $skipped skipped');
       }
     }
-    db.execute('COMMIT');
-  } catch (_) {
-    db.execute('ROLLBACK');
-    rethrow;
   } finally {
-    insert.dispose();
+    await sink.flush();
+    await sink.close();
   }
 
-  _log('Inserted $inserted cards (skipped $skipped without scryfallId)');
-  _log('VACUUMing — final compaction before shipping');
-  db.execute('VACUUM');
-  db.dispose();
-
-  // Cheap defence against future foot-guns (last run produced a 1.6 KiB
-  // file because PRAGMA journal_mode=OFF made VACUUM undefined).
-  final dbSize = outDb.lengthSync();
-  _log('  cards.sqlite: ${(dbSize / 1024 / 1024).toStringAsFixed(1)} MB');
-  if (dbSize < 5 * 1024 * 1024) {
-    throw 'cards.sqlite is suspiciously small ($dbSize bytes) — '
-        'aborting before we ship a broken bundle';
+  _log('Wrote $rows rows (skipped $skipped without scryfallId)');
+  final size = out.lengthSync();
+  _log('  cards.ndjson: ${(size / 1_000_000).toStringAsFixed(1)} MB');
+  if (size < 50 * 1024 * 1024) {
+    throw 'cards.ndjson is suspiciously small ($size bytes)';
   }
-  return inserted;
+  return rows;
 }
