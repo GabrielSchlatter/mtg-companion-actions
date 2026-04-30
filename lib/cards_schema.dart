@@ -196,6 +196,18 @@ const Map<String, String> _snakeToCamelOverride = {
   'related_token_ids_json': 'relatedTokenIds',
 };
 
+/// Default values for NOT NULL columns the mapper doesn't emit. In the app
+/// these come from Drift's `Companion.insert` filling the column default;
+/// here we apply them ourselves before binding.
+///
+/// Keep aligned with `withDefault(const Constant(...))` in
+/// flutter_mtg_app/lib/core/database/drift/tables/cards.dart.
+const Map<String, Object> _columnDefaults = {
+  // is_canonical_printing — set later by the canonical-printing pass on
+  // mobile; on the bundle every row is "not yet flagged".
+  'is_canonical_printing': 0,
+};
+
 String _snakeToCamel(String snake) {
   final override = _snakeToCamelOverride[snake];
   if (override != null) return override;
@@ -220,7 +232,11 @@ final String insertSql = () {
 List<Object?> insertParametersFor(Map<String, dynamic> mapped) {
   return columnOrder.map<Object?>((sqlCol) {
     final camel = _snakeToCamel(sqlCol);
-    return _coerce(mapped[camel]);
+    final raw = mapped[camel];
+    if (raw == null && _columnDefaults.containsKey(sqlCol)) {
+      return _columnDefaults[sqlCol];
+    }
+    return _coerce(raw);
   }).toList(growable: false);
 }
 
