@@ -136,10 +136,10 @@ Future<int> _buildBundle(File jsonFile, File outDb) async {
   _log('  sets: ${data.length}');
 
   final db = sqlite3.open(outDb.path);
-  // Big batches + WAL off + sync off → fast bulk import.
-  db.execute('PRAGMA journal_mode = OFF');
-  db.execute('PRAGMA synchronous = OFF');
-  db.execute('PRAGMA locking_mode = EXCLUSIVE');
+  // Speed up the bulk import without breaking VACUUM. journal_mode=OFF
+  // makes VACUUM undefined (it produced a 1.6 KiB file in the previous
+  // run); synchronous=NORMAL is plenty for a CI-disposable build.
+  db.execute('PRAGMA synchronous = NORMAL');
   db.execute('PRAGMA temp_store = MEMORY');
   db.execute(createCardsSql);
   for (final stmt in createIndexesSql) {
@@ -200,5 +200,14 @@ Future<int> _buildBundle(File jsonFile, File outDb) async {
   _log('VACUUMing — final compaction before shipping');
   db.execute('VACUUM');
   db.dispose();
+
+  // Cheap defence against future foot-guns (last run produced a 1.6 KiB
+  // file because PRAGMA journal_mode=OFF made VACUUM undefined).
+  final dbSize = outDb.lengthSync();
+  _log('  cards.sqlite: ${(dbSize / 1024 / 1024).toStringAsFixed(1)} MB');
+  if (dbSize < 5 * 1024 * 1024) {
+    throw 'cards.sqlite is suspiciously small ($dbSize bytes) — '
+        'aborting before we ship a broken bundle';
+  }
   return inserted;
 }
