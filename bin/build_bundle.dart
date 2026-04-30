@@ -145,7 +145,14 @@ Future<int> _writeNdjson(File jsonFile, File out) async {
   final sink = out.openWrite();
   var rows = 0;
   var skipped = 0;
+  var dedupSkipped = 0;
   var setIdx = 0;
+  // MTGJSON emits one cards-array entry per face: a split / DFC / adventure
+  // / room card has 2+ entries that share the same scryfallId. Scryfall (=
+  // our cards table) treats them as a single row whose `cardFacesJson`
+  // captures both halves. First occurrence wins — the mapper resolves the
+  // other face through `uuidMap` so the JSON is complete on either side.
+  final seen = <String>{};
 
   try {
     for (final entry in data.entries) {
@@ -174,6 +181,11 @@ Future<int> _writeNdjson(File jsonFile, File out) async {
           skipped++;
           continue;
         }
+        final sid = mapped['scryfallId'] as String?;
+        if (sid != null && !seen.add(sid)) {
+          dedupSkipped++;
+          continue;
+        }
         sink.writeln(jsonEncode(mapped));
         rows++;
       }
@@ -181,7 +193,7 @@ Future<int> _writeNdjson(File jsonFile, File out) async {
       setIdx++;
       if (setIdx % 50 == 0) {
         _log('  processed $setIdx/${data.length} sets · '
-            '$rows rows · $skipped skipped');
+            '$rows rows · $skipped skipped · $dedupSkipped dups');
       }
     }
   } finally {
@@ -189,7 +201,8 @@ Future<int> _writeNdjson(File jsonFile, File out) async {
     await sink.close();
   }
 
-  _log('Wrote $rows rows (skipped $skipped without scryfallId)');
+  _log('Wrote $rows rows '
+      '(skipped $skipped without scryfallId, $dedupSkipped duplicate scryfallIds)');
   final size = out.lengthSync();
   _log('  cards.ndjson: ${(size / 1_000_000).toStringAsFixed(1)} MB');
   if (size < 50 * 1024 * 1024) {
