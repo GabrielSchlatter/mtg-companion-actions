@@ -1,0 +1,21 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+
+# Build artifacts
+*.sqlite
+*.sqlite.gz
+*.sqlite.bz2
+*.sqlite.xz
+*.zip
+AllPrintings.*
+AllPricesToday.*
+cards.sqlite*
+latest.json
+
+# Editor
+.vscode/
+.idea/
+.DS_Store

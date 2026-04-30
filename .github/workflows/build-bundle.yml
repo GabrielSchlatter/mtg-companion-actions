@@ -1,0 +1,34 @@
+name: Build card bundle
+
+on:
+  # MTGJSON refreshes Wednesdays. Run Thursday morning UTC to pick up the new data.
+  schedule:
+    - cron: "0 6 * * 4"
+  # Manual trigger for ad-hoc rebuilds.
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Build & upload bundle
+        env:
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          PUBLIC_BASE_URL: ${{ secrets.PUBLIC_BASE_URL }}
+        run: python build_bundle.py
