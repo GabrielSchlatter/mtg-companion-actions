@@ -1,18 +1,12 @@
-__pycache__/
-*.pyc
-.venv/
-venv/
-.env
+.dart_tool/
+.packages
+pubspec.lock
+build/
 
 # Build artifacts
 *.sqlite
 *.sqlite.gz
-*.sqlite.bz2
-*.sqlite.xz
-*.zip
 AllPrintings.*
-AllPricesToday.*
-cards.sqlite*
 latest.json
 
 # Editor

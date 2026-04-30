@@ -1,10 +1,9 @@
 name: Build card bundle
 
 on:
-  # MTGJSON refreshes Wednesdays. Run Thursday morning UTC to pick up the new data.
+  # MTGJSON refreshes Wednesdays. Run Thursday morning UTC.
   schedule:
     - cron: "0 6 * * 4"
-  # Manual trigger for ad-hoc rebuilds.
   workflow_dispatch: {}
 
 jobs:
@@ -18,18 +17,38 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
+      - uses: dart-lang/setup-dart@v1
         with:
-          python-version: "3.12"
-          cache: pip
+          sdk: stable
 
-      - run: pip install -r requirements.txt
+      - name: Resolve Dart deps
+        run: dart pub get
 
-      - name: Build & upload bundle
+      - name: Build bundle
+        id: build
         env:
+          PUBLIC_BASE_URL: ${{ secrets.PUBLIC_BASE_URL }}
+        run: dart run bin/build_bundle.dart
+
+      - name: Upload to R2
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: auto
           R2_BUCKET: ${{ secrets.R2_BUCKET }}
           R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
-          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
-          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
-          PUBLIC_BASE_URL: ${{ secrets.PUBLIC_BASE_URL }}
-        run: python build_bundle.py
+          BUNDLE_PATH: ${{ steps.build.outputs.bundle_path }}
+          MANIFEST_PATH: ${{ steps.build.outputs.manifest_path }}
+          VERSIONED_KEY: ${{ steps.build.outputs.versioned_key }}
+        run: |
+          set -euo pipefail
+          aws s3 cp "$BUNDLE_PATH" "s3://$R2_BUCKET/$VERSIONED_KEY" \
+            --endpoint-url "$R2_ENDPOINT" \
+            --content-type application/x-sqlite3
+          aws s3 cp "$BUNDLE_PATH" "s3://$R2_BUCKET/cards-latest.sqlite.gz" \
+            --endpoint-url "$R2_ENDPOINT" \
+            --content-type application/x-sqlite3
+          aws s3 cp "$MANIFEST_PATH" "s3://$R2_BUCKET/latest.json" \
+            --endpoint-url "$R2_ENDPOINT" \
+            --content-type application/json \
+            --cache-control "max-age=300"

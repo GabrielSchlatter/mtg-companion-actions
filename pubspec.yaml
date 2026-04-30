@@ -1,0 +1,11 @@
+name: mtg_companion_actions
+description: Builds the MTGJSON-derived cards.sqlite bundle for the mtg-companion web client.
+publish_to: none
+
+environment:
+  sdk: ^3.6.0
+
+dependencies:
+  crypto: ^3.0.3
+  http: ^1.2.0
+  sqlite3: ^2.4.0

@@ -1,12 +1,13 @@
 # mtg-companion-actions
 
-Weekly job that downloads MTGJSON's `AllPrintings.sqlite`, projects + transforms
-it into the mtg-companion app's Drift `cards` schema, and uploads the result to
-Cloudflare R2 for the web client to download once per release.
+Weekly job that downloads MTGJSON's `AllPrintings.json.gz`, runs the same
+parser the mtg-companion mobile app uses, and uploads the resulting
+SQLite bundle (matching the app's Drift `cards` schema) to Cloudflare R2 for
+the web client to pull on first load.
 
 ## What it produces
 
-In the configured R2 bucket (root):
+In R2:
 
 - `cards-<YYYY-MM-DD>.sqlite.gz` — versioned, immutable bundle.
 - `cards-latest.sqlite.gz` — mutable pointer to the newest bundle.
@@ -24,13 +25,37 @@ In the configured R2 bucket (root):
   }
   ```
 
-The web client compares `schema_version` to its local Drift schema version and
-`version` to the last imported value (stored in `app_settings`). If newer and
-the schema matches, it downloads the bundle and imports it.
+The web client compares `schema_version` to its local Drift schema version
+and `version` to the last imported value (stored in `app_settings`). If
+newer and the schema matches, it downloads the bundle and imports it.
+
+## How it stays in sync with the app
+
+The parser (`lib/mtgjson_card_mapper.dart`) is **mirrored** from the app's
+`flutter_mtg_app/lib/services/mtgjson_sync_service.dart` — the two should
+be byte-identical for the functions ported over (`mapMtgjsonCard` and its
+helpers, `singleSideLayouts`).
+
+The schema (`lib/cards_schema.dart`) is **mirrored** from
+`flutter_mtg_app/lib/core/database/drift/tables/cards.dart`.
+
+When you change the parser or the Drift schema in the app:
+
+1. Copy the changed function(s) into this repo.
+2. If the schema changed: update `createCardsSql`, `createIndexesSql`,
+   `columnOrder`, and bump `schemaVersion` in `lib/cards_schema.dart`.
+   Bump the same number in the app's `AppDatabase.schemaVersion` and add
+   the corresponding Drift migration.
+3. Push and trigger a manual run.
+
+The web client's import check refuses bundles whose `schema_version`
+doesn't match its local Drift, so a forgotten schema bump is a soft
+failure (client falls back to its previous bundle), not a crash.
 
 ## Configuration
 
-Set as **Repository secrets** in GitHub:
+Set as **environment secrets** under the `Prod` environment in GitHub
+(Settings → Environments → Prod → Secrets):
 
 | Secret                  | Example                                                      |
 | ----------------------- | ------------------------------------------------------------ |
@@ -40,62 +65,28 @@ Set as **Repository secrets** in GitHub:
 | `R2_SECRET_ACCESS_KEY`  | from R2 → Manage R2 API Tokens                               |
 | `PUBLIC_BASE_URL`       | `https://card-bundles.example.com` (custom domain or r2.dev) |
 
-The workflow runs every Thursday 06:00 UTC (MTGJSON refreshes on Wednesdays).
-You can also trigger it manually via Actions → "Build card bundle" → Run workflow.
-
-## Why not pre-built MTGJSON SQLite directly?
-
-MTGJSON's schema (`cards`, `cardIdentifiers`, `cardLegalities` etc.) doesn't
-match the app's Drift `cards` table — different column names, normalised
-differently, missing Scryfall-specific fields like image URLs and
-`imageStatus`. This script projects MTGJSON into the app's schema so the web
-client can read it via the existing Drift `CardRepository` with no code branch.
-
-## Status — known TODOs
-
-The first build is intentionally a scaffold. Things still to wire up before
-shipping:
-
-- `set_name` / `set_type` — need to join MTGJSON's `sets` table.
-- `digital` / `booster` — derive from set availability or MTGJSON flags.
-- `legal_*` columns — join `cardLegalities` and project per-format.
-- `card_faces_json` — handle DFCs from MTGJSON's `faceName` / `otherFaceIds`.
-- `rulings_json` — pull from MTGJSON's rulings table if present, or skip.
-- `produced_mana_json` — derive from oracle text or MTGJSON's `producedMana`.
-- Prices — separate fetch from `AllPricesToday.json.gz` and JOIN by `uuid`.
-- Image URL pattern — verify Scryfall's `cards.scryfall.io/<size>/front/<a>/<b>/<id>.jpg`
-  pattern still produces the right URLs (it's stable but worth double-checking
-  with a few sample cards).
-
-The first manual run will log MTGJSON's actual table/column names — use that
-output to validate or fix the SELECT in `build_bundle.py::build_cards_db`.
+The workflow runs every Thursday 06:00 UTC (MTGJSON refreshes Wednesdays).
+Manual triggers via Actions → "Build card bundle" → Run workflow.
 
 ## Running locally
 
 ```bash
-pip install -r requirements.txt
-export R2_BUCKET=card-bundles
-export R2_ENDPOINT=https://<account>.r2.cloudflarestorage.com
-export R2_ACCESS_KEY_ID=…
-export R2_SECRET_ACCESS_KEY=…
+dart pub get
 export PUBLIC_BASE_URL=https://card-bundles.example.com
-python build_bundle.py
+dart run bin/build_bundle.dart
 ```
 
-To inspect the output without uploading, comment out the `upload_to_r2` calls
-in `main()` and run the script — the result is at `/tmp/mtg-bundle/cards.sqlite`.
+Output lands at `/tmp/mtg-bundle/cards.sqlite.gz` (set `WORK_DIR` to override).
+The R2 upload step is workflow-only — locally you'll just produce the file.
 
-## Schema sync
+## Layout
 
-The `CREATE TABLE cards` SQL in `build_bundle.py` and the `Cards` Drift table
-in `flutter_mtg_app/lib/core/database/drift/tables/cards.dart` must match. When
-you add a column to the Drift table:
-
-1. Bump `SCHEMA_VERSION` in `build_bundle.py`.
-2. Add the column to `CREATE_CARDS_SQL`.
-3. Map it in the `INSERT_SQL` block (or set a default).
-4. Bump the Drift schema version in the app and add a migration.
-
-The web client's import check refuses bundles whose `schema_version` doesn't
-match its local Drift, so a mismatch is a soft failure (client falls back to
-its previous bundle), not a crash.
+```
+.
+├── bin/build_bundle.dart        # entry point: orchestrates download → parse → write → gzip
+├── lib/
+│   ├── cards_schema.dart        # CREATE TABLE + INSERT plumbing, mirrored from Drift
+│   └── mtgjson_card_mapper.dart # parser, mirrored from mtgjson_sync_service.dart
+└── .github/workflows/
+    └── build-bundle.yml         # weekly cron + R2 upload via `aws s3 cp`
+```
