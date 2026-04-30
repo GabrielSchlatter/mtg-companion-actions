@@ -200,8 +200,15 @@ def log(msg: str) -> None:
 
 
 def download(url: str, dst: Path) -> None:
+    """Stream-download with a real User-Agent. MTGJSON's CDN 403s the
+    bare `Python-urllib/x.y` default UA."""
     log(f"Downloading {url} → {dst}")
-    urllib.request.urlretrieve(url, dst)
+    req = urllib.request.Request(
+        url,
+        headers={"User-Agent": "mtg-companion-bundle-builder/1.0 (+https://github.com/GabrielSchlatter/mtg-companion-actions)"},
+    )
+    with urllib.request.urlopen(req) as resp, open(dst, "wb") as out:
+        shutil.copyfileobj(resp, out, length=1024 * 1024)
     log(f"  size: {dst.stat().st_size / 1_000_000:.1f} MB")
 
 
