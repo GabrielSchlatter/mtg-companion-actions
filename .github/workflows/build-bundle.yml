@@ -1,9 +1,12 @@
 name: Build card bundle
 
 on:
-  # MTGJSON refreshes Wednesdays. Run Thursday morning UTC.
+  # AllPricesToday updates daily; run shortly after MTGJSON's nightly
+  # refresh window (~03–05 UTC). 06:00 UTC keeps prices ≤ 24h fresh on
+  # the client without thundering-herding the upstream during their
+  # build window.
   schedule:
-    - cron: "0 6 * * 4"
+    - cron: "0 6 * * *"
   workflow_dispatch: {}
 
 jobs:

@@ -1,10 +1,15 @@
-/// Bundle format version. Bumped when the JSON shape of an individual
-/// card row in the bundle changes incompatibly (e.g., a new required
-/// column is added to the app's Drift `cards` table). The web client
-/// compares this to its own Drift `AppDatabase.schemaVersion` and
-/// refuses to import a bundle whose number doesn't match.
+/// Bundle schema version — must match the client `CardsDatabase.schemaVersion`.
 ///
-/// Keep aligned with the app's
-///   flutter_mtg_app/lib/core/database/drift/app_database.dart
-/// `schemaVersion` getter.
-const int schemaVersion = 10;
+/// Bumped when the binary cards SQLite shape changes incompatibly: a column
+/// added to `cards` / `card_prices` / `filter_metadata`, an index added,
+/// etc. Drift opens the file as-is (no migration runs on the client side
+/// for the cards DB), so the only safe upgrade path is for the client to
+/// download a bundle whose `schema_version` matches its own.
+///
+/// The client refuses bundles with a mismatched `schema_version` and
+/// keeps using whatever cards.sqlite is already on disk until either the
+/// bundle catches up or the client is updated.
+///
+/// Keep aligned with:
+///   flutter_mtg_app/lib/core/database/drift/cards_database.dart
+const int schemaVersion = 1;
