@@ -5250,6 +5250,14 @@ class $PreconDecksTable extends PreconDecks
   late final GeneratedColumn<String> featuredCardScryfallId =
       GeneratedColumn<String>('featured_card_scryfall_id', aliasedName, true,
           type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _colorIdentityStringMeta =
+      const VerificationMeta('colorIdentityString');
+  @override
+  late final GeneratedColumn<String> colorIdentityString =
+      GeneratedColumn<String>('color_identity_string', aliasedName, false,
+          type: DriftSqlType.string,
+          requiredDuringInsert: false,
+          defaultValue: const Constant(''));
   @override
   List<GeneratedColumn> get $columns => [
         id,
@@ -5261,7 +5269,8 @@ class $PreconDecksTable extends PreconDecks
         mainBoardJson,
         sideBoardJson,
         commandersJson,
-        featuredCardScryfallId
+        featuredCardScryfallId,
+        colorIdentityString
       ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -5328,6 +5337,12 @@ class $PreconDecksTable extends PreconDecks
           featuredCardScryfallId.isAcceptableOrUnknown(
               data['featured_card_scryfall_id']!, _featuredCardScryfallIdMeta));
     }
+    if (data.containsKey('color_identity_string')) {
+      context.handle(
+          _colorIdentityStringMeta,
+          colorIdentityString.isAcceptableOrUnknown(
+              data['color_identity_string']!, _colorIdentityStringMeta));
+    }
     return context;
   }
 
@@ -5358,6 +5373,9 @@ class $PreconDecksTable extends PreconDecks
       featuredCardScryfallId: attachedDatabase.typeMapping.read(
           DriftSqlType.string,
           data['${effectivePrefix}featured_card_scryfall_id']),
+      colorIdentityString: attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}color_identity_string'])!,
     );
   }
 
@@ -5378,6 +5396,16 @@ class PreconDeckRow extends DataClass implements Insertable<PreconDeckRow> {
   final String sideBoardJson;
   final String commandersJson;
   final String? featuredCardScryfallId;
+
+  /// Precomputed sorted-WUBRG color identity (e.g. "WU", "BGR"). Built
+  /// by the bundle pipeline by unioning the colorIdentity of each
+  /// commander; for non-commander decks sampled from the main board.
+  ///
+  /// The browser screen reads this directly to color the deck-box tile
+  /// — without it, the client used to scan the cards table per deck
+  /// at load (~200 SQL lookups + JSON-decoding every main board) which
+  /// blocked the UI for several seconds on a fresh install.
+  final String colorIdentityString;
   const PreconDeckRow(
       {required this.id,
       required this.name,
@@ -5388,7 +5416,8 @@ class PreconDeckRow extends DataClass implements Insertable<PreconDeckRow> {
       required this.mainBoardJson,
       required this.sideBoardJson,
       required this.commandersJson,
-      this.featuredCardScryfallId});
+      this.featuredCardScryfallId,
+      required this.colorIdentityString});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -5405,6 +5434,7 @@ class PreconDeckRow extends DataClass implements Insertable<PreconDeckRow> {
       map['featured_card_scryfall_id'] =
           Variable<String>(featuredCardScryfallId);
     }
+    map['color_identity_string'] = Variable<String>(colorIdentityString);
     return map;
   }
 
@@ -5422,6 +5452,7 @@ class PreconDeckRow extends DataClass implements Insertable<PreconDeckRow> {
       featuredCardScryfallId: featuredCardScryfallId == null && nullToAbsent
           ? const Value.absent()
           : Value(featuredCardScryfallId),
+      colorIdentityString: Value(colorIdentityString),
     );
   }
 
@@ -5440,6 +5471,8 @@ class PreconDeckRow extends DataClass implements Insertable<PreconDeckRow> {
       commandersJson: serializer.fromJson<String>(json['commandersJson']),
       featuredCardScryfallId:
           serializer.fromJson<String?>(json['featuredCardScryfallId']),
+      colorIdentityString:
+          serializer.fromJson<String>(json['colorIdentityString']),
     );
   }
   @override
@@ -5457,6 +5490,7 @@ class PreconDeckRow extends DataClass implements Insertable<PreconDeckRow> {
       'commandersJson': serializer.toJson<String>(commandersJson),
       'featuredCardScryfallId':
           serializer.toJson<String?>(featuredCardScryfallId),
+      'colorIdentityString': serializer.toJson<String>(colorIdentityString),
     };
   }
 
@@ -5470,7 +5504,8 @@ class PreconDeckRow extends DataClass implements Insertable<PreconDeckRow> {
           String? mainBoardJson,
           String? sideBoardJson,
           String? commandersJson,
-          Value<String?> featuredCardScryfallId = const Value.absent()}) =>
+          Value<String?> featuredCardScryfallId = const Value.absent(),
+          String? colorIdentityString}) =>
       PreconDeckRow(
         id: id ?? this.id,
         name: name ?? this.name,
@@ -5484,6 +5519,7 @@ class PreconDeckRow extends DataClass implements Insertable<PreconDeckRow> {
         featuredCardScryfallId: featuredCardScryfallId.present
             ? featuredCardScryfallId.value
             : this.featuredCardScryfallId,
+        colorIdentityString: colorIdentityString ?? this.colorIdentityString,
       );
   PreconDeckRow copyWithCompanion(PreconDecksCompanion data) {
     return PreconDeckRow(
@@ -5506,6 +5542,9 @@ class PreconDeckRow extends DataClass implements Insertable<PreconDeckRow> {
       featuredCardScryfallId: data.featuredCardScryfallId.present
           ? data.featuredCardScryfallId.value
           : this.featuredCardScryfallId,
+      colorIdentityString: data.colorIdentityString.present
+          ? data.colorIdentityString.value
+          : this.colorIdentityString,
     );
   }
 
@@ -5521,14 +5560,25 @@ class PreconDeckRow extends DataClass implements Insertable<PreconDeckRow> {
           ..write('mainBoardJson: $mainBoardJson, ')
           ..write('sideBoardJson: $sideBoardJson, ')
           ..write('commandersJson: $commandersJson, ')
-          ..write('featuredCardScryfallId: $featuredCardScryfallId')
+          ..write('featuredCardScryfallId: $featuredCardScryfallId, ')
+          ..write('colorIdentityString: $colorIdentityString')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, name, setCode, setName, type, releaseDate,
-      mainBoardJson, sideBoardJson, commandersJson, featuredCardScryfallId);
+  int get hashCode => Object.hash(
+      id,
+      name,
+      setCode,
+      setName,
+      type,
+      releaseDate,
+      mainBoardJson,
+      sideBoardJson,
+      commandersJson,
+      featuredCardScryfallId,
+      colorIdentityString);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -5542,7 +5592,8 @@ class PreconDeckRow extends DataClass implements Insertable<PreconDeckRow> {
           other.mainBoardJson == this.mainBoardJson &&
           other.sideBoardJson == this.sideBoardJson &&
           other.commandersJson == this.commandersJson &&
-          other.featuredCardScryfallId == this.featuredCardScryfallId);
+          other.featuredCardScryfallId == this.featuredCardScryfallId &&
+          other.colorIdentityString == this.colorIdentityString);
 }
 
 class PreconDecksCompanion extends UpdateCompanion<PreconDeckRow> {
@@ -5556,6 +5607,7 @@ class PreconDecksCompanion extends UpdateCompanion<PreconDeckRow> {
   final Value<String> sideBoardJson;
   final Value<String> commandersJson;
   final Value<String?> featuredCardScryfallId;
+  final Value<String> colorIdentityString;
   const PreconDecksCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
@@ -5567,6 +5619,7 @@ class PreconDecksCompanion extends UpdateCompanion<PreconDeckRow> {
     this.sideBoardJson = const Value.absent(),
     this.commandersJson = const Value.absent(),
     this.featuredCardScryfallId = const Value.absent(),
+    this.colorIdentityString = const Value.absent(),
   });
   PreconDecksCompanion.insert({
     this.id = const Value.absent(),
@@ -5579,6 +5632,7 @@ class PreconDecksCompanion extends UpdateCompanion<PreconDeckRow> {
     this.sideBoardJson = const Value.absent(),
     this.commandersJson = const Value.absent(),
     this.featuredCardScryfallId = const Value.absent(),
+    this.colorIdentityString = const Value.absent(),
   })  : name = Value(name),
         setCode = Value(setCode),
         type = Value(type);
@@ -5593,6 +5647,7 @@ class PreconDecksCompanion extends UpdateCompanion<PreconDeckRow> {
     Expression<String>? sideBoardJson,
     Expression<String>? commandersJson,
     Expression<String>? featuredCardScryfallId,
+    Expression<String>? colorIdentityString,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -5606,6 +5661,8 @@ class PreconDecksCompanion extends UpdateCompanion<PreconDeckRow> {
       if (commandersJson != null) 'commanders_json': commandersJson,
       if (featuredCardScryfallId != null)
         'featured_card_scryfall_id': featuredCardScryfallId,
+      if (colorIdentityString != null)
+        'color_identity_string': colorIdentityString,
     });
   }
 
@@ -5619,7 +5676,8 @@ class PreconDecksCompanion extends UpdateCompanion<PreconDeckRow> {
       Value<String>? mainBoardJson,
       Value<String>? sideBoardJson,
       Value<String>? commandersJson,
-      Value<String?>? featuredCardScryfallId}) {
+      Value<String?>? featuredCardScryfallId,
+      Value<String>? colorIdentityString}) {
     return PreconDecksCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
@@ -5632,6 +5690,7 @@ class PreconDecksCompanion extends UpdateCompanion<PreconDeckRow> {
       commandersJson: commandersJson ?? this.commandersJson,
       featuredCardScryfallId:
           featuredCardScryfallId ?? this.featuredCardScryfallId,
+      colorIdentityString: colorIdentityString ?? this.colorIdentityString,
     );
   }
 
@@ -5669,6 +5728,10 @@ class PreconDecksCompanion extends UpdateCompanion<PreconDeckRow> {
       map['featured_card_scryfall_id'] =
           Variable<String>(featuredCardScryfallId.value);
     }
+    if (colorIdentityString.present) {
+      map['color_identity_string'] =
+          Variable<String>(colorIdentityString.value);
+    }
     return map;
   }
 
@@ -5684,7 +5747,8 @@ class PreconDecksCompanion extends UpdateCompanion<PreconDeckRow> {
           ..write('mainBoardJson: $mainBoardJson, ')
           ..write('sideBoardJson: $sideBoardJson, ')
           ..write('commandersJson: $commandersJson, ')
-          ..write('featuredCardScryfallId: $featuredCardScryfallId')
+          ..write('featuredCardScryfallId: $featuredCardScryfallId, ')
+          ..write('colorIdentityString: $colorIdentityString')
           ..write(')'))
         .toString();
   }
@@ -7827,6 +7891,7 @@ typedef $$PreconDecksTableCreateCompanionBuilder = PreconDecksCompanion
   Value<String> sideBoardJson,
   Value<String> commandersJson,
   Value<String?> featuredCardScryfallId,
+  Value<String> colorIdentityString,
 });
 typedef $$PreconDecksTableUpdateCompanionBuilder = PreconDecksCompanion
     Function({
@@ -7840,6 +7905,7 @@ typedef $$PreconDecksTableUpdateCompanionBuilder = PreconDecksCompanion
   Value<String> sideBoardJson,
   Value<String> commandersJson,
   Value<String?> featuredCardScryfallId,
+  Value<String> colorIdentityString,
 });
 
 class $$PreconDecksTableFilterComposer
@@ -7881,6 +7947,10 @@ class $$PreconDecksTableFilterComposer
 
   ColumnFilters<String> get featuredCardScryfallId => $composableBuilder(
       column: $table.featuredCardScryfallId,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get colorIdentityString => $composableBuilder(
+      column: $table.colorIdentityString,
       builder: (column) => ColumnFilters(column));
 }
 
@@ -7926,6 +7996,10 @@ class $$PreconDecksTableOrderingComposer
   ColumnOrderings<String> get featuredCardScryfallId => $composableBuilder(
       column: $table.featuredCardScryfallId,
       builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get colorIdentityString => $composableBuilder(
+      column: $table.colorIdentityString,
+      builder: (column) => ColumnOrderings(column));
 }
 
 class $$PreconDecksTableAnnotationComposer
@@ -7966,6 +8040,9 @@ class $$PreconDecksTableAnnotationComposer
 
   GeneratedColumn<String> get featuredCardScryfallId => $composableBuilder(
       column: $table.featuredCardScryfallId, builder: (column) => column);
+
+  GeneratedColumn<String> get colorIdentityString => $composableBuilder(
+      column: $table.colorIdentityString, builder: (column) => column);
 }
 
 class $$PreconDecksTableTableManager extends RootTableManager<
@@ -8004,6 +8081,7 @@ class $$PreconDecksTableTableManager extends RootTableManager<
             Value<String> sideBoardJson = const Value.absent(),
             Value<String> commandersJson = const Value.absent(),
             Value<String?> featuredCardScryfallId = const Value.absent(),
+            Value<String> colorIdentityString = const Value.absent(),
           }) =>
               PreconDecksCompanion(
             id: id,
@@ -8016,6 +8094,7 @@ class $$PreconDecksTableTableManager extends RootTableManager<
             sideBoardJson: sideBoardJson,
             commandersJson: commandersJson,
             featuredCardScryfallId: featuredCardScryfallId,
+            colorIdentityString: colorIdentityString,
           ),
           createCompanionCallback: ({
             Value<int> id = const Value.absent(),
@@ -8028,6 +8107,7 @@ class $$PreconDecksTableTableManager extends RootTableManager<
             Value<String> sideBoardJson = const Value.absent(),
             Value<String> commandersJson = const Value.absent(),
             Value<String?> featuredCardScryfallId = const Value.absent(),
+            Value<String> colorIdentityString = const Value.absent(),
           }) =>
               PreconDecksCompanion.insert(
             id: id,
@@ -8040,6 +8120,7 @@ class $$PreconDecksTableTableManager extends RootTableManager<
             sideBoardJson: sideBoardJson,
             commandersJson: commandersJson,
             featuredCardScryfallId: featuredCardScryfallId,
+            colorIdentityString: colorIdentityString,
           ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))

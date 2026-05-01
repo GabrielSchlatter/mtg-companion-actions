@@ -93,7 +93,7 @@ Future<void> main(List<String> args) async {
 
   await _download(_allDeckFilesUrl, preconsZip);
   _log('Importing precon decks…');
-  final preconCount = await _writePrecons(db, preconsZip);
+  final preconCount = await _writePrecons(db, preconsZip, stats.mappedCards);
 
   // VACUUM rewrites the DB packed; same data, smaller file. Done outside
   // any transaction.
@@ -160,7 +160,35 @@ Future<void> main(List<String> args) async {
   );
 }
 
-Future<int> _writePrecons(CardsDatabase db, File zipFile) async {
+Future<int> _writePrecons(
+  CardsDatabase db,
+  File zipFile,
+  List<Map<String, dynamic>> mappedCards,
+) async {
+  // Build a `name → colorIdentity letters` index once. The browser
+  // tile colors deck boxes by union-of-commanders' color identity;
+  // doing this lookup at runtime forced ~200 SQL queries per screen
+  // load, which froze the UI for several seconds.
+  //
+  // First wins by canonical printing → newest releaseDate → first seen.
+  final nameToColors = <String, Set<String>>{};
+  for (final c in mappedCards) {
+    final name = (c['name'] as String?) ?? '';
+    if (name.isEmpty) continue;
+    final identity = c['colorIdentity'];
+    Set<String> colors;
+    if (identity is List) {
+      colors = identity.whereType<String>().toSet();
+    } else {
+      continue;
+    }
+    final existing = nameToColors[name];
+    final isCanonical = c['isCanonicalPrinting'] == true;
+    if (existing == null || isCanonical) {
+      nameToColors[name] = colors;
+    }
+  }
+
   final bytes = await zipFile.readAsBytes();
   final archive = ZipDecoder().decodeBytes(bytes);
 
@@ -176,6 +204,9 @@ Future<int> _writePrecons(CardsDatabase db, File zipFile) async {
         skipped++;
         continue;
       }
+
+      final colorIdentity = _preconColorIdentity(parsed, nameToColors);
+
       pending.add(
         PreconDecksCompanion.insert(
           name: parsed.name,
@@ -187,6 +218,7 @@ Future<int> _writePrecons(CardsDatabase db, File zipFile) async {
           sideBoardJson: Value(parsed.sideBoardJson),
           commandersJson: Value(parsed.commandersJson),
           featuredCardScryfallId: Value(parsed.featuredCardScryfallId),
+          colorIdentityString: Value(colorIdentity),
         ),
       );
     } catch (_) {
@@ -204,6 +236,57 @@ Future<int> _writePrecons(CardsDatabase db, File zipFile) async {
 
   _log('  ${pending.length} precons (skipped $skipped malformed)');
   return pending.length;
+}
+
+/// WUBRG order — the client filter UI assumes colors come in this order
+/// when matching against a hex/swatch lookup table.
+const _wubrgOrder = ['W', 'U', 'B', 'R', 'G'];
+
+/// Compute a precon's color identity by unioning its commanders'
+/// colorIdentity sets (or main-board fallback for non-commander decks).
+String _preconColorIdentity(
+  ParsedPrecon parsed,
+  Map<String, Set<String>> nameToColors,
+) {
+  String namesOf(String json) {
+    try {
+      final list = jsonDecode(json) as List<dynamic>;
+      return list.map((e) => (e as Map)['name'] as String? ?? '').join('|');
+    } catch (_) {
+      return '';
+    }
+  }
+
+  Iterable<String> namesIn(String json) sync* {
+    if (json.isEmpty || json == '[]') return;
+    try {
+      final list = jsonDecode(json) as List<dynamic>;
+      for (final e in list) {
+        final n = (e as Map)['name'] as String?;
+        if (n != null && n.isNotEmpty) yield n;
+      }
+    } catch (_) {}
+  }
+
+  final colors = <String>{};
+
+  // Commanders take priority — for Commander decks this is the source
+  // of truth even if some main-board card has a wider identity.
+  final commanderNames = namesOf(parsed.commandersJson);
+  if (commanderNames.isNotEmpty) {
+    for (final name in namesIn(parsed.commandersJson)) {
+      final c = nameToColors[name];
+      if (c != null) colors.addAll(c);
+    }
+  } else {
+    // Non-commander decks: union the whole main board.
+    for (final name in namesIn(parsed.mainBoardJson)) {
+      final c = nameToColors[name];
+      if (c != null) colors.addAll(c);
+    }
+  }
+
+  return _wubrgOrder.where(colors.contains).join();
 }
 
 void _log(String msg) {

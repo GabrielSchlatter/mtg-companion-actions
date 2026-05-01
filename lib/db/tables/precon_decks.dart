@@ -20,4 +20,15 @@ class PreconDecks extends Table {
   TextColumn get sideBoardJson => text().withDefault(const Constant('[]'))();
   TextColumn get commandersJson => text().withDefault(const Constant('[]'))();
   TextColumn get featuredCardScryfallId => text().nullable()();
+
+  /// Precomputed sorted-WUBRG color identity (e.g. "WU", "BGR"). Built
+  /// by the bundle pipeline by unioning the colorIdentity of each
+  /// commander; for non-commander decks sampled from the main board.
+  ///
+  /// The browser screen reads this directly to color the deck-box tile
+  /// — without it, the client used to scan the cards table per deck
+  /// at load (~200 SQL lookups + JSON-decoding every main board) which
+  /// blocked the UI for several seconds on a fresh install.
+  TextColumn get colorIdentityString =>
+      text().withDefault(const Constant(''))();
 }
