@@ -70,11 +70,21 @@ Future<void> main(List<String> args) async {
   await _download(_allPrintingsUrl, printingsGz);
   await _gunzip(printingsGz, printingsJson);
 
-  await _download(_allPricesUrl, pricesBz2);
-  final pricesPayload = await _decodeBz2(pricesBz2);
-  _log('Parsing prices…');
-  final prices = parseAllPricesToday(pricesPayload);
-  _log('  ${prices.byMtgjsonUuid.length} priced cards (date=${prices.date})');
+  // Prices are best-effort — MTGJSON has had multi-day outages on the
+  // prices feed before. We don't want a transient 404 there to block
+  // shipping a fresh cards/precons bundle, so fall back to an empty
+  // price set and let the next run pick prices back up.
+  PricesParseResult prices;
+  try {
+    await _download(_allPricesUrl, pricesBz2);
+    final pricesPayload = await _decodeBz2(pricesBz2);
+    _log('Parsing prices…');
+    prices = parseAllPricesToday(pricesPayload);
+    _log('  ${prices.byMtgjsonUuid.length} priced cards (date=${prices.date})');
+  } catch (e) {
+    _log('⚠ Prices feed unavailable ($e) — shipping bundle without prices');
+    prices = PricesParseResult(date: 'unavailable', byMtgjsonUuid: const {});
+  }
 
   _log('Opening cards.sqlite');
   final db = CardsDatabase.file(dbFile);
