@@ -3,26 +3,33 @@
 /// one we surface in collection / deck-builder UI when the user hasn't
 /// explicitly picked a specific printing.
 ///
-/// Selection rules (applied in order; first decisive comparison wins):
-///   1. Has at least one legal format → wins over has-none.
-///      (Don't surface unplayable Un-set / Mystery Booster gags as the
-///      default printing.)
-///   2. Non-digital → wins over digital-only.
-///   3. **Oldest `releasedAt`** → first printing wins.
-///      (User-facing change: previously "newest". The first printing is
-///      the one most players think of and the one most likely to have
-///      reasonable secondary-market pricing — newer reprints tend to be
-///      special-treatment showcase variants.)
-///   4. "Normal" set type → expansion / core / commander / masters /
-///      draft_innovation win over promo / funny / from_the_vault /
-///      memorabilia / token / etc.
-///   5. `borderColor == 'black'` → wins over borderless / silver / gold.
-///   6. `fullArt == false` → wins over full-art.
-///   7. `promo == false` → wins over promo.
-///   8. `nonfoil == true` → wins over foil-only.
-///   9. Lowest numeric `collectorNumber` → tiebreaker for the "main"
-///      printing within a set (showcases / extended-art usually live
-///      above the normal set range, e.g. ≥ 265 for a 264-card set).
+/// **Two-tier selection model.** A printing first either *qualifies* as
+/// a "normal" printing or doesn't. Qualifying printings always rank
+/// above non-qualifying ones (so a Secret Lair / Promo / showcase
+/// version never beats a regular reprint). Within either group we sort
+/// by a sequence of preferences geared toward "modern, common,
+/// playable copy".
+///
+/// **Qualifying** requires ALL of:
+///   - legal in at least one format
+///   - non-digital (Arena-only / MTGO-only printings excluded)
+///   - `setCode` not in the deny-list (Secret Lair, 30th Anniversary,
+///     known masterpiece-style sets MTGJSON tags as `expansion`)
+///   - `setType` not in the promo/funny/memorabilia/etc. deny-list
+///   - `borderColor == 'black'` (rejects borderless / silver / gold)
+///   - not `fullArt`
+///   - not `textless`
+///   - not `promo`
+///
+/// Among qualifying (and as a fallback among non-qualifying) we prefer:
+///   1. Modern frame (`2015` > everything else)
+///   2. Higher set-type rank (expansion > core > masters > commander >
+///      draft_innovation > else) — most common print runs.
+///   3. Has a non-foil printing
+///   4. Newest `releasedAt` — modern reprint > 1993 alpha for the
+///      "looks like a current Magic card" goal.
+///   5. Lowest numeric collector number — pick the standard print run
+///      within the chosen set, not a high-number showcase variant.
 ///
 /// Returns the set of `scryfallId`s that should have
 /// `is_canonical_printing = TRUE`.
@@ -39,8 +46,11 @@ class _PrintingFacts {
   final bool promo;
   final bool nonfoil;
   final bool fullArt;
+  final bool textless;
   final String releasedAt;
+  final String setCode;
   final String setType;
+  final String frame;
   final String borderColor;
   final String collectorNumber;
   final String colorIdentityJson;
@@ -55,8 +65,11 @@ class _PrintingFacts {
     required this.promo,
     required this.nonfoil,
     required this.fullArt,
+    required this.textless,
     required this.releasedAt,
+    required this.setCode,
     required this.setType,
+    required this.frame,
     required this.borderColor,
     required this.collectorNumber,
     required this.colorIdentityJson,
@@ -80,21 +93,70 @@ class CanonicalPrintingsResult {
   });
 }
 
-/// Set types that represent "real" printings of a card. Anything outside
-/// this set (promo, funny, memorabilia, from_the_vault, token, …) is
-/// considered second-class for canonical selection.
-const _normalSetTypes = {
-  'expansion',
-  'core',
-  'commander',
-  'masters',
-  'draft_innovation',
+/// Set codes hard-banned regardless of `setType`. MTGJSON tags Secret
+/// Lair as `setType: expansion`, so the set-type filter alone doesn't
+/// catch it. Similarly, 30th Anniversary Edition is a fancy reprint
+/// product MTGJSON treats as a normal expansion.
+const _denySetCodes = <String>{
+  'sld', // Secret Lair Drop
+  '30a', // 30th Anniversary Edition
 };
 
-/// Higher = more preferred. Used so a Beta card beats a From-the-Vault
-/// reprint with the same (or older) release date.
-int _setTypeRank(String setType) =>
-    _normalSetTypes.contains(setType) ? 1 : 0;
+/// Set types that represent "fancy" or non-tournament-legal print runs
+/// — promo decks, From the Vault, Mystery Booster, etc. Anything in
+/// here disqualifies the printing from the "normal" tier.
+const _denySetTypes = <String>{
+  'promo',
+  'funny',
+  'memorabilia',
+  'from_the_vault',
+  'spellbook',
+  'premium_deck',
+  'duel_deck',
+  'treasure_chest',
+  'starter',
+  'box',
+  'masterpiece',
+  'token',
+  'minigame',
+  'vanguard',
+  'planechase',
+  'archenemy',
+  'arsenal',
+};
+
+/// Set types that produce the most-recognizable "main set" reprints.
+/// Higher = more preferred *as a tiebreaker* among already-qualifying
+/// printings; this is independent of the [_denySetTypes] hard filter.
+int _setTypePreferenceRank(String setType) {
+  switch (setType) {
+    case 'expansion':
+      return 5;
+    case 'core':
+      return 4;
+    case 'masters':
+      return 3;
+    case 'commander':
+      return 2;
+    case 'draft_innovation':
+      return 1;
+    default:
+      return 0;
+  }
+}
+
+/// Frame era preference. The 2015 modern frame is what current Magic
+/// cards look like; everything older looks dated next to it.
+int _framePreferenceRank(String frame) {
+  switch (frame) {
+    case '2015':
+      return 2;
+    case 'future':
+      return 1;
+    default:
+      return 0;
+  }
+}
 
 /// Numeric portion of a collector number (`"123★"`, `"42a"`, `"265"`
 /// → 123 / 42 / 265). Returns a large sentinel for unparseable values
@@ -103,6 +165,18 @@ int _collectorNumberRank(String cn) {
   final match = RegExp(r'^\d+').firstMatch(cn);
   if (match == null) return 1 << 30;
   return int.tryParse(match.group(0)!) ?? (1 << 30);
+}
+
+bool _qualifies(_PrintingFacts p) {
+  if (!p.legalInAnyFormat) return false;
+  if (p.digital) return false;
+  if (_denySetCodes.contains(p.setCode)) return false;
+  if (_denySetTypes.contains(p.setType)) return false;
+  if (p.borderColor != 'black') return false;
+  if (p.fullArt) return false;
+  if (p.textless) return false;
+  if (p.promo) return false;
+  return true;
 }
 
 CanonicalPrintingsResult computeCanonicalPrintings(
@@ -119,8 +193,11 @@ CanonicalPrintingsResult computeCanonicalPrintings(
       promo: m['promo'] as bool? ?? false,
       nonfoil: m['nonfoil'] as bool? ?? false,
       fullArt: m['fullArt'] as bool? ?? false,
+      textless: m['textless'] as bool? ?? false,
       releasedAt: m['releasedAt'] as String? ?? '',
+      setCode: (m['setCode'] as String? ?? '').toLowerCase(),
       setType: m['setType'] as String? ?? '',
+      frame: m['frame'] as String? ?? '',
       borderColor: m['borderColor'] as String? ?? 'black',
       collectorNumber: m['collectorNumber'] as String? ?? '',
       colorIdentityJson: _jsonOrEmpty(m['colorIdentity']),
@@ -143,29 +220,35 @@ CanonicalPrintingsResult computeCanonicalPrintings(
 
   for (final group in [...oracleGroups.values, ...nameGroups.values]) {
     group.sort((a, b) {
-      // 1. Legal-in-any-format wins.
-      if (a.legalInAnyFormat != b.legalInAnyFormat) {
-        return a.legalInAnyFormat ? -1 : 1;
-      }
-      // 2. Non-digital wins.
-      if (a.digital != b.digital) return a.digital ? 1 : -1;
-      // 3. Oldest releasedAt wins. (Was: newest.)
-      final dateCmp = a.releasedAt.compareTo(b.releasedAt);
-      if (dateCmp != 0) return dateCmp;
-      // 4. Normal set type wins over promo/funny/from-the-vault.
-      final typeCmp = _setTypeRank(b.setType).compareTo(_setTypeRank(a.setType));
+      // Tier 1: qualifying printings beat non-qualifying. If a card
+      // has at least one normal printing, that printing wins regardless
+      // of date / collector number.
+      final aQ = _qualifies(a);
+      final bQ = _qualifies(b);
+      if (aQ != bQ) return aQ ? -1 : 1;
+
+      // Tier 2: among qualifying (or, as fallback, among non-qualifying)
+      // sort by preferences geared toward "modern, common, playable".
+
+      // 2a. Modern frame wins.
+      final frameCmp = _framePreferenceRank(b.frame)
+          .compareTo(_framePreferenceRank(a.frame));
+      if (frameCmp != 0) return frameCmp;
+
+      // 2b. Set-type preference (expansion > core > masters > …).
+      final typeCmp = _setTypePreferenceRank(b.setType)
+          .compareTo(_setTypePreferenceRank(a.setType));
       if (typeCmp != 0) return typeCmp;
-      // 5. Black border wins.
-      final aBlack = a.borderColor == 'black';
-      final bBlack = b.borderColor == 'black';
-      if (aBlack != bBlack) return aBlack ? -1 : 1;
-      // 6. Non-full-art wins.
-      if (a.fullArt != b.fullArt) return a.fullArt ? 1 : -1;
-      // 7. Non-promo wins.
-      if (a.promo != b.promo) return a.promo ? 1 : -1;
-      // 8. Has nonfoil wins.
+
+      // 2c. Has a non-foil printing.
       if (a.nonfoil != b.nonfoil) return a.nonfoil ? -1 : 1;
-      // 9. Lowest collector number wins.
+
+      // 2d. Newest releasedAt — modern reprint > 1993 alpha.
+      final dateCmp = b.releasedAt.compareTo(a.releasedAt);
+      if (dateCmp != 0) return dateCmp;
+
+      // 2e. Lowest collector number — pick the standard-print-run
+      //     printing within the chosen set, not a high-number showcase.
       return _collectorNumberRank(a.collectorNumber)
           .compareTo(_collectorNumberRank(b.collectorNumber));
     });
