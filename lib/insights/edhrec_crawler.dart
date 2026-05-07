@@ -192,6 +192,10 @@ Future<EdhrecCrawlResult> runEdhrecCrawl(
   var stoppedByRateLimit = false;
   var stoppedByTimeBudget = false;
 
+  // Heartbeat every 100 pages (~100s of pacing) so a multi-hour crawl
+  // shows up in the log instead of looking hung.
+  const heartbeatEvery = 100;
+
   try {
     for (final w in allWork) {
       if (config.maxRuntime != null && stopwatch.elapsed > config.maxRuntime!) {
@@ -201,6 +205,15 @@ Future<EdhrecCrawlResult> runEdhrecCrawl(
       }
 
       attempted++;
+      if (attempted % heartbeatEvery == 0) {
+        final pct = ((attempted / allWork.length) * 100).toStringAsFixed(1);
+        emit(
+          '  edhrec progress: $attempted/${allWork.length} ($pct%) '
+          '· succeeded=$succeeded notFound=$notFound failed=$failed '
+          '· elapsed=${stopwatch.elapsed.inSeconds}s '
+          '· recs=$newRecommendations',
+        );
+      }
       final wasRefresh = w.kind == 'card'
           ? cardPagePresent.contains(w.oracleId)
           : commanderPagePresent.contains(w.oracleId);

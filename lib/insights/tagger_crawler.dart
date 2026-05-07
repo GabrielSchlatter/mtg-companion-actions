@@ -207,6 +207,10 @@ Future<TaggerCrawlResult> runTaggerCrawl(
   var stoppedByRateLimit = false;
   var stoppedByTimeBudget = false;
 
+  // Heartbeat every 100 cards (~150s of pacing) so a healthy multi-hour
+  // crawl shows up in the log instead of looking hung.
+  const heartbeatEvery = 100;
+
   try {
     for (final card in workList) {
       if (config.maxRuntime != null &&
@@ -217,6 +221,15 @@ Future<TaggerCrawlResult> runTaggerCrawl(
       }
 
       attempted++;
+      if (attempted % heartbeatEvery == 0) {
+        final pct = ((attempted / workList.length) * 100).toStringAsFixed(1);
+        emit(
+          '  tagger progress: $attempted/${workList.length} ($pct%) '
+          '· succeeded=$succeeded failed=$failed '
+          '· elapsed=${stopwatch.elapsed.inSeconds}s '
+          '· cardTagEdges=$newCardTagEdges',
+        );
+      }
       final wasRefresh = preExisting.contains(card.oracleId);
       final fetch = await session.fetchCard(card.setCode, card.collectorNumber);
       switch (fetch.outcome) {
