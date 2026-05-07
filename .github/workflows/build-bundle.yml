@@ -1,5 +1,23 @@
 name: Build card bundle
 
+# Pipeline:
+#
+#   build-base ────► crawl-tagger (matrix 0/1/2) ─┐
+#                 ╲                               ├─► merge ──► R2 upload
+#                   ─► crawl-edhrec (matrix 0/1/2)─┘
+#
+# build-base produces a `cards-base` artifact (cards + prices + precons +
+# combos, no insights). Each crawler matrix shard restores that artifact,
+# runs ONLY its slice of tagger / edhrec, and uploads its result. The
+# merge job ATTACHes every shard's SQLite, INSERT-OR-IGNOREs the
+# insights tables, then carries over rows from the previously published
+# bundle for any oracle that wasn't crawled this run.
+#
+# Sharding is by stable FNV-1a hash on scryfall_id (3 shards). Per-shard
+# wall-time defaults to 5.5h (19800s) — leaves 30 min slack in the 6h
+# GitHub Actions per-job limit. Combos always runs once in build-base
+# via the bulk dump (one ~500 MB request, no rate limit).
+
 on:
   # AllPricesToday updates daily; run shortly after MTGJSON's nightly
   # refresh window (~03–05 UTC). 06:00 UTC keeps prices ≤ 24h fresh on
@@ -7,16 +25,32 @@ on:
   # build window.
   schedule:
     - cron: "0 6 * * *"
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      tagger_max_runtime_s:
+        description: "Tagger crawler wall-time budget per shard (seconds)"
+        required: false
+        default: "19800"
+      edhrec_max_runtime_s:
+        description: "EDHREC crawler wall-time budget per shard (seconds)"
+        required: false
+        default: "19800"
+      tagger_pacing_ms:
+        description: "Tagger inter-request pacing (ms)"
+        required: false
+        default: "1500"
+      edhrec_pacing_ms:
+        description: "EDHREC inter-request pacing (ms)"
+        required: false
+        default: "1000"
 
 jobs:
-  build:
+  build-base:
     runs-on: ubuntu-latest
     environment: Prod
     timeout-minutes: 30
     permissions:
       contents: read
-
     steps:
       - uses: actions/checkout@v4
 
@@ -27,11 +61,169 @@ jobs:
       - name: Resolve Dart deps
         run: dart pub get
 
-      - name: Build bundle
-        id: build
+      - name: Build base (cards + prices + precons + combos)
+        env:
+          # Skip seed in build-base — the merge job is responsible for
+          # carry-over from the previous bundle. PUBLIC_BASE_URL is set
+          # so the manifest URLs are correct, but seed is a no-op here
+          # because we run with INSIGHTS_PHASES=combos (seed only
+          # triggers when tagger / edhrec phases are enabled).
+          PUBLIC_BASE_URL: ${{ secrets.PUBLIC_BASE_URL }}
+          INSIGHTS_PHASES: combos
+        run: dart run bin/build_bundle.dart
+
+      - name: Upload base artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: cards-base
+          path: /tmp/mtg-bundle/cards.sqlite
+          retention-days: 1
+
+  crawl-tagger:
+    needs: build-base
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    permissions:
+      contents: read
+    strategy:
+      # One shard failing must not cancel the other two — carry-over
+      # from the previous bundle covers any gaps.
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+
+      - name: Resolve Dart deps
+        run: dart pub get
+
+      - name: Restore base bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: cards-base
+          path: /tmp/mtg-bundle
+
+      - name: Crawl Tagger shard ${{ matrix.shard }} of 3
+        env:
+          REUSE_EXISTING_DB: "1"
+          INSIGHTS_PHASES: tagger
+          TAGGER_SHARD_INDEX: ${{ matrix.shard }}
+          TAGGER_SHARD_COUNT: "3"
+          TAGGER_PACING_MS: ${{ inputs.tagger_pacing_ms || '1500' }}
+          TAGGER_MAX_RUNTIME_S: ${{ inputs.tagger_max_runtime_s || '19800' }}
+        run: dart run bin/build_bundle.dart
+
+      - name: Upload tagger shard ${{ matrix.shard }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: cards-tagger-shard-${{ matrix.shard }}
+          path: /tmp/mtg-bundle/cards.sqlite
+          retention-days: 1
+
+  crawl-edhrec:
+    needs: build-base
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+
+      - name: Resolve Dart deps
+        run: dart pub get
+
+      - name: Restore base bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: cards-base
+          path: /tmp/mtg-bundle
+
+      - name: Crawl EDHREC shard ${{ matrix.shard }} of 3
+        env:
+          REUSE_EXISTING_DB: "1"
+          INSIGHTS_PHASES: edhrec
+          EDHREC_SHARD_INDEX: ${{ matrix.shard }}
+          EDHREC_SHARD_COUNT: "3"
+          EDHREC_PACING_MS: ${{ inputs.edhrec_pacing_ms || '1000' }}
+          EDHREC_MAX_RUNTIME_S: ${{ inputs.edhrec_max_runtime_s || '19800' }}
+        run: dart run bin/build_bundle.dart
+
+      - name: Upload edhrec shard ${{ matrix.shard }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: cards-edhrec-shard-${{ matrix.shard }}
+          path: /tmp/mtg-bundle/cards.sqlite
+          retention-days: 1
+
+  merge:
+    needs: [crawl-tagger, crawl-edhrec]
+    # Always run merge as long as build-base succeeded. Individual
+    # shard failures are tolerated — carryover backs us up.
+    if: ${{ always() && needs.build-base.result == 'success' }}
+    runs-on: ubuntu-latest
+    environment: Prod
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+
+      - name: Resolve Dart deps
+        run: dart pub get
+
+      - name: Download all shard artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: /tmp/artifacts
+
+      - name: List artifacts (diagnostic)
+        run: |
+          ls -la /tmp/artifacts/
+          for d in /tmp/artifacts/*/; do
+            echo "$d:"
+            ls -la "$d"
+          done
+
+      - name: Merge shards + carryover
+        id: merge
         env:
           PUBLIC_BASE_URL: ${{ secrets.PUBLIC_BASE_URL }}
-        run: dart run bin/build_bundle.dart
+        run: |
+          set -euo pipefail
+          # Build the --shard list from whichever artifacts exist.
+          # A failed crawl-tagger shard leaves no `cards-tagger-shard-N`
+          # artifact, so we glob defensively.
+          SHARD_ARGS=()
+          for d in /tmp/artifacts/cards-tagger-shard-*/; do
+            if [[ -f "$d/cards.sqlite" ]]; then
+              SHARD_ARGS+=( --shard "$d/cards.sqlite" )
+            fi
+          done
+          for d in /tmp/artifacts/cards-edhrec-shard-*/; do
+            if [[ -f "$d/cards.sqlite" ]]; then
+              SHARD_ARGS+=( --shard "$d/cards.sqlite" )
+            fi
+          done
+          echo "Shards to merge: ${#SHARD_ARGS[@]}"
+          dart run bin/merge_shards.dart \
+            --base /tmp/artifacts/cards-base/cards.sqlite \
+            "${SHARD_ARGS[@]}"
 
       - name: Upload to R2
         env:
@@ -40,10 +232,10 @@ jobs:
           AWS_DEFAULT_REGION: auto
           R2_BUCKET: ${{ secrets.R2_BUCKET }}
           R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
-          BUNDLE_PATH: ${{ steps.build.outputs.bundle_path }}
-          MANIFEST_PATH: ${{ steps.build.outputs.manifest_path }}
-          VERSIONED_KEY: ${{ steps.build.outputs.versioned_key }}
-          LATEST_KEY: ${{ steps.build.outputs.latest_key }}
+          BUNDLE_PATH: ${{ steps.merge.outputs.bundle_path }}
+          MANIFEST_PATH: ${{ steps.merge.outputs.manifest_path }}
+          VERSIONED_KEY: ${{ steps.merge.outputs.versioned_key }}
+          LATEST_KEY: ${{ steps.merge.outputs.latest_key }}
         run: |
           set -euo pipefail
           # Serve as opaque gzipped bytes — the client decompresses

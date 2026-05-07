@@ -5754,6 +5754,5004 @@ class PreconDecksCompanion extends UpdateCompanion<PreconDeckRow> {
   }
 }
 
+class $TagsTable extends Tags with TableInfo<$TagsTable, TagRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $TagsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _tagIdMeta = const VerificationMeta('tagId');
+  @override
+  late final GeneratedColumn<String> tagId = GeneratedColumn<String>(
+      'tag_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _slugMeta = const VerificationMeta('slug');
+  @override
+  late final GeneratedColumn<String> slug = GeneratedColumn<String>(
+      'slug', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _typeMeta = const VerificationMeta('type');
+  @override
+  late final GeneratedColumn<String> type = GeneratedColumn<String>(
+      'type', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _categoryMeta =
+      const VerificationMeta('category');
+  @override
+  late final GeneratedColumn<String> category = GeneratedColumn<String>(
+      'category', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _isRootCategoryMeta =
+      const VerificationMeta('isRootCategory');
+  @override
+  late final GeneratedColumn<bool> isRootCategory = GeneratedColumn<bool>(
+      'is_root_category', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'CHECK ("is_root_category" IN (0, 1))'),
+      defaultValue: const Constant(false));
+  static const VerificationMeta _descriptionMeta =
+      const VerificationMeta('description');
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+      'description', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, tagId, slug, name, type, category, isRootCategory, description];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'tags';
+  @override
+  VerificationContext validateIntegrity(Insertable<TagRow> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('tag_id')) {
+      context.handle(
+          _tagIdMeta, tagId.isAcceptableOrUnknown(data['tag_id']!, _tagIdMeta));
+    } else if (isInserting) {
+      context.missing(_tagIdMeta);
+    }
+    if (data.containsKey('slug')) {
+      context.handle(
+          _slugMeta, slug.isAcceptableOrUnknown(data['slug']!, _slugMeta));
+    } else if (isInserting) {
+      context.missing(_slugMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('type')) {
+      context.handle(
+          _typeMeta, type.isAcceptableOrUnknown(data['type']!, _typeMeta));
+    } else if (isInserting) {
+      context.missing(_typeMeta);
+    }
+    if (data.containsKey('category')) {
+      context.handle(_categoryMeta,
+          category.isAcceptableOrUnknown(data['category']!, _categoryMeta));
+    }
+    if (data.containsKey('is_root_category')) {
+      context.handle(
+          _isRootCategoryMeta,
+          isRootCategory.isAcceptableOrUnknown(
+              data['is_root_category']!, _isRootCategoryMeta));
+    }
+    if (data.containsKey('description')) {
+      context.handle(
+          _descriptionMeta,
+          description.isAcceptableOrUnknown(
+              data['description']!, _descriptionMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  TagRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return TagRow(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      tagId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}tag_id'])!,
+      slug: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}slug'])!,
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      type: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}type'])!,
+      category: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}category']),
+      isRootCategory: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_root_category'])!,
+      description: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}description']),
+    );
+  }
+
+  @override
+  $TagsTable createAlias(String alias) {
+    return $TagsTable(attachedDatabase, alias);
+  }
+}
+
+class TagRow extends DataClass implements Insertable<TagRow> {
+  final int id;
+
+  /// Scryfall tag id (e.g. `VGFnLTEyMzQ=`).
+  final String tagId;
+  final String slug;
+  final String name;
+
+  /// Scryfall classifies its own tags into kinds — we keep the value but
+  /// only ingest functional tags.
+  final String type;
+
+  /// Scryfall's tag-level `category` field (a free-text string like
+  /// "removal", "ramp"). Distinct from the [isRootCategory] flag below.
+  final String? category;
+
+  /// Scryfall's `category` boolean — true when the tag itself is a
+  /// top-level category (used to distinguish "removal" from "doom blade").
+  final bool isRootCategory;
+  final String? description;
+  const TagRow(
+      {required this.id,
+      required this.tagId,
+      required this.slug,
+      required this.name,
+      required this.type,
+      this.category,
+      required this.isRootCategory,
+      this.description});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['tag_id'] = Variable<String>(tagId);
+    map['slug'] = Variable<String>(slug);
+    map['name'] = Variable<String>(name);
+    map['type'] = Variable<String>(type);
+    if (!nullToAbsent || category != null) {
+      map['category'] = Variable<String>(category);
+    }
+    map['is_root_category'] = Variable<bool>(isRootCategory);
+    if (!nullToAbsent || description != null) {
+      map['description'] = Variable<String>(description);
+    }
+    return map;
+  }
+
+  TagsCompanion toCompanion(bool nullToAbsent) {
+    return TagsCompanion(
+      id: Value(id),
+      tagId: Value(tagId),
+      slug: Value(slug),
+      name: Value(name),
+      type: Value(type),
+      category: category == null && nullToAbsent
+          ? const Value.absent()
+          : Value(category),
+      isRootCategory: Value(isRootCategory),
+      description: description == null && nullToAbsent
+          ? const Value.absent()
+          : Value(description),
+    );
+  }
+
+  factory TagRow.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return TagRow(
+      id: serializer.fromJson<int>(json['id']),
+      tagId: serializer.fromJson<String>(json['tagId']),
+      slug: serializer.fromJson<String>(json['slug']),
+      name: serializer.fromJson<String>(json['name']),
+      type: serializer.fromJson<String>(json['type']),
+      category: serializer.fromJson<String?>(json['category']),
+      isRootCategory: serializer.fromJson<bool>(json['isRootCategory']),
+      description: serializer.fromJson<String?>(json['description']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'tagId': serializer.toJson<String>(tagId),
+      'slug': serializer.toJson<String>(slug),
+      'name': serializer.toJson<String>(name),
+      'type': serializer.toJson<String>(type),
+      'category': serializer.toJson<String?>(category),
+      'isRootCategory': serializer.toJson<bool>(isRootCategory),
+      'description': serializer.toJson<String?>(description),
+    };
+  }
+
+  TagRow copyWith(
+          {int? id,
+          String? tagId,
+          String? slug,
+          String? name,
+          String? type,
+          Value<String?> category = const Value.absent(),
+          bool? isRootCategory,
+          Value<String?> description = const Value.absent()}) =>
+      TagRow(
+        id: id ?? this.id,
+        tagId: tagId ?? this.tagId,
+        slug: slug ?? this.slug,
+        name: name ?? this.name,
+        type: type ?? this.type,
+        category: category.present ? category.value : this.category,
+        isRootCategory: isRootCategory ?? this.isRootCategory,
+        description: description.present ? description.value : this.description,
+      );
+  TagRow copyWithCompanion(TagsCompanion data) {
+    return TagRow(
+      id: data.id.present ? data.id.value : this.id,
+      tagId: data.tagId.present ? data.tagId.value : this.tagId,
+      slug: data.slug.present ? data.slug.value : this.slug,
+      name: data.name.present ? data.name.value : this.name,
+      type: data.type.present ? data.type.value : this.type,
+      category: data.category.present ? data.category.value : this.category,
+      isRootCategory: data.isRootCategory.present
+          ? data.isRootCategory.value
+          : this.isRootCategory,
+      description:
+          data.description.present ? data.description.value : this.description,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TagRow(')
+          ..write('id: $id, ')
+          ..write('tagId: $tagId, ')
+          ..write('slug: $slug, ')
+          ..write('name: $name, ')
+          ..write('type: $type, ')
+          ..write('category: $category, ')
+          ..write('isRootCategory: $isRootCategory, ')
+          ..write('description: $description')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+      id, tagId, slug, name, type, category, isRootCategory, description);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is TagRow &&
+          other.id == this.id &&
+          other.tagId == this.tagId &&
+          other.slug == this.slug &&
+          other.name == this.name &&
+          other.type == this.type &&
+          other.category == this.category &&
+          other.isRootCategory == this.isRootCategory &&
+          other.description == this.description);
+}
+
+class TagsCompanion extends UpdateCompanion<TagRow> {
+  final Value<int> id;
+  final Value<String> tagId;
+  final Value<String> slug;
+  final Value<String> name;
+  final Value<String> type;
+  final Value<String?> category;
+  final Value<bool> isRootCategory;
+  final Value<String?> description;
+  const TagsCompanion({
+    this.id = const Value.absent(),
+    this.tagId = const Value.absent(),
+    this.slug = const Value.absent(),
+    this.name = const Value.absent(),
+    this.type = const Value.absent(),
+    this.category = const Value.absent(),
+    this.isRootCategory = const Value.absent(),
+    this.description = const Value.absent(),
+  });
+  TagsCompanion.insert({
+    this.id = const Value.absent(),
+    required String tagId,
+    required String slug,
+    required String name,
+    required String type,
+    this.category = const Value.absent(),
+    this.isRootCategory = const Value.absent(),
+    this.description = const Value.absent(),
+  })  : tagId = Value(tagId),
+        slug = Value(slug),
+        name = Value(name),
+        type = Value(type);
+  static Insertable<TagRow> custom({
+    Expression<int>? id,
+    Expression<String>? tagId,
+    Expression<String>? slug,
+    Expression<String>? name,
+    Expression<String>? type,
+    Expression<String>? category,
+    Expression<bool>? isRootCategory,
+    Expression<String>? description,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (tagId != null) 'tag_id': tagId,
+      if (slug != null) 'slug': slug,
+      if (name != null) 'name': name,
+      if (type != null) 'type': type,
+      if (category != null) 'category': category,
+      if (isRootCategory != null) 'is_root_category': isRootCategory,
+      if (description != null) 'description': description,
+    });
+  }
+
+  TagsCompanion copyWith(
+      {Value<int>? id,
+      Value<String>? tagId,
+      Value<String>? slug,
+      Value<String>? name,
+      Value<String>? type,
+      Value<String?>? category,
+      Value<bool>? isRootCategory,
+      Value<String?>? description}) {
+    return TagsCompanion(
+      id: id ?? this.id,
+      tagId: tagId ?? this.tagId,
+      slug: slug ?? this.slug,
+      name: name ?? this.name,
+      type: type ?? this.type,
+      category: category ?? this.category,
+      isRootCategory: isRootCategory ?? this.isRootCategory,
+      description: description ?? this.description,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (tagId.present) {
+      map['tag_id'] = Variable<String>(tagId.value);
+    }
+    if (slug.present) {
+      map['slug'] = Variable<String>(slug.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (type.present) {
+      map['type'] = Variable<String>(type.value);
+    }
+    if (category.present) {
+      map['category'] = Variable<String>(category.value);
+    }
+    if (isRootCategory.present) {
+      map['is_root_category'] = Variable<bool>(isRootCategory.value);
+    }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TagsCompanion(')
+          ..write('id: $id, ')
+          ..write('tagId: $tagId, ')
+          ..write('slug: $slug, ')
+          ..write('name: $name, ')
+          ..write('type: $type, ')
+          ..write('category: $category, ')
+          ..write('isRootCategory: $isRootCategory, ')
+          ..write('description: $description')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $TagAncestorsTable extends TagAncestors
+    with TableInfo<$TagAncestorsTable, TagAncestorRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $TagAncestorsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _tagIdMeta = const VerificationMeta('tagId');
+  @override
+  late final GeneratedColumn<String> tagId = GeneratedColumn<String>(
+      'tag_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _ancestorIdMeta =
+      const VerificationMeta('ancestorId');
+  @override
+  late final GeneratedColumn<String> ancestorId = GeneratedColumn<String>(
+      'ancestor_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _depthMeta = const VerificationMeta('depth');
+  @override
+  late final GeneratedColumn<int> depth = GeneratedColumn<int>(
+      'depth', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _isCategoryAncestorMeta =
+      const VerificationMeta('isCategoryAncestor');
+  @override
+  late final GeneratedColumn<bool> isCategoryAncestor = GeneratedColumn<bool>(
+      'is_category_ancestor', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'CHECK ("is_category_ancestor" IN (0, 1))'),
+      defaultValue: const Constant(false));
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, tagId, ancestorId, depth, isCategoryAncestor];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'tag_ancestors';
+  @override
+  VerificationContext validateIntegrity(Insertable<TagAncestorRow> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('tag_id')) {
+      context.handle(
+          _tagIdMeta, tagId.isAcceptableOrUnknown(data['tag_id']!, _tagIdMeta));
+    } else if (isInserting) {
+      context.missing(_tagIdMeta);
+    }
+    if (data.containsKey('ancestor_id')) {
+      context.handle(
+          _ancestorIdMeta,
+          ancestorId.isAcceptableOrUnknown(
+              data['ancestor_id']!, _ancestorIdMeta));
+    } else if (isInserting) {
+      context.missing(_ancestorIdMeta);
+    }
+    if (data.containsKey('depth')) {
+      context.handle(
+          _depthMeta, depth.isAcceptableOrUnknown(data['depth']!, _depthMeta));
+    } else if (isInserting) {
+      context.missing(_depthMeta);
+    }
+    if (data.containsKey('is_category_ancestor')) {
+      context.handle(
+          _isCategoryAncestorMeta,
+          isCategoryAncestor.isAcceptableOrUnknown(
+              data['is_category_ancestor']!, _isCategoryAncestorMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  TagAncestorRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return TagAncestorRow(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      tagId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}tag_id'])!,
+      ancestorId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}ancestor_id'])!,
+      depth: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}depth'])!,
+      isCategoryAncestor: attachedDatabase.typeMapping.read(
+          DriftSqlType.bool, data['${effectivePrefix}is_category_ancestor'])!,
+    );
+  }
+
+  @override
+  $TagAncestorsTable createAlias(String alias) {
+    return $TagAncestorsTable(attachedDatabase, alias);
+  }
+}
+
+class TagAncestorRow extends DataClass implements Insertable<TagAncestorRow> {
+  final int id;
+
+  /// FK → tags.tagId (the descendant).
+  final String tagId;
+
+  /// FK → tags.tagId (the ancestor).
+  final String ancestorId;
+
+  /// 1 = immediate parent, 2 = grandparent, …
+  final int depth;
+
+  /// True if the ancestor's `category` boolean is set — i.e. the ancestor
+  /// is itself a top-level category. Lets queries pick the most general
+  /// category candidate without re-joining `tags`.
+  final bool isCategoryAncestor;
+  const TagAncestorRow(
+      {required this.id,
+      required this.tagId,
+      required this.ancestorId,
+      required this.depth,
+      required this.isCategoryAncestor});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['tag_id'] = Variable<String>(tagId);
+    map['ancestor_id'] = Variable<String>(ancestorId);
+    map['depth'] = Variable<int>(depth);
+    map['is_category_ancestor'] = Variable<bool>(isCategoryAncestor);
+    return map;
+  }
+
+  TagAncestorsCompanion toCompanion(bool nullToAbsent) {
+    return TagAncestorsCompanion(
+      id: Value(id),
+      tagId: Value(tagId),
+      ancestorId: Value(ancestorId),
+      depth: Value(depth),
+      isCategoryAncestor: Value(isCategoryAncestor),
+    );
+  }
+
+  factory TagAncestorRow.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return TagAncestorRow(
+      id: serializer.fromJson<int>(json['id']),
+      tagId: serializer.fromJson<String>(json['tagId']),
+      ancestorId: serializer.fromJson<String>(json['ancestorId']),
+      depth: serializer.fromJson<int>(json['depth']),
+      isCategoryAncestor: serializer.fromJson<bool>(json['isCategoryAncestor']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'tagId': serializer.toJson<String>(tagId),
+      'ancestorId': serializer.toJson<String>(ancestorId),
+      'depth': serializer.toJson<int>(depth),
+      'isCategoryAncestor': serializer.toJson<bool>(isCategoryAncestor),
+    };
+  }
+
+  TagAncestorRow copyWith(
+          {int? id,
+          String? tagId,
+          String? ancestorId,
+          int? depth,
+          bool? isCategoryAncestor}) =>
+      TagAncestorRow(
+        id: id ?? this.id,
+        tagId: tagId ?? this.tagId,
+        ancestorId: ancestorId ?? this.ancestorId,
+        depth: depth ?? this.depth,
+        isCategoryAncestor: isCategoryAncestor ?? this.isCategoryAncestor,
+      );
+  TagAncestorRow copyWithCompanion(TagAncestorsCompanion data) {
+    return TagAncestorRow(
+      id: data.id.present ? data.id.value : this.id,
+      tagId: data.tagId.present ? data.tagId.value : this.tagId,
+      ancestorId:
+          data.ancestorId.present ? data.ancestorId.value : this.ancestorId,
+      depth: data.depth.present ? data.depth.value : this.depth,
+      isCategoryAncestor: data.isCategoryAncestor.present
+          ? data.isCategoryAncestor.value
+          : this.isCategoryAncestor,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TagAncestorRow(')
+          ..write('id: $id, ')
+          ..write('tagId: $tagId, ')
+          ..write('ancestorId: $ancestorId, ')
+          ..write('depth: $depth, ')
+          ..write('isCategoryAncestor: $isCategoryAncestor')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, tagId, ancestorId, depth, isCategoryAncestor);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is TagAncestorRow &&
+          other.id == this.id &&
+          other.tagId == this.tagId &&
+          other.ancestorId == this.ancestorId &&
+          other.depth == this.depth &&
+          other.isCategoryAncestor == this.isCategoryAncestor);
+}
+
+class TagAncestorsCompanion extends UpdateCompanion<TagAncestorRow> {
+  final Value<int> id;
+  final Value<String> tagId;
+  final Value<String> ancestorId;
+  final Value<int> depth;
+  final Value<bool> isCategoryAncestor;
+  const TagAncestorsCompanion({
+    this.id = const Value.absent(),
+    this.tagId = const Value.absent(),
+    this.ancestorId = const Value.absent(),
+    this.depth = const Value.absent(),
+    this.isCategoryAncestor = const Value.absent(),
+  });
+  TagAncestorsCompanion.insert({
+    this.id = const Value.absent(),
+    required String tagId,
+    required String ancestorId,
+    required int depth,
+    this.isCategoryAncestor = const Value.absent(),
+  })  : tagId = Value(tagId),
+        ancestorId = Value(ancestorId),
+        depth = Value(depth);
+  static Insertable<TagAncestorRow> custom({
+    Expression<int>? id,
+    Expression<String>? tagId,
+    Expression<String>? ancestorId,
+    Expression<int>? depth,
+    Expression<bool>? isCategoryAncestor,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (tagId != null) 'tag_id': tagId,
+      if (ancestorId != null) 'ancestor_id': ancestorId,
+      if (depth != null) 'depth': depth,
+      if (isCategoryAncestor != null)
+        'is_category_ancestor': isCategoryAncestor,
+    });
+  }
+
+  TagAncestorsCompanion copyWith(
+      {Value<int>? id,
+      Value<String>? tagId,
+      Value<String>? ancestorId,
+      Value<int>? depth,
+      Value<bool>? isCategoryAncestor}) {
+    return TagAncestorsCompanion(
+      id: id ?? this.id,
+      tagId: tagId ?? this.tagId,
+      ancestorId: ancestorId ?? this.ancestorId,
+      depth: depth ?? this.depth,
+      isCategoryAncestor: isCategoryAncestor ?? this.isCategoryAncestor,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (tagId.present) {
+      map['tag_id'] = Variable<String>(tagId.value);
+    }
+    if (ancestorId.present) {
+      map['ancestor_id'] = Variable<String>(ancestorId.value);
+    }
+    if (depth.present) {
+      map['depth'] = Variable<int>(depth.value);
+    }
+    if (isCategoryAncestor.present) {
+      map['is_category_ancestor'] = Variable<bool>(isCategoryAncestor.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TagAncestorsCompanion(')
+          ..write('id: $id, ')
+          ..write('tagId: $tagId, ')
+          ..write('ancestorId: $ancestorId, ')
+          ..write('depth: $depth, ')
+          ..write('isCategoryAncestor: $isCategoryAncestor')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $CardTagsTable extends CardTags
+    with TableInfo<$CardTagsTable, CardTagRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CardTagsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _oracleIdMeta =
+      const VerificationMeta('oracleId');
+  @override
+  late final GeneratedColumn<String> oracleId = GeneratedColumn<String>(
+      'oracle_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _tagIdMeta = const VerificationMeta('tagId');
+  @override
+  late final GeneratedColumn<String> tagId = GeneratedColumn<String>(
+      'tag_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [id, oracleId, tagId];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'card_tags';
+  @override
+  VerificationContext validateIntegrity(Insertable<CardTagRow> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('oracle_id')) {
+      context.handle(_oracleIdMeta,
+          oracleId.isAcceptableOrUnknown(data['oracle_id']!, _oracleIdMeta));
+    } else if (isInserting) {
+      context.missing(_oracleIdMeta);
+    }
+    if (data.containsKey('tag_id')) {
+      context.handle(
+          _tagIdMeta, tagId.isAcceptableOrUnknown(data['tag_id']!, _tagIdMeta));
+    } else if (isInserting) {
+      context.missing(_tagIdMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  CardTagRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CardTagRow(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      oracleId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}oracle_id'])!,
+      tagId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}tag_id'])!,
+    );
+  }
+
+  @override
+  $CardTagsTable createAlias(String alias) {
+    return $CardTagsTable(attachedDatabase, alias);
+  }
+}
+
+class CardTagRow extends DataClass implements Insertable<CardTagRow> {
+  final int id;
+
+  /// FK → cards.oracleId.
+  final String oracleId;
+
+  /// FK → tags.tagId.
+  final String tagId;
+  const CardTagRow(
+      {required this.id, required this.oracleId, required this.tagId});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['oracle_id'] = Variable<String>(oracleId);
+    map['tag_id'] = Variable<String>(tagId);
+    return map;
+  }
+
+  CardTagsCompanion toCompanion(bool nullToAbsent) {
+    return CardTagsCompanion(
+      id: Value(id),
+      oracleId: Value(oracleId),
+      tagId: Value(tagId),
+    );
+  }
+
+  factory CardTagRow.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CardTagRow(
+      id: serializer.fromJson<int>(json['id']),
+      oracleId: serializer.fromJson<String>(json['oracleId']),
+      tagId: serializer.fromJson<String>(json['tagId']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'oracleId': serializer.toJson<String>(oracleId),
+      'tagId': serializer.toJson<String>(tagId),
+    };
+  }
+
+  CardTagRow copyWith({int? id, String? oracleId, String? tagId}) => CardTagRow(
+        id: id ?? this.id,
+        oracleId: oracleId ?? this.oracleId,
+        tagId: tagId ?? this.tagId,
+      );
+  CardTagRow copyWithCompanion(CardTagsCompanion data) {
+    return CardTagRow(
+      id: data.id.present ? data.id.value : this.id,
+      oracleId: data.oracleId.present ? data.oracleId.value : this.oracleId,
+      tagId: data.tagId.present ? data.tagId.value : this.tagId,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CardTagRow(')
+          ..write('id: $id, ')
+          ..write('oracleId: $oracleId, ')
+          ..write('tagId: $tagId')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, oracleId, tagId);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CardTagRow &&
+          other.id == this.id &&
+          other.oracleId == this.oracleId &&
+          other.tagId == this.tagId);
+}
+
+class CardTagsCompanion extends UpdateCompanion<CardTagRow> {
+  final Value<int> id;
+  final Value<String> oracleId;
+  final Value<String> tagId;
+  const CardTagsCompanion({
+    this.id = const Value.absent(),
+    this.oracleId = const Value.absent(),
+    this.tagId = const Value.absent(),
+  });
+  CardTagsCompanion.insert({
+    this.id = const Value.absent(),
+    required String oracleId,
+    required String tagId,
+  })  : oracleId = Value(oracleId),
+        tagId = Value(tagId);
+  static Insertable<CardTagRow> custom({
+    Expression<int>? id,
+    Expression<String>? oracleId,
+    Expression<String>? tagId,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (oracleId != null) 'oracle_id': oracleId,
+      if (tagId != null) 'tag_id': tagId,
+    });
+  }
+
+  CardTagsCompanion copyWith(
+      {Value<int>? id, Value<String>? oracleId, Value<String>? tagId}) {
+    return CardTagsCompanion(
+      id: id ?? this.id,
+      oracleId: oracleId ?? this.oracleId,
+      tagId: tagId ?? this.tagId,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (oracleId.present) {
+      map['oracle_id'] = Variable<String>(oracleId.value);
+    }
+    if (tagId.present) {
+      map['tag_id'] = Variable<String>(tagId.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CardTagsCompanion(')
+          ..write('id: $id, ')
+          ..write('oracleId: $oracleId, ')
+          ..write('tagId: $tagId')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $CardRelationshipsTable extends CardRelationships
+    with TableInfo<$CardRelationshipsTable, CardRelationshipRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CardRelationshipsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _relationshipIdMeta =
+      const VerificationMeta('relationshipId');
+  @override
+  late final GeneratedColumn<String> relationshipId = GeneratedColumn<String>(
+      'relationship_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _subjectOracleIdMeta =
+      const VerificationMeta('subjectOracleId');
+  @override
+  late final GeneratedColumn<String> subjectOracleId = GeneratedColumn<String>(
+      'subject_oracle_id', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _relatedOracleIdMeta =
+      const VerificationMeta('relatedOracleId');
+  @override
+  late final GeneratedColumn<String> relatedOracleId = GeneratedColumn<String>(
+      'related_oracle_id', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _subjectNameMeta =
+      const VerificationMeta('subjectName');
+  @override
+  late final GeneratedColumn<String> subjectName = GeneratedColumn<String>(
+      'subject_name', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _relatedNameMeta =
+      const VerificationMeta('relatedName');
+  @override
+  late final GeneratedColumn<String> relatedName = GeneratedColumn<String>(
+      'related_name', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _classifierMeta =
+      const VerificationMeta('classifier');
+  @override
+  late final GeneratedColumn<String> classifier = GeneratedColumn<String>(
+      'classifier', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _classifierInverseMeta =
+      const VerificationMeta('classifierInverse');
+  @override
+  late final GeneratedColumn<String> classifierInverse =
+      GeneratedColumn<String>('classifier_inverse', aliasedName, true,
+          type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _annotationMeta =
+      const VerificationMeta('annotation');
+  @override
+  late final GeneratedColumn<String> annotation = GeneratedColumn<String>(
+      'annotation', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        relationshipId,
+        subjectOracleId,
+        relatedOracleId,
+        subjectName,
+        relatedName,
+        classifier,
+        classifierInverse,
+        annotation
+      ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'card_relationships';
+  @override
+  VerificationContext validateIntegrity(
+      Insertable<CardRelationshipRow> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('relationship_id')) {
+      context.handle(
+          _relationshipIdMeta,
+          relationshipId.isAcceptableOrUnknown(
+              data['relationship_id']!, _relationshipIdMeta));
+    } else if (isInserting) {
+      context.missing(_relationshipIdMeta);
+    }
+    if (data.containsKey('subject_oracle_id')) {
+      context.handle(
+          _subjectOracleIdMeta,
+          subjectOracleId.isAcceptableOrUnknown(
+              data['subject_oracle_id']!, _subjectOracleIdMeta));
+    }
+    if (data.containsKey('related_oracle_id')) {
+      context.handle(
+          _relatedOracleIdMeta,
+          relatedOracleId.isAcceptableOrUnknown(
+              data['related_oracle_id']!, _relatedOracleIdMeta));
+    }
+    if (data.containsKey('subject_name')) {
+      context.handle(
+          _subjectNameMeta,
+          subjectName.isAcceptableOrUnknown(
+              data['subject_name']!, _subjectNameMeta));
+    } else if (isInserting) {
+      context.missing(_subjectNameMeta);
+    }
+    if (data.containsKey('related_name')) {
+      context.handle(
+          _relatedNameMeta,
+          relatedName.isAcceptableOrUnknown(
+              data['related_name']!, _relatedNameMeta));
+    } else if (isInserting) {
+      context.missing(_relatedNameMeta);
+    }
+    if (data.containsKey('classifier')) {
+      context.handle(
+          _classifierMeta,
+          classifier.isAcceptableOrUnknown(
+              data['classifier']!, _classifierMeta));
+    }
+    if (data.containsKey('classifier_inverse')) {
+      context.handle(
+          _classifierInverseMeta,
+          classifierInverse.isAcceptableOrUnknown(
+              data['classifier_inverse']!, _classifierInverseMeta));
+    }
+    if (data.containsKey('annotation')) {
+      context.handle(
+          _annotationMeta,
+          annotation.isAcceptableOrUnknown(
+              data['annotation']!, _annotationMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  CardRelationshipRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CardRelationshipRow(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      relationshipId: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}relationship_id'])!,
+      subjectOracleId: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}subject_oracle_id']),
+      relatedOracleId: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}related_oracle_id']),
+      subjectName: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}subject_name'])!,
+      relatedName: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}related_name'])!,
+      classifier: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}classifier']),
+      classifierInverse: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}classifier_inverse']),
+      annotation: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}annotation']),
+    );
+  }
+
+  @override
+  $CardRelationshipsTable createAlias(String alias) {
+    return $CardRelationshipsTable(attachedDatabase, alias);
+  }
+}
+
+class CardRelationshipRow extends DataClass
+    implements Insertable<CardRelationshipRow> {
+  final int id;
+
+  /// Scryfall's id for the relationship edge.
+  final String relationshipId;
+
+  /// Resolved oracle_id of the subject card. Null when name didn't match.
+  final String? subjectOracleId;
+
+  /// Resolved oracle_id of the related card. Null when name didn't match.
+  final String? relatedOracleId;
+
+  /// Raw subject card name from Tagger — preserved as fallback.
+  final String subjectName;
+
+  /// Raw related card name from Tagger.
+  final String relatedName;
+
+  /// e.g. "BetterThan", "CombosWith".
+  final String? classifier;
+
+  /// Inverse direction's classifier.
+  final String? classifierInverse;
+  final String? annotation;
+  const CardRelationshipRow(
+      {required this.id,
+      required this.relationshipId,
+      this.subjectOracleId,
+      this.relatedOracleId,
+      required this.subjectName,
+      required this.relatedName,
+      this.classifier,
+      this.classifierInverse,
+      this.annotation});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['relationship_id'] = Variable<String>(relationshipId);
+    if (!nullToAbsent || subjectOracleId != null) {
+      map['subject_oracle_id'] = Variable<String>(subjectOracleId);
+    }
+    if (!nullToAbsent || relatedOracleId != null) {
+      map['related_oracle_id'] = Variable<String>(relatedOracleId);
+    }
+    map['subject_name'] = Variable<String>(subjectName);
+    map['related_name'] = Variable<String>(relatedName);
+    if (!nullToAbsent || classifier != null) {
+      map['classifier'] = Variable<String>(classifier);
+    }
+    if (!nullToAbsent || classifierInverse != null) {
+      map['classifier_inverse'] = Variable<String>(classifierInverse);
+    }
+    if (!nullToAbsent || annotation != null) {
+      map['annotation'] = Variable<String>(annotation);
+    }
+    return map;
+  }
+
+  CardRelationshipsCompanion toCompanion(bool nullToAbsent) {
+    return CardRelationshipsCompanion(
+      id: Value(id),
+      relationshipId: Value(relationshipId),
+      subjectOracleId: subjectOracleId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(subjectOracleId),
+      relatedOracleId: relatedOracleId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(relatedOracleId),
+      subjectName: Value(subjectName),
+      relatedName: Value(relatedName),
+      classifier: classifier == null && nullToAbsent
+          ? const Value.absent()
+          : Value(classifier),
+      classifierInverse: classifierInverse == null && nullToAbsent
+          ? const Value.absent()
+          : Value(classifierInverse),
+      annotation: annotation == null && nullToAbsent
+          ? const Value.absent()
+          : Value(annotation),
+    );
+  }
+
+  factory CardRelationshipRow.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CardRelationshipRow(
+      id: serializer.fromJson<int>(json['id']),
+      relationshipId: serializer.fromJson<String>(json['relationshipId']),
+      subjectOracleId: serializer.fromJson<String?>(json['subjectOracleId']),
+      relatedOracleId: serializer.fromJson<String?>(json['relatedOracleId']),
+      subjectName: serializer.fromJson<String>(json['subjectName']),
+      relatedName: serializer.fromJson<String>(json['relatedName']),
+      classifier: serializer.fromJson<String?>(json['classifier']),
+      classifierInverse:
+          serializer.fromJson<String?>(json['classifierInverse']),
+      annotation: serializer.fromJson<String?>(json['annotation']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'relationshipId': serializer.toJson<String>(relationshipId),
+      'subjectOracleId': serializer.toJson<String?>(subjectOracleId),
+      'relatedOracleId': serializer.toJson<String?>(relatedOracleId),
+      'subjectName': serializer.toJson<String>(subjectName),
+      'relatedName': serializer.toJson<String>(relatedName),
+      'classifier': serializer.toJson<String?>(classifier),
+      'classifierInverse': serializer.toJson<String?>(classifierInverse),
+      'annotation': serializer.toJson<String?>(annotation),
+    };
+  }
+
+  CardRelationshipRow copyWith(
+          {int? id,
+          String? relationshipId,
+          Value<String?> subjectOracleId = const Value.absent(),
+          Value<String?> relatedOracleId = const Value.absent(),
+          String? subjectName,
+          String? relatedName,
+          Value<String?> classifier = const Value.absent(),
+          Value<String?> classifierInverse = const Value.absent(),
+          Value<String?> annotation = const Value.absent()}) =>
+      CardRelationshipRow(
+        id: id ?? this.id,
+        relationshipId: relationshipId ?? this.relationshipId,
+        subjectOracleId: subjectOracleId.present
+            ? subjectOracleId.value
+            : this.subjectOracleId,
+        relatedOracleId: relatedOracleId.present
+            ? relatedOracleId.value
+            : this.relatedOracleId,
+        subjectName: subjectName ?? this.subjectName,
+        relatedName: relatedName ?? this.relatedName,
+        classifier: classifier.present ? classifier.value : this.classifier,
+        classifierInverse: classifierInverse.present
+            ? classifierInverse.value
+            : this.classifierInverse,
+        annotation: annotation.present ? annotation.value : this.annotation,
+      );
+  CardRelationshipRow copyWithCompanion(CardRelationshipsCompanion data) {
+    return CardRelationshipRow(
+      id: data.id.present ? data.id.value : this.id,
+      relationshipId: data.relationshipId.present
+          ? data.relationshipId.value
+          : this.relationshipId,
+      subjectOracleId: data.subjectOracleId.present
+          ? data.subjectOracleId.value
+          : this.subjectOracleId,
+      relatedOracleId: data.relatedOracleId.present
+          ? data.relatedOracleId.value
+          : this.relatedOracleId,
+      subjectName:
+          data.subjectName.present ? data.subjectName.value : this.subjectName,
+      relatedName:
+          data.relatedName.present ? data.relatedName.value : this.relatedName,
+      classifier:
+          data.classifier.present ? data.classifier.value : this.classifier,
+      classifierInverse: data.classifierInverse.present
+          ? data.classifierInverse.value
+          : this.classifierInverse,
+      annotation:
+          data.annotation.present ? data.annotation.value : this.annotation,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CardRelationshipRow(')
+          ..write('id: $id, ')
+          ..write('relationshipId: $relationshipId, ')
+          ..write('subjectOracleId: $subjectOracleId, ')
+          ..write('relatedOracleId: $relatedOracleId, ')
+          ..write('subjectName: $subjectName, ')
+          ..write('relatedName: $relatedName, ')
+          ..write('classifier: $classifier, ')
+          ..write('classifierInverse: $classifierInverse, ')
+          ..write('annotation: $annotation')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+      id,
+      relationshipId,
+      subjectOracleId,
+      relatedOracleId,
+      subjectName,
+      relatedName,
+      classifier,
+      classifierInverse,
+      annotation);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CardRelationshipRow &&
+          other.id == this.id &&
+          other.relationshipId == this.relationshipId &&
+          other.subjectOracleId == this.subjectOracleId &&
+          other.relatedOracleId == this.relatedOracleId &&
+          other.subjectName == this.subjectName &&
+          other.relatedName == this.relatedName &&
+          other.classifier == this.classifier &&
+          other.classifierInverse == this.classifierInverse &&
+          other.annotation == this.annotation);
+}
+
+class CardRelationshipsCompanion extends UpdateCompanion<CardRelationshipRow> {
+  final Value<int> id;
+  final Value<String> relationshipId;
+  final Value<String?> subjectOracleId;
+  final Value<String?> relatedOracleId;
+  final Value<String> subjectName;
+  final Value<String> relatedName;
+  final Value<String?> classifier;
+  final Value<String?> classifierInverse;
+  final Value<String?> annotation;
+  const CardRelationshipsCompanion({
+    this.id = const Value.absent(),
+    this.relationshipId = const Value.absent(),
+    this.subjectOracleId = const Value.absent(),
+    this.relatedOracleId = const Value.absent(),
+    this.subjectName = const Value.absent(),
+    this.relatedName = const Value.absent(),
+    this.classifier = const Value.absent(),
+    this.classifierInverse = const Value.absent(),
+    this.annotation = const Value.absent(),
+  });
+  CardRelationshipsCompanion.insert({
+    this.id = const Value.absent(),
+    required String relationshipId,
+    this.subjectOracleId = const Value.absent(),
+    this.relatedOracleId = const Value.absent(),
+    required String subjectName,
+    required String relatedName,
+    this.classifier = const Value.absent(),
+    this.classifierInverse = const Value.absent(),
+    this.annotation = const Value.absent(),
+  })  : relationshipId = Value(relationshipId),
+        subjectName = Value(subjectName),
+        relatedName = Value(relatedName);
+  static Insertable<CardRelationshipRow> custom({
+    Expression<int>? id,
+    Expression<String>? relationshipId,
+    Expression<String>? subjectOracleId,
+    Expression<String>? relatedOracleId,
+    Expression<String>? subjectName,
+    Expression<String>? relatedName,
+    Expression<String>? classifier,
+    Expression<String>? classifierInverse,
+    Expression<String>? annotation,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (relationshipId != null) 'relationship_id': relationshipId,
+      if (subjectOracleId != null) 'subject_oracle_id': subjectOracleId,
+      if (relatedOracleId != null) 'related_oracle_id': relatedOracleId,
+      if (subjectName != null) 'subject_name': subjectName,
+      if (relatedName != null) 'related_name': relatedName,
+      if (classifier != null) 'classifier': classifier,
+      if (classifierInverse != null) 'classifier_inverse': classifierInverse,
+      if (annotation != null) 'annotation': annotation,
+    });
+  }
+
+  CardRelationshipsCompanion copyWith(
+      {Value<int>? id,
+      Value<String>? relationshipId,
+      Value<String?>? subjectOracleId,
+      Value<String?>? relatedOracleId,
+      Value<String>? subjectName,
+      Value<String>? relatedName,
+      Value<String?>? classifier,
+      Value<String?>? classifierInverse,
+      Value<String?>? annotation}) {
+    return CardRelationshipsCompanion(
+      id: id ?? this.id,
+      relationshipId: relationshipId ?? this.relationshipId,
+      subjectOracleId: subjectOracleId ?? this.subjectOracleId,
+      relatedOracleId: relatedOracleId ?? this.relatedOracleId,
+      subjectName: subjectName ?? this.subjectName,
+      relatedName: relatedName ?? this.relatedName,
+      classifier: classifier ?? this.classifier,
+      classifierInverse: classifierInverse ?? this.classifierInverse,
+      annotation: annotation ?? this.annotation,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (relationshipId.present) {
+      map['relationship_id'] = Variable<String>(relationshipId.value);
+    }
+    if (subjectOracleId.present) {
+      map['subject_oracle_id'] = Variable<String>(subjectOracleId.value);
+    }
+    if (relatedOracleId.present) {
+      map['related_oracle_id'] = Variable<String>(relatedOracleId.value);
+    }
+    if (subjectName.present) {
+      map['subject_name'] = Variable<String>(subjectName.value);
+    }
+    if (relatedName.present) {
+      map['related_name'] = Variable<String>(relatedName.value);
+    }
+    if (classifier.present) {
+      map['classifier'] = Variable<String>(classifier.value);
+    }
+    if (classifierInverse.present) {
+      map['classifier_inverse'] = Variable<String>(classifierInverse.value);
+    }
+    if (annotation.present) {
+      map['annotation'] = Variable<String>(annotation.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CardRelationshipsCompanion(')
+          ..write('id: $id, ')
+          ..write('relationshipId: $relationshipId, ')
+          ..write('subjectOracleId: $subjectOracleId, ')
+          ..write('relatedOracleId: $relatedOracleId, ')
+          ..write('subjectName: $subjectName, ')
+          ..write('relatedName: $relatedName, ')
+          ..write('classifier: $classifier, ')
+          ..write('classifierInverse: $classifierInverse, ')
+          ..write('annotation: $annotation')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $TaggerCrawlStatusTable extends TaggerCrawlStatus
+    with TableInfo<$TaggerCrawlStatusTable, TaggerCrawlStatusRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $TaggerCrawlStatusTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _oracleIdMeta =
+      const VerificationMeta('oracleId');
+  @override
+  late final GeneratedColumn<String> oracleId = GeneratedColumn<String>(
+      'oracle_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _lastCrawledAtMeta =
+      const VerificationMeta('lastCrawledAt');
+  @override
+  late final GeneratedColumn<DateTime> lastCrawledAt =
+      GeneratedColumn<DateTime>('last_crawled_at', aliasedName, false,
+          type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [id, oracleId, lastCrawledAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'tagger_crawl_status';
+  @override
+  VerificationContext validateIntegrity(
+      Insertable<TaggerCrawlStatusRow> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('oracle_id')) {
+      context.handle(_oracleIdMeta,
+          oracleId.isAcceptableOrUnknown(data['oracle_id']!, _oracleIdMeta));
+    } else if (isInserting) {
+      context.missing(_oracleIdMeta);
+    }
+    if (data.containsKey('last_crawled_at')) {
+      context.handle(
+          _lastCrawledAtMeta,
+          lastCrawledAt.isAcceptableOrUnknown(
+              data['last_crawled_at']!, _lastCrawledAtMeta));
+    } else if (isInserting) {
+      context.missing(_lastCrawledAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  TaggerCrawlStatusRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return TaggerCrawlStatusRow(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      oracleId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}oracle_id'])!,
+      lastCrawledAt: attachedDatabase.typeMapping.read(
+          DriftSqlType.dateTime, data['${effectivePrefix}last_crawled_at'])!,
+    );
+  }
+
+  @override
+  $TaggerCrawlStatusTable createAlias(String alias) {
+    return $TaggerCrawlStatusTable(attachedDatabase, alias);
+  }
+}
+
+class TaggerCrawlStatusRow extends DataClass
+    implements Insertable<TaggerCrawlStatusRow> {
+  final int id;
+
+  /// FK → cards.oracleId.
+  final String oracleId;
+
+  /// When the crawler last successfully wrote tags for this oracle.
+  final DateTime lastCrawledAt;
+  const TaggerCrawlStatusRow(
+      {required this.id, required this.oracleId, required this.lastCrawledAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['oracle_id'] = Variable<String>(oracleId);
+    map['last_crawled_at'] = Variable<DateTime>(lastCrawledAt);
+    return map;
+  }
+
+  TaggerCrawlStatusCompanion toCompanion(bool nullToAbsent) {
+    return TaggerCrawlStatusCompanion(
+      id: Value(id),
+      oracleId: Value(oracleId),
+      lastCrawledAt: Value(lastCrawledAt),
+    );
+  }
+
+  factory TaggerCrawlStatusRow.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return TaggerCrawlStatusRow(
+      id: serializer.fromJson<int>(json['id']),
+      oracleId: serializer.fromJson<String>(json['oracleId']),
+      lastCrawledAt: serializer.fromJson<DateTime>(json['lastCrawledAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'oracleId': serializer.toJson<String>(oracleId),
+      'lastCrawledAt': serializer.toJson<DateTime>(lastCrawledAt),
+    };
+  }
+
+  TaggerCrawlStatusRow copyWith(
+          {int? id, String? oracleId, DateTime? lastCrawledAt}) =>
+      TaggerCrawlStatusRow(
+        id: id ?? this.id,
+        oracleId: oracleId ?? this.oracleId,
+        lastCrawledAt: lastCrawledAt ?? this.lastCrawledAt,
+      );
+  TaggerCrawlStatusRow copyWithCompanion(TaggerCrawlStatusCompanion data) {
+    return TaggerCrawlStatusRow(
+      id: data.id.present ? data.id.value : this.id,
+      oracleId: data.oracleId.present ? data.oracleId.value : this.oracleId,
+      lastCrawledAt: data.lastCrawledAt.present
+          ? data.lastCrawledAt.value
+          : this.lastCrawledAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TaggerCrawlStatusRow(')
+          ..write('id: $id, ')
+          ..write('oracleId: $oracleId, ')
+          ..write('lastCrawledAt: $lastCrawledAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, oracleId, lastCrawledAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is TaggerCrawlStatusRow &&
+          other.id == this.id &&
+          other.oracleId == this.oracleId &&
+          other.lastCrawledAt == this.lastCrawledAt);
+}
+
+class TaggerCrawlStatusCompanion extends UpdateCompanion<TaggerCrawlStatusRow> {
+  final Value<int> id;
+  final Value<String> oracleId;
+  final Value<DateTime> lastCrawledAt;
+  const TaggerCrawlStatusCompanion({
+    this.id = const Value.absent(),
+    this.oracleId = const Value.absent(),
+    this.lastCrawledAt = const Value.absent(),
+  });
+  TaggerCrawlStatusCompanion.insert({
+    this.id = const Value.absent(),
+    required String oracleId,
+    required DateTime lastCrawledAt,
+  })  : oracleId = Value(oracleId),
+        lastCrawledAt = Value(lastCrawledAt);
+  static Insertable<TaggerCrawlStatusRow> custom({
+    Expression<int>? id,
+    Expression<String>? oracleId,
+    Expression<DateTime>? lastCrawledAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (oracleId != null) 'oracle_id': oracleId,
+      if (lastCrawledAt != null) 'last_crawled_at': lastCrawledAt,
+    });
+  }
+
+  TaggerCrawlStatusCompanion copyWith(
+      {Value<int>? id,
+      Value<String>? oracleId,
+      Value<DateTime>? lastCrawledAt}) {
+    return TaggerCrawlStatusCompanion(
+      id: id ?? this.id,
+      oracleId: oracleId ?? this.oracleId,
+      lastCrawledAt: lastCrawledAt ?? this.lastCrawledAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (oracleId.present) {
+      map['oracle_id'] = Variable<String>(oracleId.value);
+    }
+    if (lastCrawledAt.present) {
+      map['last_crawled_at'] = Variable<DateTime>(lastCrawledAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TaggerCrawlStatusCompanion(')
+          ..write('id: $id, ')
+          ..write('oracleId: $oracleId, ')
+          ..write('lastCrawledAt: $lastCrawledAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $CombosTable extends Combos with TableInfo<$CombosTable, ComboRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CombosTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _comboIdMeta =
+      const VerificationMeta('comboId');
+  @override
+  late final GeneratedColumn<String> comboId = GeneratedColumn<String>(
+      'combo_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _descriptionMeta =
+      const VerificationMeta('description');
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+      'description', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _notesMeta = const VerificationMeta('notes');
+  @override
+  late final GeneratedColumn<String> notes = GeneratedColumn<String>(
+      'notes', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _bracketTagMeta =
+      const VerificationMeta('bracketTag');
+  @override
+  late final GeneratedColumn<String> bracketTag = GeneratedColumn<String>(
+      'bracket_tag', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _identityMeta =
+      const VerificationMeta('identity');
+  @override
+  late final GeneratedColumn<String> identity = GeneratedColumn<String>(
+      'identity', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+      'status', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _popularityMeta =
+      const VerificationMeta('popularity');
+  @override
+  late final GeneratedColumn<int> popularity = GeneratedColumn<int>(
+      'popularity', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  static const VerificationMeta _manaValueNeededMeta =
+      const VerificationMeta('manaValueNeeded');
+  @override
+  late final GeneratedColumn<int> manaValueNeeded = GeneratedColumn<int>(
+      'mana_value_needed', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  static const VerificationMeta _manaNeededMeta =
+      const VerificationMeta('manaNeeded');
+  @override
+  late final GeneratedColumn<String> manaNeeded = GeneratedColumn<String>(
+      'mana_needed', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _easyPrerequisitesMeta =
+      const VerificationMeta('easyPrerequisites');
+  @override
+  late final GeneratedColumn<String> easyPrerequisites =
+      GeneratedColumn<String>('easy_prerequisites', aliasedName, true,
+          type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _notablePrerequisitesMeta =
+      const VerificationMeta('notablePrerequisites');
+  @override
+  late final GeneratedColumn<String> notablePrerequisites =
+      GeneratedColumn<String>('notable_prerequisites', aliasedName, true,
+          type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _lastUpdatedMeta =
+      const VerificationMeta('lastUpdated');
+  @override
+  late final GeneratedColumn<DateTime> lastUpdated = GeneratedColumn<DateTime>(
+      'last_updated', aliasedName, false,
+      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        comboId,
+        description,
+        notes,
+        bracketTag,
+        identity,
+        status,
+        popularity,
+        manaValueNeeded,
+        manaNeeded,
+        easyPrerequisites,
+        notablePrerequisites,
+        lastUpdated
+      ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'combos';
+  @override
+  VerificationContext validateIntegrity(Insertable<ComboRow> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('combo_id')) {
+      context.handle(_comboIdMeta,
+          comboId.isAcceptableOrUnknown(data['combo_id']!, _comboIdMeta));
+    } else if (isInserting) {
+      context.missing(_comboIdMeta);
+    }
+    if (data.containsKey('description')) {
+      context.handle(
+          _descriptionMeta,
+          description.isAcceptableOrUnknown(
+              data['description']!, _descriptionMeta));
+    }
+    if (data.containsKey('notes')) {
+      context.handle(
+          _notesMeta, notes.isAcceptableOrUnknown(data['notes']!, _notesMeta));
+    }
+    if (data.containsKey('bracket_tag')) {
+      context.handle(
+          _bracketTagMeta,
+          bracketTag.isAcceptableOrUnknown(
+              data['bracket_tag']!, _bracketTagMeta));
+    }
+    if (data.containsKey('identity')) {
+      context.handle(_identityMeta,
+          identity.isAcceptableOrUnknown(data['identity']!, _identityMeta));
+    }
+    if (data.containsKey('status')) {
+      context.handle(_statusMeta,
+          status.isAcceptableOrUnknown(data['status']!, _statusMeta));
+    }
+    if (data.containsKey('popularity')) {
+      context.handle(
+          _popularityMeta,
+          popularity.isAcceptableOrUnknown(
+              data['popularity']!, _popularityMeta));
+    }
+    if (data.containsKey('mana_value_needed')) {
+      context.handle(
+          _manaValueNeededMeta,
+          manaValueNeeded.isAcceptableOrUnknown(
+              data['mana_value_needed']!, _manaValueNeededMeta));
+    }
+    if (data.containsKey('mana_needed')) {
+      context.handle(
+          _manaNeededMeta,
+          manaNeeded.isAcceptableOrUnknown(
+              data['mana_needed']!, _manaNeededMeta));
+    }
+    if (data.containsKey('easy_prerequisites')) {
+      context.handle(
+          _easyPrerequisitesMeta,
+          easyPrerequisites.isAcceptableOrUnknown(
+              data['easy_prerequisites']!, _easyPrerequisitesMeta));
+    }
+    if (data.containsKey('notable_prerequisites')) {
+      context.handle(
+          _notablePrerequisitesMeta,
+          notablePrerequisites.isAcceptableOrUnknown(
+              data['notable_prerequisites']!, _notablePrerequisitesMeta));
+    }
+    if (data.containsKey('last_updated')) {
+      context.handle(
+          _lastUpdatedMeta,
+          lastUpdated.isAcceptableOrUnknown(
+              data['last_updated']!, _lastUpdatedMeta));
+    } else if (isInserting) {
+      context.missing(_lastUpdatedMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  ComboRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ComboRow(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      comboId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}combo_id'])!,
+      description: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}description']),
+      notes: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}notes']),
+      bracketTag: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}bracket_tag']),
+      identity: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}identity']),
+      status: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}status']),
+      popularity: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}popularity']),
+      manaValueNeeded: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}mana_value_needed']),
+      manaNeeded: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}mana_needed']),
+      easyPrerequisites: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}easy_prerequisites']),
+      notablePrerequisites: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}notable_prerequisites']),
+      lastUpdated: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}last_updated'])!,
+    );
+  }
+
+  @override
+  $CombosTable createAlias(String alias) {
+    return $CombosTable(attachedDatabase, alias);
+  }
+}
+
+class ComboRow extends DataClass implements Insertable<ComboRow> {
+  final int id;
+
+  /// Spellbook variant id (string — e.g. `513-5034--46`).
+  final String comboId;
+  final String? description;
+  final String? notes;
+
+  /// Spellbook bracket tag — single letter R/S/P/O/C/E/B. Promoted out
+  /// of any blob so deck-bracket aggregations don't need joins/parsing.
+  final String? bracketTag;
+
+  /// Combo color identity letters (e.g. "WUB").
+  final String? identity;
+  final String? status;
+  final int? popularity;
+  final int? manaValueNeeded;
+  final String? manaNeeded;
+  final String? easyPrerequisites;
+  final String? notablePrerequisites;
+
+  /// Whole-table replace each build — every row shares the same value.
+  final DateTime lastUpdated;
+  const ComboRow(
+      {required this.id,
+      required this.comboId,
+      this.description,
+      this.notes,
+      this.bracketTag,
+      this.identity,
+      this.status,
+      this.popularity,
+      this.manaValueNeeded,
+      this.manaNeeded,
+      this.easyPrerequisites,
+      this.notablePrerequisites,
+      required this.lastUpdated});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['combo_id'] = Variable<String>(comboId);
+    if (!nullToAbsent || description != null) {
+      map['description'] = Variable<String>(description);
+    }
+    if (!nullToAbsent || notes != null) {
+      map['notes'] = Variable<String>(notes);
+    }
+    if (!nullToAbsent || bracketTag != null) {
+      map['bracket_tag'] = Variable<String>(bracketTag);
+    }
+    if (!nullToAbsent || identity != null) {
+      map['identity'] = Variable<String>(identity);
+    }
+    if (!nullToAbsent || status != null) {
+      map['status'] = Variable<String>(status);
+    }
+    if (!nullToAbsent || popularity != null) {
+      map['popularity'] = Variable<int>(popularity);
+    }
+    if (!nullToAbsent || manaValueNeeded != null) {
+      map['mana_value_needed'] = Variable<int>(manaValueNeeded);
+    }
+    if (!nullToAbsent || manaNeeded != null) {
+      map['mana_needed'] = Variable<String>(manaNeeded);
+    }
+    if (!nullToAbsent || easyPrerequisites != null) {
+      map['easy_prerequisites'] = Variable<String>(easyPrerequisites);
+    }
+    if (!nullToAbsent || notablePrerequisites != null) {
+      map['notable_prerequisites'] = Variable<String>(notablePrerequisites);
+    }
+    map['last_updated'] = Variable<DateTime>(lastUpdated);
+    return map;
+  }
+
+  CombosCompanion toCompanion(bool nullToAbsent) {
+    return CombosCompanion(
+      id: Value(id),
+      comboId: Value(comboId),
+      description: description == null && nullToAbsent
+          ? const Value.absent()
+          : Value(description),
+      notes:
+          notes == null && nullToAbsent ? const Value.absent() : Value(notes),
+      bracketTag: bracketTag == null && nullToAbsent
+          ? const Value.absent()
+          : Value(bracketTag),
+      identity: identity == null && nullToAbsent
+          ? const Value.absent()
+          : Value(identity),
+      status:
+          status == null && nullToAbsent ? const Value.absent() : Value(status),
+      popularity: popularity == null && nullToAbsent
+          ? const Value.absent()
+          : Value(popularity),
+      manaValueNeeded: manaValueNeeded == null && nullToAbsent
+          ? const Value.absent()
+          : Value(manaValueNeeded),
+      manaNeeded: manaNeeded == null && nullToAbsent
+          ? const Value.absent()
+          : Value(manaNeeded),
+      easyPrerequisites: easyPrerequisites == null && nullToAbsent
+          ? const Value.absent()
+          : Value(easyPrerequisites),
+      notablePrerequisites: notablePrerequisites == null && nullToAbsent
+          ? const Value.absent()
+          : Value(notablePrerequisites),
+      lastUpdated: Value(lastUpdated),
+    );
+  }
+
+  factory ComboRow.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ComboRow(
+      id: serializer.fromJson<int>(json['id']),
+      comboId: serializer.fromJson<String>(json['comboId']),
+      description: serializer.fromJson<String?>(json['description']),
+      notes: serializer.fromJson<String?>(json['notes']),
+      bracketTag: serializer.fromJson<String?>(json['bracketTag']),
+      identity: serializer.fromJson<String?>(json['identity']),
+      status: serializer.fromJson<String?>(json['status']),
+      popularity: serializer.fromJson<int?>(json['popularity']),
+      manaValueNeeded: serializer.fromJson<int?>(json['manaValueNeeded']),
+      manaNeeded: serializer.fromJson<String?>(json['manaNeeded']),
+      easyPrerequisites:
+          serializer.fromJson<String?>(json['easyPrerequisites']),
+      notablePrerequisites:
+          serializer.fromJson<String?>(json['notablePrerequisites']),
+      lastUpdated: serializer.fromJson<DateTime>(json['lastUpdated']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'comboId': serializer.toJson<String>(comboId),
+      'description': serializer.toJson<String?>(description),
+      'notes': serializer.toJson<String?>(notes),
+      'bracketTag': serializer.toJson<String?>(bracketTag),
+      'identity': serializer.toJson<String?>(identity),
+      'status': serializer.toJson<String?>(status),
+      'popularity': serializer.toJson<int?>(popularity),
+      'manaValueNeeded': serializer.toJson<int?>(manaValueNeeded),
+      'manaNeeded': serializer.toJson<String?>(manaNeeded),
+      'easyPrerequisites': serializer.toJson<String?>(easyPrerequisites),
+      'notablePrerequisites': serializer.toJson<String?>(notablePrerequisites),
+      'lastUpdated': serializer.toJson<DateTime>(lastUpdated),
+    };
+  }
+
+  ComboRow copyWith(
+          {int? id,
+          String? comboId,
+          Value<String?> description = const Value.absent(),
+          Value<String?> notes = const Value.absent(),
+          Value<String?> bracketTag = const Value.absent(),
+          Value<String?> identity = const Value.absent(),
+          Value<String?> status = const Value.absent(),
+          Value<int?> popularity = const Value.absent(),
+          Value<int?> manaValueNeeded = const Value.absent(),
+          Value<String?> manaNeeded = const Value.absent(),
+          Value<String?> easyPrerequisites = const Value.absent(),
+          Value<String?> notablePrerequisites = const Value.absent(),
+          DateTime? lastUpdated}) =>
+      ComboRow(
+        id: id ?? this.id,
+        comboId: comboId ?? this.comboId,
+        description: description.present ? description.value : this.description,
+        notes: notes.present ? notes.value : this.notes,
+        bracketTag: bracketTag.present ? bracketTag.value : this.bracketTag,
+        identity: identity.present ? identity.value : this.identity,
+        status: status.present ? status.value : this.status,
+        popularity: popularity.present ? popularity.value : this.popularity,
+        manaValueNeeded: manaValueNeeded.present
+            ? manaValueNeeded.value
+            : this.manaValueNeeded,
+        manaNeeded: manaNeeded.present ? manaNeeded.value : this.manaNeeded,
+        easyPrerequisites: easyPrerequisites.present
+            ? easyPrerequisites.value
+            : this.easyPrerequisites,
+        notablePrerequisites: notablePrerequisites.present
+            ? notablePrerequisites.value
+            : this.notablePrerequisites,
+        lastUpdated: lastUpdated ?? this.lastUpdated,
+      );
+  ComboRow copyWithCompanion(CombosCompanion data) {
+    return ComboRow(
+      id: data.id.present ? data.id.value : this.id,
+      comboId: data.comboId.present ? data.comboId.value : this.comboId,
+      description:
+          data.description.present ? data.description.value : this.description,
+      notes: data.notes.present ? data.notes.value : this.notes,
+      bracketTag:
+          data.bracketTag.present ? data.bracketTag.value : this.bracketTag,
+      identity: data.identity.present ? data.identity.value : this.identity,
+      status: data.status.present ? data.status.value : this.status,
+      popularity:
+          data.popularity.present ? data.popularity.value : this.popularity,
+      manaValueNeeded: data.manaValueNeeded.present
+          ? data.manaValueNeeded.value
+          : this.manaValueNeeded,
+      manaNeeded:
+          data.manaNeeded.present ? data.manaNeeded.value : this.manaNeeded,
+      easyPrerequisites: data.easyPrerequisites.present
+          ? data.easyPrerequisites.value
+          : this.easyPrerequisites,
+      notablePrerequisites: data.notablePrerequisites.present
+          ? data.notablePrerequisites.value
+          : this.notablePrerequisites,
+      lastUpdated:
+          data.lastUpdated.present ? data.lastUpdated.value : this.lastUpdated,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ComboRow(')
+          ..write('id: $id, ')
+          ..write('comboId: $comboId, ')
+          ..write('description: $description, ')
+          ..write('notes: $notes, ')
+          ..write('bracketTag: $bracketTag, ')
+          ..write('identity: $identity, ')
+          ..write('status: $status, ')
+          ..write('popularity: $popularity, ')
+          ..write('manaValueNeeded: $manaValueNeeded, ')
+          ..write('manaNeeded: $manaNeeded, ')
+          ..write('easyPrerequisites: $easyPrerequisites, ')
+          ..write('notablePrerequisites: $notablePrerequisites, ')
+          ..write('lastUpdated: $lastUpdated')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+      id,
+      comboId,
+      description,
+      notes,
+      bracketTag,
+      identity,
+      status,
+      popularity,
+      manaValueNeeded,
+      manaNeeded,
+      easyPrerequisites,
+      notablePrerequisites,
+      lastUpdated);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ComboRow &&
+          other.id == this.id &&
+          other.comboId == this.comboId &&
+          other.description == this.description &&
+          other.notes == this.notes &&
+          other.bracketTag == this.bracketTag &&
+          other.identity == this.identity &&
+          other.status == this.status &&
+          other.popularity == this.popularity &&
+          other.manaValueNeeded == this.manaValueNeeded &&
+          other.manaNeeded == this.manaNeeded &&
+          other.easyPrerequisites == this.easyPrerequisites &&
+          other.notablePrerequisites == this.notablePrerequisites &&
+          other.lastUpdated == this.lastUpdated);
+}
+
+class CombosCompanion extends UpdateCompanion<ComboRow> {
+  final Value<int> id;
+  final Value<String> comboId;
+  final Value<String?> description;
+  final Value<String?> notes;
+  final Value<String?> bracketTag;
+  final Value<String?> identity;
+  final Value<String?> status;
+  final Value<int?> popularity;
+  final Value<int?> manaValueNeeded;
+  final Value<String?> manaNeeded;
+  final Value<String?> easyPrerequisites;
+  final Value<String?> notablePrerequisites;
+  final Value<DateTime> lastUpdated;
+  const CombosCompanion({
+    this.id = const Value.absent(),
+    this.comboId = const Value.absent(),
+    this.description = const Value.absent(),
+    this.notes = const Value.absent(),
+    this.bracketTag = const Value.absent(),
+    this.identity = const Value.absent(),
+    this.status = const Value.absent(),
+    this.popularity = const Value.absent(),
+    this.manaValueNeeded = const Value.absent(),
+    this.manaNeeded = const Value.absent(),
+    this.easyPrerequisites = const Value.absent(),
+    this.notablePrerequisites = const Value.absent(),
+    this.lastUpdated = const Value.absent(),
+  });
+  CombosCompanion.insert({
+    this.id = const Value.absent(),
+    required String comboId,
+    this.description = const Value.absent(),
+    this.notes = const Value.absent(),
+    this.bracketTag = const Value.absent(),
+    this.identity = const Value.absent(),
+    this.status = const Value.absent(),
+    this.popularity = const Value.absent(),
+    this.manaValueNeeded = const Value.absent(),
+    this.manaNeeded = const Value.absent(),
+    this.easyPrerequisites = const Value.absent(),
+    this.notablePrerequisites = const Value.absent(),
+    required DateTime lastUpdated,
+  })  : comboId = Value(comboId),
+        lastUpdated = Value(lastUpdated);
+  static Insertable<ComboRow> custom({
+    Expression<int>? id,
+    Expression<String>? comboId,
+    Expression<String>? description,
+    Expression<String>? notes,
+    Expression<String>? bracketTag,
+    Expression<String>? identity,
+    Expression<String>? status,
+    Expression<int>? popularity,
+    Expression<int>? manaValueNeeded,
+    Expression<String>? manaNeeded,
+    Expression<String>? easyPrerequisites,
+    Expression<String>? notablePrerequisites,
+    Expression<DateTime>? lastUpdated,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (comboId != null) 'combo_id': comboId,
+      if (description != null) 'description': description,
+      if (notes != null) 'notes': notes,
+      if (bracketTag != null) 'bracket_tag': bracketTag,
+      if (identity != null) 'identity': identity,
+      if (status != null) 'status': status,
+      if (popularity != null) 'popularity': popularity,
+      if (manaValueNeeded != null) 'mana_value_needed': manaValueNeeded,
+      if (manaNeeded != null) 'mana_needed': manaNeeded,
+      if (easyPrerequisites != null) 'easy_prerequisites': easyPrerequisites,
+      if (notablePrerequisites != null)
+        'notable_prerequisites': notablePrerequisites,
+      if (lastUpdated != null) 'last_updated': lastUpdated,
+    });
+  }
+
+  CombosCompanion copyWith(
+      {Value<int>? id,
+      Value<String>? comboId,
+      Value<String?>? description,
+      Value<String?>? notes,
+      Value<String?>? bracketTag,
+      Value<String?>? identity,
+      Value<String?>? status,
+      Value<int?>? popularity,
+      Value<int?>? manaValueNeeded,
+      Value<String?>? manaNeeded,
+      Value<String?>? easyPrerequisites,
+      Value<String?>? notablePrerequisites,
+      Value<DateTime>? lastUpdated}) {
+    return CombosCompanion(
+      id: id ?? this.id,
+      comboId: comboId ?? this.comboId,
+      description: description ?? this.description,
+      notes: notes ?? this.notes,
+      bracketTag: bracketTag ?? this.bracketTag,
+      identity: identity ?? this.identity,
+      status: status ?? this.status,
+      popularity: popularity ?? this.popularity,
+      manaValueNeeded: manaValueNeeded ?? this.manaValueNeeded,
+      manaNeeded: manaNeeded ?? this.manaNeeded,
+      easyPrerequisites: easyPrerequisites ?? this.easyPrerequisites,
+      notablePrerequisites: notablePrerequisites ?? this.notablePrerequisites,
+      lastUpdated: lastUpdated ?? this.lastUpdated,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (comboId.present) {
+      map['combo_id'] = Variable<String>(comboId.value);
+    }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
+    if (notes.present) {
+      map['notes'] = Variable<String>(notes.value);
+    }
+    if (bracketTag.present) {
+      map['bracket_tag'] = Variable<String>(bracketTag.value);
+    }
+    if (identity.present) {
+      map['identity'] = Variable<String>(identity.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (popularity.present) {
+      map['popularity'] = Variable<int>(popularity.value);
+    }
+    if (manaValueNeeded.present) {
+      map['mana_value_needed'] = Variable<int>(manaValueNeeded.value);
+    }
+    if (manaNeeded.present) {
+      map['mana_needed'] = Variable<String>(manaNeeded.value);
+    }
+    if (easyPrerequisites.present) {
+      map['easy_prerequisites'] = Variable<String>(easyPrerequisites.value);
+    }
+    if (notablePrerequisites.present) {
+      map['notable_prerequisites'] =
+          Variable<String>(notablePrerequisites.value);
+    }
+    if (lastUpdated.present) {
+      map['last_updated'] = Variable<DateTime>(lastUpdated.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CombosCompanion(')
+          ..write('id: $id, ')
+          ..write('comboId: $comboId, ')
+          ..write('description: $description, ')
+          ..write('notes: $notes, ')
+          ..write('bracketTag: $bracketTag, ')
+          ..write('identity: $identity, ')
+          ..write('status: $status, ')
+          ..write('popularity: $popularity, ')
+          ..write('manaValueNeeded: $manaValueNeeded, ')
+          ..write('manaNeeded: $manaNeeded, ')
+          ..write('easyPrerequisites: $easyPrerequisites, ')
+          ..write('notablePrerequisites: $notablePrerequisites, ')
+          ..write('lastUpdated: $lastUpdated')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ComboCardsTable extends ComboCards
+    with TableInfo<$ComboCardsTable, ComboCardRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ComboCardsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _comboIdMeta =
+      const VerificationMeta('comboId');
+  @override
+  late final GeneratedColumn<int> comboId = GeneratedColumn<int>(
+      'combo_id', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _positionMeta =
+      const VerificationMeta('position');
+  @override
+  late final GeneratedColumn<int> position = GeneratedColumn<int>(
+      'position', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _oracleIdMeta =
+      const VerificationMeta('oracleId');
+  @override
+  late final GeneratedColumn<String> oracleId = GeneratedColumn<String>(
+      'oracle_id', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _cardNameMeta =
+      const VerificationMeta('cardName');
+  @override
+  late final GeneratedColumn<String> cardName = GeneratedColumn<String>(
+      'card_name', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _zoneLocationsMeta =
+      const VerificationMeta('zoneLocations');
+  @override
+  late final GeneratedColumn<String> zoneLocations = GeneratedColumn<String>(
+      'zone_locations', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _quantityMeta =
+      const VerificationMeta('quantity');
+  @override
+  late final GeneratedColumn<int> quantity = GeneratedColumn<int>(
+      'quantity', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(1));
+  static const VerificationMeta _mustBeCommanderMeta =
+      const VerificationMeta('mustBeCommander');
+  @override
+  late final GeneratedColumn<bool> mustBeCommander = GeneratedColumn<bool>(
+      'must_be_commander', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'CHECK ("must_be_commander" IN (0, 1))'),
+      defaultValue: const Constant(false));
+  static const VerificationMeta _battlefieldCardStateMeta =
+      const VerificationMeta('battlefieldCardState');
+  @override
+  late final GeneratedColumn<String> battlefieldCardState =
+      GeneratedColumn<String>('battlefield_card_state', aliasedName, true,
+          type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _exileCardStateMeta =
+      const VerificationMeta('exileCardState');
+  @override
+  late final GeneratedColumn<String> exileCardState = GeneratedColumn<String>(
+      'exile_card_state', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _graveyardCardStateMeta =
+      const VerificationMeta('graveyardCardState');
+  @override
+  late final GeneratedColumn<String> graveyardCardState =
+      GeneratedColumn<String>('graveyard_card_state', aliasedName, true,
+          type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _libraryCardStateMeta =
+      const VerificationMeta('libraryCardState');
+  @override
+  late final GeneratedColumn<String> libraryCardState = GeneratedColumn<String>(
+      'library_card_state', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        comboId,
+        position,
+        oracleId,
+        cardName,
+        zoneLocations,
+        quantity,
+        mustBeCommander,
+        battlefieldCardState,
+        exileCardState,
+        graveyardCardState,
+        libraryCardState
+      ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'combo_cards';
+  @override
+  VerificationContext validateIntegrity(Insertable<ComboCardRow> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('combo_id')) {
+      context.handle(_comboIdMeta,
+          comboId.isAcceptableOrUnknown(data['combo_id']!, _comboIdMeta));
+    } else if (isInserting) {
+      context.missing(_comboIdMeta);
+    }
+    if (data.containsKey('position')) {
+      context.handle(_positionMeta,
+          position.isAcceptableOrUnknown(data['position']!, _positionMeta));
+    } else if (isInserting) {
+      context.missing(_positionMeta);
+    }
+    if (data.containsKey('oracle_id')) {
+      context.handle(_oracleIdMeta,
+          oracleId.isAcceptableOrUnknown(data['oracle_id']!, _oracleIdMeta));
+    }
+    if (data.containsKey('card_name')) {
+      context.handle(_cardNameMeta,
+          cardName.isAcceptableOrUnknown(data['card_name']!, _cardNameMeta));
+    } else if (isInserting) {
+      context.missing(_cardNameMeta);
+    }
+    if (data.containsKey('zone_locations')) {
+      context.handle(
+          _zoneLocationsMeta,
+          zoneLocations.isAcceptableOrUnknown(
+              data['zone_locations']!, _zoneLocationsMeta));
+    }
+    if (data.containsKey('quantity')) {
+      context.handle(_quantityMeta,
+          quantity.isAcceptableOrUnknown(data['quantity']!, _quantityMeta));
+    }
+    if (data.containsKey('must_be_commander')) {
+      context.handle(
+          _mustBeCommanderMeta,
+          mustBeCommander.isAcceptableOrUnknown(
+              data['must_be_commander']!, _mustBeCommanderMeta));
+    }
+    if (data.containsKey('battlefield_card_state')) {
+      context.handle(
+          _battlefieldCardStateMeta,
+          battlefieldCardState.isAcceptableOrUnknown(
+              data['battlefield_card_state']!, _battlefieldCardStateMeta));
+    }
+    if (data.containsKey('exile_card_state')) {
+      context.handle(
+          _exileCardStateMeta,
+          exileCardState.isAcceptableOrUnknown(
+              data['exile_card_state']!, _exileCardStateMeta));
+    }
+    if (data.containsKey('graveyard_card_state')) {
+      context.handle(
+          _graveyardCardStateMeta,
+          graveyardCardState.isAcceptableOrUnknown(
+              data['graveyard_card_state']!, _graveyardCardStateMeta));
+    }
+    if (data.containsKey('library_card_state')) {
+      context.handle(
+          _libraryCardStateMeta,
+          libraryCardState.isAcceptableOrUnknown(
+              data['library_card_state']!, _libraryCardStateMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  ComboCardRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ComboCardRow(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      comboId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}combo_id'])!,
+      position: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}position'])!,
+      oracleId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}oracle_id']),
+      cardName: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}card_name'])!,
+      zoneLocations: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}zone_locations']),
+      quantity: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}quantity'])!,
+      mustBeCommander: attachedDatabase.typeMapping.read(
+          DriftSqlType.bool, data['${effectivePrefix}must_be_commander'])!,
+      battlefieldCardState: attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}battlefield_card_state']),
+      exileCardState: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}exile_card_state']),
+      graveyardCardState: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}graveyard_card_state']),
+      libraryCardState: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}library_card_state']),
+    );
+  }
+
+  @override
+  $ComboCardsTable createAlias(String alias) {
+    return $ComboCardsTable(attachedDatabase, alias);
+  }
+}
+
+class ComboCardRow extends DataClass implements Insertable<ComboCardRow> {
+  final int id;
+
+  /// FK → combos.id.
+  final int comboId;
+
+  /// 1-based ordering within the combo (mirrors the API's `uses` order).
+  final int position;
+
+  /// FK → cards.oracleId — null when the card name didn't resolve.
+  final String? oracleId;
+
+  /// Display card name as it came from Spellbook.
+  final String cardName;
+
+  /// Comma-joined zone codes — e.g. "B" or "B,H". B=Battlefield, H=Hand,
+  /// G=Graveyard, L=Library, E=Exile, C=Command.
+  final String? zoneLocations;
+  final int quantity;
+  final bool mustBeCommander;
+  final String? battlefieldCardState;
+  final String? exileCardState;
+  final String? graveyardCardState;
+  final String? libraryCardState;
+  const ComboCardRow(
+      {required this.id,
+      required this.comboId,
+      required this.position,
+      this.oracleId,
+      required this.cardName,
+      this.zoneLocations,
+      required this.quantity,
+      required this.mustBeCommander,
+      this.battlefieldCardState,
+      this.exileCardState,
+      this.graveyardCardState,
+      this.libraryCardState});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['combo_id'] = Variable<int>(comboId);
+    map['position'] = Variable<int>(position);
+    if (!nullToAbsent || oracleId != null) {
+      map['oracle_id'] = Variable<String>(oracleId);
+    }
+    map['card_name'] = Variable<String>(cardName);
+    if (!nullToAbsent || zoneLocations != null) {
+      map['zone_locations'] = Variable<String>(zoneLocations);
+    }
+    map['quantity'] = Variable<int>(quantity);
+    map['must_be_commander'] = Variable<bool>(mustBeCommander);
+    if (!nullToAbsent || battlefieldCardState != null) {
+      map['battlefield_card_state'] = Variable<String>(battlefieldCardState);
+    }
+    if (!nullToAbsent || exileCardState != null) {
+      map['exile_card_state'] = Variable<String>(exileCardState);
+    }
+    if (!nullToAbsent || graveyardCardState != null) {
+      map['graveyard_card_state'] = Variable<String>(graveyardCardState);
+    }
+    if (!nullToAbsent || libraryCardState != null) {
+      map['library_card_state'] = Variable<String>(libraryCardState);
+    }
+    return map;
+  }
+
+  ComboCardsCompanion toCompanion(bool nullToAbsent) {
+    return ComboCardsCompanion(
+      id: Value(id),
+      comboId: Value(comboId),
+      position: Value(position),
+      oracleId: oracleId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(oracleId),
+      cardName: Value(cardName),
+      zoneLocations: zoneLocations == null && nullToAbsent
+          ? const Value.absent()
+          : Value(zoneLocations),
+      quantity: Value(quantity),
+      mustBeCommander: Value(mustBeCommander),
+      battlefieldCardState: battlefieldCardState == null && nullToAbsent
+          ? const Value.absent()
+          : Value(battlefieldCardState),
+      exileCardState: exileCardState == null && nullToAbsent
+          ? const Value.absent()
+          : Value(exileCardState),
+      graveyardCardState: graveyardCardState == null && nullToAbsent
+          ? const Value.absent()
+          : Value(graveyardCardState),
+      libraryCardState: libraryCardState == null && nullToAbsent
+          ? const Value.absent()
+          : Value(libraryCardState),
+    );
+  }
+
+  factory ComboCardRow.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ComboCardRow(
+      id: serializer.fromJson<int>(json['id']),
+      comboId: serializer.fromJson<int>(json['comboId']),
+      position: serializer.fromJson<int>(json['position']),
+      oracleId: serializer.fromJson<String?>(json['oracleId']),
+      cardName: serializer.fromJson<String>(json['cardName']),
+      zoneLocations: serializer.fromJson<String?>(json['zoneLocations']),
+      quantity: serializer.fromJson<int>(json['quantity']),
+      mustBeCommander: serializer.fromJson<bool>(json['mustBeCommander']),
+      battlefieldCardState:
+          serializer.fromJson<String?>(json['battlefieldCardState']),
+      exileCardState: serializer.fromJson<String?>(json['exileCardState']),
+      graveyardCardState:
+          serializer.fromJson<String?>(json['graveyardCardState']),
+      libraryCardState: serializer.fromJson<String?>(json['libraryCardState']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'comboId': serializer.toJson<int>(comboId),
+      'position': serializer.toJson<int>(position),
+      'oracleId': serializer.toJson<String?>(oracleId),
+      'cardName': serializer.toJson<String>(cardName),
+      'zoneLocations': serializer.toJson<String?>(zoneLocations),
+      'quantity': serializer.toJson<int>(quantity),
+      'mustBeCommander': serializer.toJson<bool>(mustBeCommander),
+      'battlefieldCardState': serializer.toJson<String?>(battlefieldCardState),
+      'exileCardState': serializer.toJson<String?>(exileCardState),
+      'graveyardCardState': serializer.toJson<String?>(graveyardCardState),
+      'libraryCardState': serializer.toJson<String?>(libraryCardState),
+    };
+  }
+
+  ComboCardRow copyWith(
+          {int? id,
+          int? comboId,
+          int? position,
+          Value<String?> oracleId = const Value.absent(),
+          String? cardName,
+          Value<String?> zoneLocations = const Value.absent(),
+          int? quantity,
+          bool? mustBeCommander,
+          Value<String?> battlefieldCardState = const Value.absent(),
+          Value<String?> exileCardState = const Value.absent(),
+          Value<String?> graveyardCardState = const Value.absent(),
+          Value<String?> libraryCardState = const Value.absent()}) =>
+      ComboCardRow(
+        id: id ?? this.id,
+        comboId: comboId ?? this.comboId,
+        position: position ?? this.position,
+        oracleId: oracleId.present ? oracleId.value : this.oracleId,
+        cardName: cardName ?? this.cardName,
+        zoneLocations:
+            zoneLocations.present ? zoneLocations.value : this.zoneLocations,
+        quantity: quantity ?? this.quantity,
+        mustBeCommander: mustBeCommander ?? this.mustBeCommander,
+        battlefieldCardState: battlefieldCardState.present
+            ? battlefieldCardState.value
+            : this.battlefieldCardState,
+        exileCardState:
+            exileCardState.present ? exileCardState.value : this.exileCardState,
+        graveyardCardState: graveyardCardState.present
+            ? graveyardCardState.value
+            : this.graveyardCardState,
+        libraryCardState: libraryCardState.present
+            ? libraryCardState.value
+            : this.libraryCardState,
+      );
+  ComboCardRow copyWithCompanion(ComboCardsCompanion data) {
+    return ComboCardRow(
+      id: data.id.present ? data.id.value : this.id,
+      comboId: data.comboId.present ? data.comboId.value : this.comboId,
+      position: data.position.present ? data.position.value : this.position,
+      oracleId: data.oracleId.present ? data.oracleId.value : this.oracleId,
+      cardName: data.cardName.present ? data.cardName.value : this.cardName,
+      zoneLocations: data.zoneLocations.present
+          ? data.zoneLocations.value
+          : this.zoneLocations,
+      quantity: data.quantity.present ? data.quantity.value : this.quantity,
+      mustBeCommander: data.mustBeCommander.present
+          ? data.mustBeCommander.value
+          : this.mustBeCommander,
+      battlefieldCardState: data.battlefieldCardState.present
+          ? data.battlefieldCardState.value
+          : this.battlefieldCardState,
+      exileCardState: data.exileCardState.present
+          ? data.exileCardState.value
+          : this.exileCardState,
+      graveyardCardState: data.graveyardCardState.present
+          ? data.graveyardCardState.value
+          : this.graveyardCardState,
+      libraryCardState: data.libraryCardState.present
+          ? data.libraryCardState.value
+          : this.libraryCardState,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ComboCardRow(')
+          ..write('id: $id, ')
+          ..write('comboId: $comboId, ')
+          ..write('position: $position, ')
+          ..write('oracleId: $oracleId, ')
+          ..write('cardName: $cardName, ')
+          ..write('zoneLocations: $zoneLocations, ')
+          ..write('quantity: $quantity, ')
+          ..write('mustBeCommander: $mustBeCommander, ')
+          ..write('battlefieldCardState: $battlefieldCardState, ')
+          ..write('exileCardState: $exileCardState, ')
+          ..write('graveyardCardState: $graveyardCardState, ')
+          ..write('libraryCardState: $libraryCardState')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+      id,
+      comboId,
+      position,
+      oracleId,
+      cardName,
+      zoneLocations,
+      quantity,
+      mustBeCommander,
+      battlefieldCardState,
+      exileCardState,
+      graveyardCardState,
+      libraryCardState);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ComboCardRow &&
+          other.id == this.id &&
+          other.comboId == this.comboId &&
+          other.position == this.position &&
+          other.oracleId == this.oracleId &&
+          other.cardName == this.cardName &&
+          other.zoneLocations == this.zoneLocations &&
+          other.quantity == this.quantity &&
+          other.mustBeCommander == this.mustBeCommander &&
+          other.battlefieldCardState == this.battlefieldCardState &&
+          other.exileCardState == this.exileCardState &&
+          other.graveyardCardState == this.graveyardCardState &&
+          other.libraryCardState == this.libraryCardState);
+}
+
+class ComboCardsCompanion extends UpdateCompanion<ComboCardRow> {
+  final Value<int> id;
+  final Value<int> comboId;
+  final Value<int> position;
+  final Value<String?> oracleId;
+  final Value<String> cardName;
+  final Value<String?> zoneLocations;
+  final Value<int> quantity;
+  final Value<bool> mustBeCommander;
+  final Value<String?> battlefieldCardState;
+  final Value<String?> exileCardState;
+  final Value<String?> graveyardCardState;
+  final Value<String?> libraryCardState;
+  const ComboCardsCompanion({
+    this.id = const Value.absent(),
+    this.comboId = const Value.absent(),
+    this.position = const Value.absent(),
+    this.oracleId = const Value.absent(),
+    this.cardName = const Value.absent(),
+    this.zoneLocations = const Value.absent(),
+    this.quantity = const Value.absent(),
+    this.mustBeCommander = const Value.absent(),
+    this.battlefieldCardState = const Value.absent(),
+    this.exileCardState = const Value.absent(),
+    this.graveyardCardState = const Value.absent(),
+    this.libraryCardState = const Value.absent(),
+  });
+  ComboCardsCompanion.insert({
+    this.id = const Value.absent(),
+    required int comboId,
+    required int position,
+    this.oracleId = const Value.absent(),
+    required String cardName,
+    this.zoneLocations = const Value.absent(),
+    this.quantity = const Value.absent(),
+    this.mustBeCommander = const Value.absent(),
+    this.battlefieldCardState = const Value.absent(),
+    this.exileCardState = const Value.absent(),
+    this.graveyardCardState = const Value.absent(),
+    this.libraryCardState = const Value.absent(),
+  })  : comboId = Value(comboId),
+        position = Value(position),
+        cardName = Value(cardName);
+  static Insertable<ComboCardRow> custom({
+    Expression<int>? id,
+    Expression<int>? comboId,
+    Expression<int>? position,
+    Expression<String>? oracleId,
+    Expression<String>? cardName,
+    Expression<String>? zoneLocations,
+    Expression<int>? quantity,
+    Expression<bool>? mustBeCommander,
+    Expression<String>? battlefieldCardState,
+    Expression<String>? exileCardState,
+    Expression<String>? graveyardCardState,
+    Expression<String>? libraryCardState,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (comboId != null) 'combo_id': comboId,
+      if (position != null) 'position': position,
+      if (oracleId != null) 'oracle_id': oracleId,
+      if (cardName != null) 'card_name': cardName,
+      if (zoneLocations != null) 'zone_locations': zoneLocations,
+      if (quantity != null) 'quantity': quantity,
+      if (mustBeCommander != null) 'must_be_commander': mustBeCommander,
+      if (battlefieldCardState != null)
+        'battlefield_card_state': battlefieldCardState,
+      if (exileCardState != null) 'exile_card_state': exileCardState,
+      if (graveyardCardState != null)
+        'graveyard_card_state': graveyardCardState,
+      if (libraryCardState != null) 'library_card_state': libraryCardState,
+    });
+  }
+
+  ComboCardsCompanion copyWith(
+      {Value<int>? id,
+      Value<int>? comboId,
+      Value<int>? position,
+      Value<String?>? oracleId,
+      Value<String>? cardName,
+      Value<String?>? zoneLocations,
+      Value<int>? quantity,
+      Value<bool>? mustBeCommander,
+      Value<String?>? battlefieldCardState,
+      Value<String?>? exileCardState,
+      Value<String?>? graveyardCardState,
+      Value<String?>? libraryCardState}) {
+    return ComboCardsCompanion(
+      id: id ?? this.id,
+      comboId: comboId ?? this.comboId,
+      position: position ?? this.position,
+      oracleId: oracleId ?? this.oracleId,
+      cardName: cardName ?? this.cardName,
+      zoneLocations: zoneLocations ?? this.zoneLocations,
+      quantity: quantity ?? this.quantity,
+      mustBeCommander: mustBeCommander ?? this.mustBeCommander,
+      battlefieldCardState: battlefieldCardState ?? this.battlefieldCardState,
+      exileCardState: exileCardState ?? this.exileCardState,
+      graveyardCardState: graveyardCardState ?? this.graveyardCardState,
+      libraryCardState: libraryCardState ?? this.libraryCardState,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (comboId.present) {
+      map['combo_id'] = Variable<int>(comboId.value);
+    }
+    if (position.present) {
+      map['position'] = Variable<int>(position.value);
+    }
+    if (oracleId.present) {
+      map['oracle_id'] = Variable<String>(oracleId.value);
+    }
+    if (cardName.present) {
+      map['card_name'] = Variable<String>(cardName.value);
+    }
+    if (zoneLocations.present) {
+      map['zone_locations'] = Variable<String>(zoneLocations.value);
+    }
+    if (quantity.present) {
+      map['quantity'] = Variable<int>(quantity.value);
+    }
+    if (mustBeCommander.present) {
+      map['must_be_commander'] = Variable<bool>(mustBeCommander.value);
+    }
+    if (battlefieldCardState.present) {
+      map['battlefield_card_state'] =
+          Variable<String>(battlefieldCardState.value);
+    }
+    if (exileCardState.present) {
+      map['exile_card_state'] = Variable<String>(exileCardState.value);
+    }
+    if (graveyardCardState.present) {
+      map['graveyard_card_state'] = Variable<String>(graveyardCardState.value);
+    }
+    if (libraryCardState.present) {
+      map['library_card_state'] = Variable<String>(libraryCardState.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ComboCardsCompanion(')
+          ..write('id: $id, ')
+          ..write('comboId: $comboId, ')
+          ..write('position: $position, ')
+          ..write('oracleId: $oracleId, ')
+          ..write('cardName: $cardName, ')
+          ..write('zoneLocations: $zoneLocations, ')
+          ..write('quantity: $quantity, ')
+          ..write('mustBeCommander: $mustBeCommander, ')
+          ..write('battlefieldCardState: $battlefieldCardState, ')
+          ..write('exileCardState: $exileCardState, ')
+          ..write('graveyardCardState: $graveyardCardState, ')
+          ..write('libraryCardState: $libraryCardState')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ComboFeaturesTable extends ComboFeatures
+    with TableInfo<$ComboFeaturesTable, ComboFeatureRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ComboFeaturesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _comboIdMeta =
+      const VerificationMeta('comboId');
+  @override
+  late final GeneratedColumn<int> comboId = GeneratedColumn<int>(
+      'combo_id', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _featureIdMeta =
+      const VerificationMeta('featureId');
+  @override
+  late final GeneratedColumn<int> featureId = GeneratedColumn<int>(
+      'feature_id', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  static const VerificationMeta _featureNameMeta =
+      const VerificationMeta('featureName');
+  @override
+  late final GeneratedColumn<String> featureName = GeneratedColumn<String>(
+      'feature_name', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _quantityMeta =
+      const VerificationMeta('quantity');
+  @override
+  late final GeneratedColumn<int> quantity = GeneratedColumn<int>(
+      'quantity', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(1));
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, comboId, featureId, featureName, quantity];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'combo_features';
+  @override
+  VerificationContext validateIntegrity(Insertable<ComboFeatureRow> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('combo_id')) {
+      context.handle(_comboIdMeta,
+          comboId.isAcceptableOrUnknown(data['combo_id']!, _comboIdMeta));
+    } else if (isInserting) {
+      context.missing(_comboIdMeta);
+    }
+    if (data.containsKey('feature_id')) {
+      context.handle(_featureIdMeta,
+          featureId.isAcceptableOrUnknown(data['feature_id']!, _featureIdMeta));
+    }
+    if (data.containsKey('feature_name')) {
+      context.handle(
+          _featureNameMeta,
+          featureName.isAcceptableOrUnknown(
+              data['feature_name']!, _featureNameMeta));
+    } else if (isInserting) {
+      context.missing(_featureNameMeta);
+    }
+    if (data.containsKey('quantity')) {
+      context.handle(_quantityMeta,
+          quantity.isAcceptableOrUnknown(data['quantity']!, _quantityMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  ComboFeatureRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ComboFeatureRow(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      comboId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}combo_id'])!,
+      featureId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}feature_id']),
+      featureName: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}feature_name'])!,
+      quantity: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}quantity'])!,
+    );
+  }
+
+  @override
+  $ComboFeaturesTable createAlias(String alias) {
+    return $ComboFeaturesTable(attachedDatabase, alias);
+  }
+}
+
+class ComboFeatureRow extends DataClass implements Insertable<ComboFeatureRow> {
+  final int id;
+
+  /// FK → combos.id.
+  final int comboId;
+
+  /// Spellbook's numeric feature id when present.
+  final int? featureId;
+
+  /// Human-readable feature name.
+  final String featureName;
+  final int quantity;
+  const ComboFeatureRow(
+      {required this.id,
+      required this.comboId,
+      this.featureId,
+      required this.featureName,
+      required this.quantity});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['combo_id'] = Variable<int>(comboId);
+    if (!nullToAbsent || featureId != null) {
+      map['feature_id'] = Variable<int>(featureId);
+    }
+    map['feature_name'] = Variable<String>(featureName);
+    map['quantity'] = Variable<int>(quantity);
+    return map;
+  }
+
+  ComboFeaturesCompanion toCompanion(bool nullToAbsent) {
+    return ComboFeaturesCompanion(
+      id: Value(id),
+      comboId: Value(comboId),
+      featureId: featureId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(featureId),
+      featureName: Value(featureName),
+      quantity: Value(quantity),
+    );
+  }
+
+  factory ComboFeatureRow.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ComboFeatureRow(
+      id: serializer.fromJson<int>(json['id']),
+      comboId: serializer.fromJson<int>(json['comboId']),
+      featureId: serializer.fromJson<int?>(json['featureId']),
+      featureName: serializer.fromJson<String>(json['featureName']),
+      quantity: serializer.fromJson<int>(json['quantity']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'comboId': serializer.toJson<int>(comboId),
+      'featureId': serializer.toJson<int?>(featureId),
+      'featureName': serializer.toJson<String>(featureName),
+      'quantity': serializer.toJson<int>(quantity),
+    };
+  }
+
+  ComboFeatureRow copyWith(
+          {int? id,
+          int? comboId,
+          Value<int?> featureId = const Value.absent(),
+          String? featureName,
+          int? quantity}) =>
+      ComboFeatureRow(
+        id: id ?? this.id,
+        comboId: comboId ?? this.comboId,
+        featureId: featureId.present ? featureId.value : this.featureId,
+        featureName: featureName ?? this.featureName,
+        quantity: quantity ?? this.quantity,
+      );
+  ComboFeatureRow copyWithCompanion(ComboFeaturesCompanion data) {
+    return ComboFeatureRow(
+      id: data.id.present ? data.id.value : this.id,
+      comboId: data.comboId.present ? data.comboId.value : this.comboId,
+      featureId: data.featureId.present ? data.featureId.value : this.featureId,
+      featureName:
+          data.featureName.present ? data.featureName.value : this.featureName,
+      quantity: data.quantity.present ? data.quantity.value : this.quantity,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ComboFeatureRow(')
+          ..write('id: $id, ')
+          ..write('comboId: $comboId, ')
+          ..write('featureId: $featureId, ')
+          ..write('featureName: $featureName, ')
+          ..write('quantity: $quantity')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, comboId, featureId, featureName, quantity);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ComboFeatureRow &&
+          other.id == this.id &&
+          other.comboId == this.comboId &&
+          other.featureId == this.featureId &&
+          other.featureName == this.featureName &&
+          other.quantity == this.quantity);
+}
+
+class ComboFeaturesCompanion extends UpdateCompanion<ComboFeatureRow> {
+  final Value<int> id;
+  final Value<int> comboId;
+  final Value<int?> featureId;
+  final Value<String> featureName;
+  final Value<int> quantity;
+  const ComboFeaturesCompanion({
+    this.id = const Value.absent(),
+    this.comboId = const Value.absent(),
+    this.featureId = const Value.absent(),
+    this.featureName = const Value.absent(),
+    this.quantity = const Value.absent(),
+  });
+  ComboFeaturesCompanion.insert({
+    this.id = const Value.absent(),
+    required int comboId,
+    this.featureId = const Value.absent(),
+    required String featureName,
+    this.quantity = const Value.absent(),
+  })  : comboId = Value(comboId),
+        featureName = Value(featureName);
+  static Insertable<ComboFeatureRow> custom({
+    Expression<int>? id,
+    Expression<int>? comboId,
+    Expression<int>? featureId,
+    Expression<String>? featureName,
+    Expression<int>? quantity,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (comboId != null) 'combo_id': comboId,
+      if (featureId != null) 'feature_id': featureId,
+      if (featureName != null) 'feature_name': featureName,
+      if (quantity != null) 'quantity': quantity,
+    });
+  }
+
+  ComboFeaturesCompanion copyWith(
+      {Value<int>? id,
+      Value<int>? comboId,
+      Value<int?>? featureId,
+      Value<String>? featureName,
+      Value<int>? quantity}) {
+    return ComboFeaturesCompanion(
+      id: id ?? this.id,
+      comboId: comboId ?? this.comboId,
+      featureId: featureId ?? this.featureId,
+      featureName: featureName ?? this.featureName,
+      quantity: quantity ?? this.quantity,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (comboId.present) {
+      map['combo_id'] = Variable<int>(comboId.value);
+    }
+    if (featureId.present) {
+      map['feature_id'] = Variable<int>(featureId.value);
+    }
+    if (featureName.present) {
+      map['feature_name'] = Variable<String>(featureName.value);
+    }
+    if (quantity.present) {
+      map['quantity'] = Variable<int>(quantity.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ComboFeaturesCompanion(')
+          ..write('id: $id, ')
+          ..write('comboId: $comboId, ')
+          ..write('featureId: $featureId, ')
+          ..write('featureName: $featureName, ')
+          ..write('quantity: $quantity')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $EdhrecPagesTable extends EdhrecPages
+    with TableInfo<$EdhrecPagesTable, EdhrecPageRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $EdhrecPagesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _oracleIdMeta =
+      const VerificationMeta('oracleId');
+  @override
+  late final GeneratedColumn<String> oracleId = GeneratedColumn<String>(
+      'oracle_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _kindMeta = const VerificationMeta('kind');
+  @override
+  late final GeneratedColumn<String> kind = GeneratedColumn<String>(
+      'kind', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _rankMeta = const VerificationMeta('rank');
+  @override
+  late final GeneratedColumn<int> rank = GeneratedColumn<int>(
+      'rank', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  static const VerificationMeta _numDecksMeta =
+      const VerificationMeta('numDecks');
+  @override
+  late final GeneratedColumn<int> numDecks = GeneratedColumn<int>(
+      'num_decks', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  static const VerificationMeta _urlMeta = const VerificationMeta('url');
+  @override
+  late final GeneratedColumn<String> url = GeneratedColumn<String>(
+      'url', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _lastUpdatedMeta =
+      const VerificationMeta('lastUpdated');
+  @override
+  late final GeneratedColumn<DateTime> lastUpdated = GeneratedColumn<DateTime>(
+      'last_updated', aliasedName, false,
+      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, oracleId, kind, rank, numDecks, url, lastUpdated];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'edhrec_pages';
+  @override
+  VerificationContext validateIntegrity(Insertable<EdhrecPageRow> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('oracle_id')) {
+      context.handle(_oracleIdMeta,
+          oracleId.isAcceptableOrUnknown(data['oracle_id']!, _oracleIdMeta));
+    } else if (isInserting) {
+      context.missing(_oracleIdMeta);
+    }
+    if (data.containsKey('kind')) {
+      context.handle(
+          _kindMeta, kind.isAcceptableOrUnknown(data['kind']!, _kindMeta));
+    } else if (isInserting) {
+      context.missing(_kindMeta);
+    }
+    if (data.containsKey('rank')) {
+      context.handle(
+          _rankMeta, rank.isAcceptableOrUnknown(data['rank']!, _rankMeta));
+    }
+    if (data.containsKey('num_decks')) {
+      context.handle(_numDecksMeta,
+          numDecks.isAcceptableOrUnknown(data['num_decks']!, _numDecksMeta));
+    }
+    if (data.containsKey('url')) {
+      context.handle(
+          _urlMeta, url.isAcceptableOrUnknown(data['url']!, _urlMeta));
+    }
+    if (data.containsKey('last_updated')) {
+      context.handle(
+          _lastUpdatedMeta,
+          lastUpdated.isAcceptableOrUnknown(
+              data['last_updated']!, _lastUpdatedMeta));
+    } else if (isInserting) {
+      context.missing(_lastUpdatedMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  EdhrecPageRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return EdhrecPageRow(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      oracleId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}oracle_id'])!,
+      kind: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}kind'])!,
+      rank: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}rank']),
+      numDecks: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}num_decks']),
+      url: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}url']),
+      lastUpdated: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}last_updated'])!,
+    );
+  }
+
+  @override
+  $EdhrecPagesTable createAlias(String alias) {
+    return $EdhrecPagesTable(attachedDatabase, alias);
+  }
+}
+
+class EdhrecPageRow extends DataClass implements Insertable<EdhrecPageRow> {
+  final int id;
+
+  /// FK → cards.oracleId. The subject of the page.
+  final String oracleId;
+
+  /// `card` or `commander`.
+  final String kind;
+  final int? rank;
+  final int? numDecks;
+  final String? url;
+  final DateTime lastUpdated;
+  const EdhrecPageRow(
+      {required this.id,
+      required this.oracleId,
+      required this.kind,
+      this.rank,
+      this.numDecks,
+      this.url,
+      required this.lastUpdated});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['oracle_id'] = Variable<String>(oracleId);
+    map['kind'] = Variable<String>(kind);
+    if (!nullToAbsent || rank != null) {
+      map['rank'] = Variable<int>(rank);
+    }
+    if (!nullToAbsent || numDecks != null) {
+      map['num_decks'] = Variable<int>(numDecks);
+    }
+    if (!nullToAbsent || url != null) {
+      map['url'] = Variable<String>(url);
+    }
+    map['last_updated'] = Variable<DateTime>(lastUpdated);
+    return map;
+  }
+
+  EdhrecPagesCompanion toCompanion(bool nullToAbsent) {
+    return EdhrecPagesCompanion(
+      id: Value(id),
+      oracleId: Value(oracleId),
+      kind: Value(kind),
+      rank: rank == null && nullToAbsent ? const Value.absent() : Value(rank),
+      numDecks: numDecks == null && nullToAbsent
+          ? const Value.absent()
+          : Value(numDecks),
+      url: url == null && nullToAbsent ? const Value.absent() : Value(url),
+      lastUpdated: Value(lastUpdated),
+    );
+  }
+
+  factory EdhrecPageRow.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return EdhrecPageRow(
+      id: serializer.fromJson<int>(json['id']),
+      oracleId: serializer.fromJson<String>(json['oracleId']),
+      kind: serializer.fromJson<String>(json['kind']),
+      rank: serializer.fromJson<int?>(json['rank']),
+      numDecks: serializer.fromJson<int?>(json['numDecks']),
+      url: serializer.fromJson<String?>(json['url']),
+      lastUpdated: serializer.fromJson<DateTime>(json['lastUpdated']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'oracleId': serializer.toJson<String>(oracleId),
+      'kind': serializer.toJson<String>(kind),
+      'rank': serializer.toJson<int?>(rank),
+      'numDecks': serializer.toJson<int?>(numDecks),
+      'url': serializer.toJson<String?>(url),
+      'lastUpdated': serializer.toJson<DateTime>(lastUpdated),
+    };
+  }
+
+  EdhrecPageRow copyWith(
+          {int? id,
+          String? oracleId,
+          String? kind,
+          Value<int?> rank = const Value.absent(),
+          Value<int?> numDecks = const Value.absent(),
+          Value<String?> url = const Value.absent(),
+          DateTime? lastUpdated}) =>
+      EdhrecPageRow(
+        id: id ?? this.id,
+        oracleId: oracleId ?? this.oracleId,
+        kind: kind ?? this.kind,
+        rank: rank.present ? rank.value : this.rank,
+        numDecks: numDecks.present ? numDecks.value : this.numDecks,
+        url: url.present ? url.value : this.url,
+        lastUpdated: lastUpdated ?? this.lastUpdated,
+      );
+  EdhrecPageRow copyWithCompanion(EdhrecPagesCompanion data) {
+    return EdhrecPageRow(
+      id: data.id.present ? data.id.value : this.id,
+      oracleId: data.oracleId.present ? data.oracleId.value : this.oracleId,
+      kind: data.kind.present ? data.kind.value : this.kind,
+      rank: data.rank.present ? data.rank.value : this.rank,
+      numDecks: data.numDecks.present ? data.numDecks.value : this.numDecks,
+      url: data.url.present ? data.url.value : this.url,
+      lastUpdated:
+          data.lastUpdated.present ? data.lastUpdated.value : this.lastUpdated,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('EdhrecPageRow(')
+          ..write('id: $id, ')
+          ..write('oracleId: $oracleId, ')
+          ..write('kind: $kind, ')
+          ..write('rank: $rank, ')
+          ..write('numDecks: $numDecks, ')
+          ..write('url: $url, ')
+          ..write('lastUpdated: $lastUpdated')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, oracleId, kind, rank, numDecks, url, lastUpdated);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is EdhrecPageRow &&
+          other.id == this.id &&
+          other.oracleId == this.oracleId &&
+          other.kind == this.kind &&
+          other.rank == this.rank &&
+          other.numDecks == this.numDecks &&
+          other.url == this.url &&
+          other.lastUpdated == this.lastUpdated);
+}
+
+class EdhrecPagesCompanion extends UpdateCompanion<EdhrecPageRow> {
+  final Value<int> id;
+  final Value<String> oracleId;
+  final Value<String> kind;
+  final Value<int?> rank;
+  final Value<int?> numDecks;
+  final Value<String?> url;
+  final Value<DateTime> lastUpdated;
+  const EdhrecPagesCompanion({
+    this.id = const Value.absent(),
+    this.oracleId = const Value.absent(),
+    this.kind = const Value.absent(),
+    this.rank = const Value.absent(),
+    this.numDecks = const Value.absent(),
+    this.url = const Value.absent(),
+    this.lastUpdated = const Value.absent(),
+  });
+  EdhrecPagesCompanion.insert({
+    this.id = const Value.absent(),
+    required String oracleId,
+    required String kind,
+    this.rank = const Value.absent(),
+    this.numDecks = const Value.absent(),
+    this.url = const Value.absent(),
+    required DateTime lastUpdated,
+  })  : oracleId = Value(oracleId),
+        kind = Value(kind),
+        lastUpdated = Value(lastUpdated);
+  static Insertable<EdhrecPageRow> custom({
+    Expression<int>? id,
+    Expression<String>? oracleId,
+    Expression<String>? kind,
+    Expression<int>? rank,
+    Expression<int>? numDecks,
+    Expression<String>? url,
+    Expression<DateTime>? lastUpdated,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (oracleId != null) 'oracle_id': oracleId,
+      if (kind != null) 'kind': kind,
+      if (rank != null) 'rank': rank,
+      if (numDecks != null) 'num_decks': numDecks,
+      if (url != null) 'url': url,
+      if (lastUpdated != null) 'last_updated': lastUpdated,
+    });
+  }
+
+  EdhrecPagesCompanion copyWith(
+      {Value<int>? id,
+      Value<String>? oracleId,
+      Value<String>? kind,
+      Value<int?>? rank,
+      Value<int?>? numDecks,
+      Value<String?>? url,
+      Value<DateTime>? lastUpdated}) {
+    return EdhrecPagesCompanion(
+      id: id ?? this.id,
+      oracleId: oracleId ?? this.oracleId,
+      kind: kind ?? this.kind,
+      rank: rank ?? this.rank,
+      numDecks: numDecks ?? this.numDecks,
+      url: url ?? this.url,
+      lastUpdated: lastUpdated ?? this.lastUpdated,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (oracleId.present) {
+      map['oracle_id'] = Variable<String>(oracleId.value);
+    }
+    if (kind.present) {
+      map['kind'] = Variable<String>(kind.value);
+    }
+    if (rank.present) {
+      map['rank'] = Variable<int>(rank.value);
+    }
+    if (numDecks.present) {
+      map['num_decks'] = Variable<int>(numDecks.value);
+    }
+    if (url.present) {
+      map['url'] = Variable<String>(url.value);
+    }
+    if (lastUpdated.present) {
+      map['last_updated'] = Variable<DateTime>(lastUpdated.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('EdhrecPagesCompanion(')
+          ..write('id: $id, ')
+          ..write('oracleId: $oracleId, ')
+          ..write('kind: $kind, ')
+          ..write('rank: $rank, ')
+          ..write('numDecks: $numDecks, ')
+          ..write('url: $url, ')
+          ..write('lastUpdated: $lastUpdated')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $EdhrecRecommendationsTable extends EdhrecRecommendations
+    with TableInfo<$EdhrecRecommendationsTable, EdhrecRecommendationRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $EdhrecRecommendationsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _pageIdMeta = const VerificationMeta('pageId');
+  @override
+  late final GeneratedColumn<int> pageId = GeneratedColumn<int>(
+      'page_id', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _oracleIdMeta =
+      const VerificationMeta('oracleId');
+  @override
+  late final GeneratedColumn<String> oracleId = GeneratedColumn<String>(
+      'oracle_id', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _cardNameMeta =
+      const VerificationMeta('cardName');
+  @override
+  late final GeneratedColumn<String> cardName = GeneratedColumn<String>(
+      'card_name', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _cardCategoryMeta =
+      const VerificationMeta('cardCategory');
+  @override
+  late final GeneratedColumn<String> cardCategory = GeneratedColumn<String>(
+      'card_category', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _recommendationTypeMeta =
+      const VerificationMeta('recommendationType');
+  @override
+  late final GeneratedColumn<String> recommendationType =
+      GeneratedColumn<String>('recommendation_type', aliasedName, true,
+          type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _inclusionCountMeta =
+      const VerificationMeta('inclusionCount');
+  @override
+  late final GeneratedColumn<int> inclusionCount = GeneratedColumn<int>(
+      'inclusion_count', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  static const VerificationMeta _inclusionPercentMeta =
+      const VerificationMeta('inclusionPercent');
+  @override
+  late final GeneratedColumn<double> inclusionPercent = GeneratedColumn<double>(
+      'inclusion_percent', aliasedName, true,
+      type: DriftSqlType.double, requiredDuringInsert: false);
+  static const VerificationMeta _synergyScoreMeta =
+      const VerificationMeta('synergyScore');
+  @override
+  late final GeneratedColumn<double> synergyScore = GeneratedColumn<double>(
+      'synergy_score', aliasedName, true,
+      type: DriftSqlType.double, requiredDuringInsert: false);
+  static const VerificationMeta _rankInCategoryMeta =
+      const VerificationMeta('rankInCategory');
+  @override
+  late final GeneratedColumn<int> rankInCategory = GeneratedColumn<int>(
+      'rank_in_category', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        pageId,
+        oracleId,
+        cardName,
+        cardCategory,
+        recommendationType,
+        inclusionCount,
+        inclusionPercent,
+        synergyScore,
+        rankInCategory
+      ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'edhrec_recommendations';
+  @override
+  VerificationContext validateIntegrity(
+      Insertable<EdhrecRecommendationRow> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('page_id')) {
+      context.handle(_pageIdMeta,
+          pageId.isAcceptableOrUnknown(data['page_id']!, _pageIdMeta));
+    } else if (isInserting) {
+      context.missing(_pageIdMeta);
+    }
+    if (data.containsKey('oracle_id')) {
+      context.handle(_oracleIdMeta,
+          oracleId.isAcceptableOrUnknown(data['oracle_id']!, _oracleIdMeta));
+    }
+    if (data.containsKey('card_name')) {
+      context.handle(_cardNameMeta,
+          cardName.isAcceptableOrUnknown(data['card_name']!, _cardNameMeta));
+    } else if (isInserting) {
+      context.missing(_cardNameMeta);
+    }
+    if (data.containsKey('card_category')) {
+      context.handle(
+          _cardCategoryMeta,
+          cardCategory.isAcceptableOrUnknown(
+              data['card_category']!, _cardCategoryMeta));
+    }
+    if (data.containsKey('recommendation_type')) {
+      context.handle(
+          _recommendationTypeMeta,
+          recommendationType.isAcceptableOrUnknown(
+              data['recommendation_type']!, _recommendationTypeMeta));
+    }
+    if (data.containsKey('inclusion_count')) {
+      context.handle(
+          _inclusionCountMeta,
+          inclusionCount.isAcceptableOrUnknown(
+              data['inclusion_count']!, _inclusionCountMeta));
+    }
+    if (data.containsKey('inclusion_percent')) {
+      context.handle(
+          _inclusionPercentMeta,
+          inclusionPercent.isAcceptableOrUnknown(
+              data['inclusion_percent']!, _inclusionPercentMeta));
+    }
+    if (data.containsKey('synergy_score')) {
+      context.handle(
+          _synergyScoreMeta,
+          synergyScore.isAcceptableOrUnknown(
+              data['synergy_score']!, _synergyScoreMeta));
+    }
+    if (data.containsKey('rank_in_category')) {
+      context.handle(
+          _rankInCategoryMeta,
+          rankInCategory.isAcceptableOrUnknown(
+              data['rank_in_category']!, _rankInCategoryMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  EdhrecRecommendationRow map(Map<String, dynamic> data,
+      {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return EdhrecRecommendationRow(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      pageId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}page_id'])!,
+      oracleId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}oracle_id']),
+      cardName: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}card_name'])!,
+      cardCategory: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}card_category']),
+      recommendationType: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}recommendation_type']),
+      inclusionCount: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}inclusion_count']),
+      inclusionPercent: attachedDatabase.typeMapping.read(
+          DriftSqlType.double, data['${effectivePrefix}inclusion_percent']),
+      synergyScore: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}synergy_score']),
+      rankInCategory: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}rank_in_category']),
+    );
+  }
+
+  @override
+  $EdhrecRecommendationsTable createAlias(String alias) {
+    return $EdhrecRecommendationsTable(attachedDatabase, alias);
+  }
+}
+
+class EdhrecRecommendationRow extends DataClass
+    implements Insertable<EdhrecRecommendationRow> {
+  final int id;
+
+  /// FK → edhrec_pages.id.
+  final int pageId;
+
+  /// FK → cards.oracleId — null when name didn't resolve.
+  final String? oracleId;
+
+  /// Raw card name from EDHREC.
+  final String cardName;
+
+  /// EDHREC's categorisation of the recommendation — e.g. "high synergy
+  /// cards", "top cards", "newcards". Lowercased free text.
+  final String? cardCategory;
+  final String? recommendationType;
+  final int? inclusionCount;
+  final double? inclusionPercent;
+  final double? synergyScore;
+  final int? rankInCategory;
+  const EdhrecRecommendationRow(
+      {required this.id,
+      required this.pageId,
+      this.oracleId,
+      required this.cardName,
+      this.cardCategory,
+      this.recommendationType,
+      this.inclusionCount,
+      this.inclusionPercent,
+      this.synergyScore,
+      this.rankInCategory});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['page_id'] = Variable<int>(pageId);
+    if (!nullToAbsent || oracleId != null) {
+      map['oracle_id'] = Variable<String>(oracleId);
+    }
+    map['card_name'] = Variable<String>(cardName);
+    if (!nullToAbsent || cardCategory != null) {
+      map['card_category'] = Variable<String>(cardCategory);
+    }
+    if (!nullToAbsent || recommendationType != null) {
+      map['recommendation_type'] = Variable<String>(recommendationType);
+    }
+    if (!nullToAbsent || inclusionCount != null) {
+      map['inclusion_count'] = Variable<int>(inclusionCount);
+    }
+    if (!nullToAbsent || inclusionPercent != null) {
+      map['inclusion_percent'] = Variable<double>(inclusionPercent);
+    }
+    if (!nullToAbsent || synergyScore != null) {
+      map['synergy_score'] = Variable<double>(synergyScore);
+    }
+    if (!nullToAbsent || rankInCategory != null) {
+      map['rank_in_category'] = Variable<int>(rankInCategory);
+    }
+    return map;
+  }
+
+  EdhrecRecommendationsCompanion toCompanion(bool nullToAbsent) {
+    return EdhrecRecommendationsCompanion(
+      id: Value(id),
+      pageId: Value(pageId),
+      oracleId: oracleId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(oracleId),
+      cardName: Value(cardName),
+      cardCategory: cardCategory == null && nullToAbsent
+          ? const Value.absent()
+          : Value(cardCategory),
+      recommendationType: recommendationType == null && nullToAbsent
+          ? const Value.absent()
+          : Value(recommendationType),
+      inclusionCount: inclusionCount == null && nullToAbsent
+          ? const Value.absent()
+          : Value(inclusionCount),
+      inclusionPercent: inclusionPercent == null && nullToAbsent
+          ? const Value.absent()
+          : Value(inclusionPercent),
+      synergyScore: synergyScore == null && nullToAbsent
+          ? const Value.absent()
+          : Value(synergyScore),
+      rankInCategory: rankInCategory == null && nullToAbsent
+          ? const Value.absent()
+          : Value(rankInCategory),
+    );
+  }
+
+  factory EdhrecRecommendationRow.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return EdhrecRecommendationRow(
+      id: serializer.fromJson<int>(json['id']),
+      pageId: serializer.fromJson<int>(json['pageId']),
+      oracleId: serializer.fromJson<String?>(json['oracleId']),
+      cardName: serializer.fromJson<String>(json['cardName']),
+      cardCategory: serializer.fromJson<String?>(json['cardCategory']),
+      recommendationType:
+          serializer.fromJson<String?>(json['recommendationType']),
+      inclusionCount: serializer.fromJson<int?>(json['inclusionCount']),
+      inclusionPercent: serializer.fromJson<double?>(json['inclusionPercent']),
+      synergyScore: serializer.fromJson<double?>(json['synergyScore']),
+      rankInCategory: serializer.fromJson<int?>(json['rankInCategory']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'pageId': serializer.toJson<int>(pageId),
+      'oracleId': serializer.toJson<String?>(oracleId),
+      'cardName': serializer.toJson<String>(cardName),
+      'cardCategory': serializer.toJson<String?>(cardCategory),
+      'recommendationType': serializer.toJson<String?>(recommendationType),
+      'inclusionCount': serializer.toJson<int?>(inclusionCount),
+      'inclusionPercent': serializer.toJson<double?>(inclusionPercent),
+      'synergyScore': serializer.toJson<double?>(synergyScore),
+      'rankInCategory': serializer.toJson<int?>(rankInCategory),
+    };
+  }
+
+  EdhrecRecommendationRow copyWith(
+          {int? id,
+          int? pageId,
+          Value<String?> oracleId = const Value.absent(),
+          String? cardName,
+          Value<String?> cardCategory = const Value.absent(),
+          Value<String?> recommendationType = const Value.absent(),
+          Value<int?> inclusionCount = const Value.absent(),
+          Value<double?> inclusionPercent = const Value.absent(),
+          Value<double?> synergyScore = const Value.absent(),
+          Value<int?> rankInCategory = const Value.absent()}) =>
+      EdhrecRecommendationRow(
+        id: id ?? this.id,
+        pageId: pageId ?? this.pageId,
+        oracleId: oracleId.present ? oracleId.value : this.oracleId,
+        cardName: cardName ?? this.cardName,
+        cardCategory:
+            cardCategory.present ? cardCategory.value : this.cardCategory,
+        recommendationType: recommendationType.present
+            ? recommendationType.value
+            : this.recommendationType,
+        inclusionCount:
+            inclusionCount.present ? inclusionCount.value : this.inclusionCount,
+        inclusionPercent: inclusionPercent.present
+            ? inclusionPercent.value
+            : this.inclusionPercent,
+        synergyScore:
+            synergyScore.present ? synergyScore.value : this.synergyScore,
+        rankInCategory:
+            rankInCategory.present ? rankInCategory.value : this.rankInCategory,
+      );
+  EdhrecRecommendationRow copyWithCompanion(
+      EdhrecRecommendationsCompanion data) {
+    return EdhrecRecommendationRow(
+      id: data.id.present ? data.id.value : this.id,
+      pageId: data.pageId.present ? data.pageId.value : this.pageId,
+      oracleId: data.oracleId.present ? data.oracleId.value : this.oracleId,
+      cardName: data.cardName.present ? data.cardName.value : this.cardName,
+      cardCategory: data.cardCategory.present
+          ? data.cardCategory.value
+          : this.cardCategory,
+      recommendationType: data.recommendationType.present
+          ? data.recommendationType.value
+          : this.recommendationType,
+      inclusionCount: data.inclusionCount.present
+          ? data.inclusionCount.value
+          : this.inclusionCount,
+      inclusionPercent: data.inclusionPercent.present
+          ? data.inclusionPercent.value
+          : this.inclusionPercent,
+      synergyScore: data.synergyScore.present
+          ? data.synergyScore.value
+          : this.synergyScore,
+      rankInCategory: data.rankInCategory.present
+          ? data.rankInCategory.value
+          : this.rankInCategory,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('EdhrecRecommendationRow(')
+          ..write('id: $id, ')
+          ..write('pageId: $pageId, ')
+          ..write('oracleId: $oracleId, ')
+          ..write('cardName: $cardName, ')
+          ..write('cardCategory: $cardCategory, ')
+          ..write('recommendationType: $recommendationType, ')
+          ..write('inclusionCount: $inclusionCount, ')
+          ..write('inclusionPercent: $inclusionPercent, ')
+          ..write('synergyScore: $synergyScore, ')
+          ..write('rankInCategory: $rankInCategory')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+      id,
+      pageId,
+      oracleId,
+      cardName,
+      cardCategory,
+      recommendationType,
+      inclusionCount,
+      inclusionPercent,
+      synergyScore,
+      rankInCategory);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is EdhrecRecommendationRow &&
+          other.id == this.id &&
+          other.pageId == this.pageId &&
+          other.oracleId == this.oracleId &&
+          other.cardName == this.cardName &&
+          other.cardCategory == this.cardCategory &&
+          other.recommendationType == this.recommendationType &&
+          other.inclusionCount == this.inclusionCount &&
+          other.inclusionPercent == this.inclusionPercent &&
+          other.synergyScore == this.synergyScore &&
+          other.rankInCategory == this.rankInCategory);
+}
+
+class EdhrecRecommendationsCompanion
+    extends UpdateCompanion<EdhrecRecommendationRow> {
+  final Value<int> id;
+  final Value<int> pageId;
+  final Value<String?> oracleId;
+  final Value<String> cardName;
+  final Value<String?> cardCategory;
+  final Value<String?> recommendationType;
+  final Value<int?> inclusionCount;
+  final Value<double?> inclusionPercent;
+  final Value<double?> synergyScore;
+  final Value<int?> rankInCategory;
+  const EdhrecRecommendationsCompanion({
+    this.id = const Value.absent(),
+    this.pageId = const Value.absent(),
+    this.oracleId = const Value.absent(),
+    this.cardName = const Value.absent(),
+    this.cardCategory = const Value.absent(),
+    this.recommendationType = const Value.absent(),
+    this.inclusionCount = const Value.absent(),
+    this.inclusionPercent = const Value.absent(),
+    this.synergyScore = const Value.absent(),
+    this.rankInCategory = const Value.absent(),
+  });
+  EdhrecRecommendationsCompanion.insert({
+    this.id = const Value.absent(),
+    required int pageId,
+    this.oracleId = const Value.absent(),
+    required String cardName,
+    this.cardCategory = const Value.absent(),
+    this.recommendationType = const Value.absent(),
+    this.inclusionCount = const Value.absent(),
+    this.inclusionPercent = const Value.absent(),
+    this.synergyScore = const Value.absent(),
+    this.rankInCategory = const Value.absent(),
+  })  : pageId = Value(pageId),
+        cardName = Value(cardName);
+  static Insertable<EdhrecRecommendationRow> custom({
+    Expression<int>? id,
+    Expression<int>? pageId,
+    Expression<String>? oracleId,
+    Expression<String>? cardName,
+    Expression<String>? cardCategory,
+    Expression<String>? recommendationType,
+    Expression<int>? inclusionCount,
+    Expression<double>? inclusionPercent,
+    Expression<double>? synergyScore,
+    Expression<int>? rankInCategory,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (pageId != null) 'page_id': pageId,
+      if (oracleId != null) 'oracle_id': oracleId,
+      if (cardName != null) 'card_name': cardName,
+      if (cardCategory != null) 'card_category': cardCategory,
+      if (recommendationType != null) 'recommendation_type': recommendationType,
+      if (inclusionCount != null) 'inclusion_count': inclusionCount,
+      if (inclusionPercent != null) 'inclusion_percent': inclusionPercent,
+      if (synergyScore != null) 'synergy_score': synergyScore,
+      if (rankInCategory != null) 'rank_in_category': rankInCategory,
+    });
+  }
+
+  EdhrecRecommendationsCompanion copyWith(
+      {Value<int>? id,
+      Value<int>? pageId,
+      Value<String?>? oracleId,
+      Value<String>? cardName,
+      Value<String?>? cardCategory,
+      Value<String?>? recommendationType,
+      Value<int?>? inclusionCount,
+      Value<double?>? inclusionPercent,
+      Value<double?>? synergyScore,
+      Value<int?>? rankInCategory}) {
+    return EdhrecRecommendationsCompanion(
+      id: id ?? this.id,
+      pageId: pageId ?? this.pageId,
+      oracleId: oracleId ?? this.oracleId,
+      cardName: cardName ?? this.cardName,
+      cardCategory: cardCategory ?? this.cardCategory,
+      recommendationType: recommendationType ?? this.recommendationType,
+      inclusionCount: inclusionCount ?? this.inclusionCount,
+      inclusionPercent: inclusionPercent ?? this.inclusionPercent,
+      synergyScore: synergyScore ?? this.synergyScore,
+      rankInCategory: rankInCategory ?? this.rankInCategory,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (pageId.present) {
+      map['page_id'] = Variable<int>(pageId.value);
+    }
+    if (oracleId.present) {
+      map['oracle_id'] = Variable<String>(oracleId.value);
+    }
+    if (cardName.present) {
+      map['card_name'] = Variable<String>(cardName.value);
+    }
+    if (cardCategory.present) {
+      map['card_category'] = Variable<String>(cardCategory.value);
+    }
+    if (recommendationType.present) {
+      map['recommendation_type'] = Variable<String>(recommendationType.value);
+    }
+    if (inclusionCount.present) {
+      map['inclusion_count'] = Variable<int>(inclusionCount.value);
+    }
+    if (inclusionPercent.present) {
+      map['inclusion_percent'] = Variable<double>(inclusionPercent.value);
+    }
+    if (synergyScore.present) {
+      map['synergy_score'] = Variable<double>(synergyScore.value);
+    }
+    if (rankInCategory.present) {
+      map['rank_in_category'] = Variable<int>(rankInCategory.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('EdhrecRecommendationsCompanion(')
+          ..write('id: $id, ')
+          ..write('pageId: $pageId, ')
+          ..write('oracleId: $oracleId, ')
+          ..write('cardName: $cardName, ')
+          ..write('cardCategory: $cardCategory, ')
+          ..write('recommendationType: $recommendationType, ')
+          ..write('inclusionCount: $inclusionCount, ')
+          ..write('inclusionPercent: $inclusionPercent, ')
+          ..write('synergyScore: $synergyScore, ')
+          ..write('rankInCategory: $rankInCategory')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $EdhrecThemesTable extends EdhrecThemes
+    with TableInfo<$EdhrecThemesTable, EdhrecThemeRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $EdhrecThemesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _pageIdMeta = const VerificationMeta('pageId');
+  @override
+  late final GeneratedColumn<int> pageId = GeneratedColumn<int>(
+      'page_id', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _themeSlugMeta =
+      const VerificationMeta('themeSlug');
+  @override
+  late final GeneratedColumn<String> themeSlug = GeneratedColumn<String>(
+      'theme_slug', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _themeNameMeta =
+      const VerificationMeta('themeName');
+  @override
+  late final GeneratedColumn<String> themeName = GeneratedColumn<String>(
+      'theme_name', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _totalDecksMeta =
+      const VerificationMeta('totalDecks');
+  @override
+  late final GeneratedColumn<int> totalDecks = GeneratedColumn<int>(
+      'total_decks', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  static const VerificationMeta _inclusionCountMeta =
+      const VerificationMeta('inclusionCount');
+  @override
+  late final GeneratedColumn<int> inclusionCount = GeneratedColumn<int>(
+      'inclusion_count', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  static const VerificationMeta _rankInThemeMeta =
+      const VerificationMeta('rankInTheme');
+  @override
+  late final GeneratedColumn<double> rankInTheme = GeneratedColumn<double>(
+      'rank_in_theme', aliasedName, true,
+      type: DriftSqlType.double, requiredDuringInsert: false);
+  static const VerificationMeta _synergyScoreMeta =
+      const VerificationMeta('synergyScore');
+  @override
+  late final GeneratedColumn<double> synergyScore = GeneratedColumn<double>(
+      'synergy_score', aliasedName, true,
+      type: DriftSqlType.double, requiredDuringInsert: false);
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        pageId,
+        themeSlug,
+        themeName,
+        totalDecks,
+        inclusionCount,
+        rankInTheme,
+        synergyScore
+      ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'edhrec_themes';
+  @override
+  VerificationContext validateIntegrity(Insertable<EdhrecThemeRow> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('page_id')) {
+      context.handle(_pageIdMeta,
+          pageId.isAcceptableOrUnknown(data['page_id']!, _pageIdMeta));
+    } else if (isInserting) {
+      context.missing(_pageIdMeta);
+    }
+    if (data.containsKey('theme_slug')) {
+      context.handle(_themeSlugMeta,
+          themeSlug.isAcceptableOrUnknown(data['theme_slug']!, _themeSlugMeta));
+    } else if (isInserting) {
+      context.missing(_themeSlugMeta);
+    }
+    if (data.containsKey('theme_name')) {
+      context.handle(_themeNameMeta,
+          themeName.isAcceptableOrUnknown(data['theme_name']!, _themeNameMeta));
+    } else if (isInserting) {
+      context.missing(_themeNameMeta);
+    }
+    if (data.containsKey('total_decks')) {
+      context.handle(
+          _totalDecksMeta,
+          totalDecks.isAcceptableOrUnknown(
+              data['total_decks']!, _totalDecksMeta));
+    }
+    if (data.containsKey('inclusion_count')) {
+      context.handle(
+          _inclusionCountMeta,
+          inclusionCount.isAcceptableOrUnknown(
+              data['inclusion_count']!, _inclusionCountMeta));
+    }
+    if (data.containsKey('rank_in_theme')) {
+      context.handle(
+          _rankInThemeMeta,
+          rankInTheme.isAcceptableOrUnknown(
+              data['rank_in_theme']!, _rankInThemeMeta));
+    }
+    if (data.containsKey('synergy_score')) {
+      context.handle(
+          _synergyScoreMeta,
+          synergyScore.isAcceptableOrUnknown(
+              data['synergy_score']!, _synergyScoreMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  EdhrecThemeRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return EdhrecThemeRow(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      pageId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}page_id'])!,
+      themeSlug: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}theme_slug'])!,
+      themeName: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}theme_name'])!,
+      totalDecks: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}total_decks']),
+      inclusionCount: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}inclusion_count']),
+      rankInTheme: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}rank_in_theme']),
+      synergyScore: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}synergy_score']),
+    );
+  }
+
+  @override
+  $EdhrecThemesTable createAlias(String alias) {
+    return $EdhrecThemesTable(attachedDatabase, alias);
+  }
+}
+
+class EdhrecThemeRow extends DataClass implements Insertable<EdhrecThemeRow> {
+  final int id;
+
+  /// FK → edhrec_pages.id.
+  final int pageId;
+  final String themeSlug;
+  final String themeName;
+  final int? totalDecks;
+  final int? inclusionCount;
+  final double? rankInTheme;
+  final double? synergyScore;
+  const EdhrecThemeRow(
+      {required this.id,
+      required this.pageId,
+      required this.themeSlug,
+      required this.themeName,
+      this.totalDecks,
+      this.inclusionCount,
+      this.rankInTheme,
+      this.synergyScore});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['page_id'] = Variable<int>(pageId);
+    map['theme_slug'] = Variable<String>(themeSlug);
+    map['theme_name'] = Variable<String>(themeName);
+    if (!nullToAbsent || totalDecks != null) {
+      map['total_decks'] = Variable<int>(totalDecks);
+    }
+    if (!nullToAbsent || inclusionCount != null) {
+      map['inclusion_count'] = Variable<int>(inclusionCount);
+    }
+    if (!nullToAbsent || rankInTheme != null) {
+      map['rank_in_theme'] = Variable<double>(rankInTheme);
+    }
+    if (!nullToAbsent || synergyScore != null) {
+      map['synergy_score'] = Variable<double>(synergyScore);
+    }
+    return map;
+  }
+
+  EdhrecThemesCompanion toCompanion(bool nullToAbsent) {
+    return EdhrecThemesCompanion(
+      id: Value(id),
+      pageId: Value(pageId),
+      themeSlug: Value(themeSlug),
+      themeName: Value(themeName),
+      totalDecks: totalDecks == null && nullToAbsent
+          ? const Value.absent()
+          : Value(totalDecks),
+      inclusionCount: inclusionCount == null && nullToAbsent
+          ? const Value.absent()
+          : Value(inclusionCount),
+      rankInTheme: rankInTheme == null && nullToAbsent
+          ? const Value.absent()
+          : Value(rankInTheme),
+      synergyScore: synergyScore == null && nullToAbsent
+          ? const Value.absent()
+          : Value(synergyScore),
+    );
+  }
+
+  factory EdhrecThemeRow.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return EdhrecThemeRow(
+      id: serializer.fromJson<int>(json['id']),
+      pageId: serializer.fromJson<int>(json['pageId']),
+      themeSlug: serializer.fromJson<String>(json['themeSlug']),
+      themeName: serializer.fromJson<String>(json['themeName']),
+      totalDecks: serializer.fromJson<int?>(json['totalDecks']),
+      inclusionCount: serializer.fromJson<int?>(json['inclusionCount']),
+      rankInTheme: serializer.fromJson<double?>(json['rankInTheme']),
+      synergyScore: serializer.fromJson<double?>(json['synergyScore']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'pageId': serializer.toJson<int>(pageId),
+      'themeSlug': serializer.toJson<String>(themeSlug),
+      'themeName': serializer.toJson<String>(themeName),
+      'totalDecks': serializer.toJson<int?>(totalDecks),
+      'inclusionCount': serializer.toJson<int?>(inclusionCount),
+      'rankInTheme': serializer.toJson<double?>(rankInTheme),
+      'synergyScore': serializer.toJson<double?>(synergyScore),
+    };
+  }
+
+  EdhrecThemeRow copyWith(
+          {int? id,
+          int? pageId,
+          String? themeSlug,
+          String? themeName,
+          Value<int?> totalDecks = const Value.absent(),
+          Value<int?> inclusionCount = const Value.absent(),
+          Value<double?> rankInTheme = const Value.absent(),
+          Value<double?> synergyScore = const Value.absent()}) =>
+      EdhrecThemeRow(
+        id: id ?? this.id,
+        pageId: pageId ?? this.pageId,
+        themeSlug: themeSlug ?? this.themeSlug,
+        themeName: themeName ?? this.themeName,
+        totalDecks: totalDecks.present ? totalDecks.value : this.totalDecks,
+        inclusionCount:
+            inclusionCount.present ? inclusionCount.value : this.inclusionCount,
+        rankInTheme: rankInTheme.present ? rankInTheme.value : this.rankInTheme,
+        synergyScore:
+            synergyScore.present ? synergyScore.value : this.synergyScore,
+      );
+  EdhrecThemeRow copyWithCompanion(EdhrecThemesCompanion data) {
+    return EdhrecThemeRow(
+      id: data.id.present ? data.id.value : this.id,
+      pageId: data.pageId.present ? data.pageId.value : this.pageId,
+      themeSlug: data.themeSlug.present ? data.themeSlug.value : this.themeSlug,
+      themeName: data.themeName.present ? data.themeName.value : this.themeName,
+      totalDecks:
+          data.totalDecks.present ? data.totalDecks.value : this.totalDecks,
+      inclusionCount: data.inclusionCount.present
+          ? data.inclusionCount.value
+          : this.inclusionCount,
+      rankInTheme:
+          data.rankInTheme.present ? data.rankInTheme.value : this.rankInTheme,
+      synergyScore: data.synergyScore.present
+          ? data.synergyScore.value
+          : this.synergyScore,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('EdhrecThemeRow(')
+          ..write('id: $id, ')
+          ..write('pageId: $pageId, ')
+          ..write('themeSlug: $themeSlug, ')
+          ..write('themeName: $themeName, ')
+          ..write('totalDecks: $totalDecks, ')
+          ..write('inclusionCount: $inclusionCount, ')
+          ..write('rankInTheme: $rankInTheme, ')
+          ..write('synergyScore: $synergyScore')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, pageId, themeSlug, themeName, totalDecks,
+      inclusionCount, rankInTheme, synergyScore);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is EdhrecThemeRow &&
+          other.id == this.id &&
+          other.pageId == this.pageId &&
+          other.themeSlug == this.themeSlug &&
+          other.themeName == this.themeName &&
+          other.totalDecks == this.totalDecks &&
+          other.inclusionCount == this.inclusionCount &&
+          other.rankInTheme == this.rankInTheme &&
+          other.synergyScore == this.synergyScore);
+}
+
+class EdhrecThemesCompanion extends UpdateCompanion<EdhrecThemeRow> {
+  final Value<int> id;
+  final Value<int> pageId;
+  final Value<String> themeSlug;
+  final Value<String> themeName;
+  final Value<int?> totalDecks;
+  final Value<int?> inclusionCount;
+  final Value<double?> rankInTheme;
+  final Value<double?> synergyScore;
+  const EdhrecThemesCompanion({
+    this.id = const Value.absent(),
+    this.pageId = const Value.absent(),
+    this.themeSlug = const Value.absent(),
+    this.themeName = const Value.absent(),
+    this.totalDecks = const Value.absent(),
+    this.inclusionCount = const Value.absent(),
+    this.rankInTheme = const Value.absent(),
+    this.synergyScore = const Value.absent(),
+  });
+  EdhrecThemesCompanion.insert({
+    this.id = const Value.absent(),
+    required int pageId,
+    required String themeSlug,
+    required String themeName,
+    this.totalDecks = const Value.absent(),
+    this.inclusionCount = const Value.absent(),
+    this.rankInTheme = const Value.absent(),
+    this.synergyScore = const Value.absent(),
+  })  : pageId = Value(pageId),
+        themeSlug = Value(themeSlug),
+        themeName = Value(themeName);
+  static Insertable<EdhrecThemeRow> custom({
+    Expression<int>? id,
+    Expression<int>? pageId,
+    Expression<String>? themeSlug,
+    Expression<String>? themeName,
+    Expression<int>? totalDecks,
+    Expression<int>? inclusionCount,
+    Expression<double>? rankInTheme,
+    Expression<double>? synergyScore,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (pageId != null) 'page_id': pageId,
+      if (themeSlug != null) 'theme_slug': themeSlug,
+      if (themeName != null) 'theme_name': themeName,
+      if (totalDecks != null) 'total_decks': totalDecks,
+      if (inclusionCount != null) 'inclusion_count': inclusionCount,
+      if (rankInTheme != null) 'rank_in_theme': rankInTheme,
+      if (synergyScore != null) 'synergy_score': synergyScore,
+    });
+  }
+
+  EdhrecThemesCompanion copyWith(
+      {Value<int>? id,
+      Value<int>? pageId,
+      Value<String>? themeSlug,
+      Value<String>? themeName,
+      Value<int?>? totalDecks,
+      Value<int?>? inclusionCount,
+      Value<double?>? rankInTheme,
+      Value<double?>? synergyScore}) {
+    return EdhrecThemesCompanion(
+      id: id ?? this.id,
+      pageId: pageId ?? this.pageId,
+      themeSlug: themeSlug ?? this.themeSlug,
+      themeName: themeName ?? this.themeName,
+      totalDecks: totalDecks ?? this.totalDecks,
+      inclusionCount: inclusionCount ?? this.inclusionCount,
+      rankInTheme: rankInTheme ?? this.rankInTheme,
+      synergyScore: synergyScore ?? this.synergyScore,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (pageId.present) {
+      map['page_id'] = Variable<int>(pageId.value);
+    }
+    if (themeSlug.present) {
+      map['theme_slug'] = Variable<String>(themeSlug.value);
+    }
+    if (themeName.present) {
+      map['theme_name'] = Variable<String>(themeName.value);
+    }
+    if (totalDecks.present) {
+      map['total_decks'] = Variable<int>(totalDecks.value);
+    }
+    if (inclusionCount.present) {
+      map['inclusion_count'] = Variable<int>(inclusionCount.value);
+    }
+    if (rankInTheme.present) {
+      map['rank_in_theme'] = Variable<double>(rankInTheme.value);
+    }
+    if (synergyScore.present) {
+      map['synergy_score'] = Variable<double>(synergyScore.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('EdhrecThemesCompanion(')
+          ..write('id: $id, ')
+          ..write('pageId: $pageId, ')
+          ..write('themeSlug: $themeSlug, ')
+          ..write('themeName: $themeName, ')
+          ..write('totalDecks: $totalDecks, ')
+          ..write('inclusionCount: $inclusionCount, ')
+          ..write('rankInTheme: $rankInTheme, ')
+          ..write('synergyScore: $synergyScore')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $EdhrecTagLinksTable extends EdhrecTagLinks
+    with TableInfo<$EdhrecTagLinksTable, EdhrecTagLinkRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $EdhrecTagLinksTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _pageIdMeta = const VerificationMeta('pageId');
+  @override
+  late final GeneratedColumn<int> pageId = GeneratedColumn<int>(
+      'page_id', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _slugMeta = const VerificationMeta('slug');
+  @override
+  late final GeneratedColumn<String> slug = GeneratedColumn<String>(
+      'slug', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _countMeta = const VerificationMeta('count');
+  @override
+  late final GeneratedColumn<int> count = GeneratedColumn<int>(
+      'count', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
+  @override
+  List<GeneratedColumn> get $columns => [id, pageId, slug, name, count];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'edhrec_tag_links';
+  @override
+  VerificationContext validateIntegrity(Insertable<EdhrecTagLinkRow> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('page_id')) {
+      context.handle(_pageIdMeta,
+          pageId.isAcceptableOrUnknown(data['page_id']!, _pageIdMeta));
+    } else if (isInserting) {
+      context.missing(_pageIdMeta);
+    }
+    if (data.containsKey('slug')) {
+      context.handle(
+          _slugMeta, slug.isAcceptableOrUnknown(data['slug']!, _slugMeta));
+    } else if (isInserting) {
+      context.missing(_slugMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('count')) {
+      context.handle(
+          _countMeta, count.isAcceptableOrUnknown(data['count']!, _countMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  EdhrecTagLinkRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return EdhrecTagLinkRow(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      pageId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}page_id'])!,
+      slug: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}slug'])!,
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      count: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}count'])!,
+    );
+  }
+
+  @override
+  $EdhrecTagLinksTable createAlias(String alias) {
+    return $EdhrecTagLinksTable(attachedDatabase, alias);
+  }
+}
+
+class EdhrecTagLinkRow extends DataClass
+    implements Insertable<EdhrecTagLinkRow> {
+  final int id;
+
+  /// FK → edhrec_pages.id.
+  final int pageId;
+  final String slug;
+  final String name;
+  final int count;
+  const EdhrecTagLinkRow(
+      {required this.id,
+      required this.pageId,
+      required this.slug,
+      required this.name,
+      required this.count});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['page_id'] = Variable<int>(pageId);
+    map['slug'] = Variable<String>(slug);
+    map['name'] = Variable<String>(name);
+    map['count'] = Variable<int>(count);
+    return map;
+  }
+
+  EdhrecTagLinksCompanion toCompanion(bool nullToAbsent) {
+    return EdhrecTagLinksCompanion(
+      id: Value(id),
+      pageId: Value(pageId),
+      slug: Value(slug),
+      name: Value(name),
+      count: Value(count),
+    );
+  }
+
+  factory EdhrecTagLinkRow.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return EdhrecTagLinkRow(
+      id: serializer.fromJson<int>(json['id']),
+      pageId: serializer.fromJson<int>(json['pageId']),
+      slug: serializer.fromJson<String>(json['slug']),
+      name: serializer.fromJson<String>(json['name']),
+      count: serializer.fromJson<int>(json['count']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'pageId': serializer.toJson<int>(pageId),
+      'slug': serializer.toJson<String>(slug),
+      'name': serializer.toJson<String>(name),
+      'count': serializer.toJson<int>(count),
+    };
+  }
+
+  EdhrecTagLinkRow copyWith(
+          {int? id, int? pageId, String? slug, String? name, int? count}) =>
+      EdhrecTagLinkRow(
+        id: id ?? this.id,
+        pageId: pageId ?? this.pageId,
+        slug: slug ?? this.slug,
+        name: name ?? this.name,
+        count: count ?? this.count,
+      );
+  EdhrecTagLinkRow copyWithCompanion(EdhrecTagLinksCompanion data) {
+    return EdhrecTagLinkRow(
+      id: data.id.present ? data.id.value : this.id,
+      pageId: data.pageId.present ? data.pageId.value : this.pageId,
+      slug: data.slug.present ? data.slug.value : this.slug,
+      name: data.name.present ? data.name.value : this.name,
+      count: data.count.present ? data.count.value : this.count,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('EdhrecTagLinkRow(')
+          ..write('id: $id, ')
+          ..write('pageId: $pageId, ')
+          ..write('slug: $slug, ')
+          ..write('name: $name, ')
+          ..write('count: $count')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, pageId, slug, name, count);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is EdhrecTagLinkRow &&
+          other.id == this.id &&
+          other.pageId == this.pageId &&
+          other.slug == this.slug &&
+          other.name == this.name &&
+          other.count == this.count);
+}
+
+class EdhrecTagLinksCompanion extends UpdateCompanion<EdhrecTagLinkRow> {
+  final Value<int> id;
+  final Value<int> pageId;
+  final Value<String> slug;
+  final Value<String> name;
+  final Value<int> count;
+  const EdhrecTagLinksCompanion({
+    this.id = const Value.absent(),
+    this.pageId = const Value.absent(),
+    this.slug = const Value.absent(),
+    this.name = const Value.absent(),
+    this.count = const Value.absent(),
+  });
+  EdhrecTagLinksCompanion.insert({
+    this.id = const Value.absent(),
+    required int pageId,
+    required String slug,
+    required String name,
+    this.count = const Value.absent(),
+  })  : pageId = Value(pageId),
+        slug = Value(slug),
+        name = Value(name);
+  static Insertable<EdhrecTagLinkRow> custom({
+    Expression<int>? id,
+    Expression<int>? pageId,
+    Expression<String>? slug,
+    Expression<String>? name,
+    Expression<int>? count,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (pageId != null) 'page_id': pageId,
+      if (slug != null) 'slug': slug,
+      if (name != null) 'name': name,
+      if (count != null) 'count': count,
+    });
+  }
+
+  EdhrecTagLinksCompanion copyWith(
+      {Value<int>? id,
+      Value<int>? pageId,
+      Value<String>? slug,
+      Value<String>? name,
+      Value<int>? count}) {
+    return EdhrecTagLinksCompanion(
+      id: id ?? this.id,
+      pageId: pageId ?? this.pageId,
+      slug: slug ?? this.slug,
+      name: name ?? this.name,
+      count: count ?? this.count,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (pageId.present) {
+      map['page_id'] = Variable<int>(pageId.value);
+    }
+    if (slug.present) {
+      map['slug'] = Variable<String>(slug.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (count.present) {
+      map['count'] = Variable<int>(count.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('EdhrecTagLinksCompanion(')
+          ..write('id: $id, ')
+          ..write('pageId: $pageId, ')
+          ..write('slug: $slug, ')
+          ..write('name: $name, ')
+          ..write('count: $count')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$CardsDatabase extends GeneratedDatabase {
   _$CardsDatabase(QueryExecutor e) : super(e);
   $CardsDatabaseManager get managers => $CardsDatabaseManager(this);
@@ -5761,6 +10759,21 @@ abstract class _$CardsDatabase extends GeneratedDatabase {
   late final $CardPricesTable cardPrices = $CardPricesTable(this);
   late final $FilterMetadataTable filterMetadata = $FilterMetadataTable(this);
   late final $PreconDecksTable preconDecks = $PreconDecksTable(this);
+  late final $TagsTable tags = $TagsTable(this);
+  late final $TagAncestorsTable tagAncestors = $TagAncestorsTable(this);
+  late final $CardTagsTable cardTags = $CardTagsTable(this);
+  late final $CardRelationshipsTable cardRelationships =
+      $CardRelationshipsTable(this);
+  late final $TaggerCrawlStatusTable taggerCrawlStatus =
+      $TaggerCrawlStatusTable(this);
+  late final $CombosTable combos = $CombosTable(this);
+  late final $ComboCardsTable comboCards = $ComboCardsTable(this);
+  late final $ComboFeaturesTable comboFeatures = $ComboFeaturesTable(this);
+  late final $EdhrecPagesTable edhrecPages = $EdhrecPagesTable(this);
+  late final $EdhrecRecommendationsTable edhrecRecommendations =
+      $EdhrecRecommendationsTable(this);
+  late final $EdhrecThemesTable edhrecThemes = $EdhrecThemesTable(this);
+  late final $EdhrecTagLinksTable edhrecTagLinks = $EdhrecTagLinksTable(this);
   late final Index idxCardScryfallId = Index('idx_card_scryfall_id',
       'CREATE UNIQUE INDEX idx_card_scryfall_id ON cards (scryfall_id)');
   late final Index idxCardMtgjsonUuid = Index('idx_card_mtgjson_uuid',
@@ -5802,6 +10815,78 @@ abstract class _$CardsDatabase extends GeneratedDatabase {
       'CREATE INDEX idx_precon_set_code ON precon_decks (set_code)');
   late final Index idxPreconType = Index(
       'idx_precon_type', 'CREATE INDEX idx_precon_type ON precon_decks (type)');
+  late final Index idxTagId =
+      Index('idx_tag_id', 'CREATE UNIQUE INDEX idx_tag_id ON tags (tag_id)');
+  late final Index idxTagSlug =
+      Index('idx_tag_slug', 'CREATE INDEX idx_tag_slug ON tags (slug)');
+  late final Index idxTagName =
+      Index('idx_tag_name', 'CREATE INDEX idx_tag_name ON tags (name)');
+  late final Index idxTagAncestorPk = Index('idx_tag_ancestor_pk',
+      'CREATE UNIQUE INDEX idx_tag_ancestor_pk ON tag_ancestors (tag_id, ancestor_id)');
+  late final Index idxTagAncestorId = Index('idx_tag_ancestor_id',
+      'CREATE INDEX idx_tag_ancestor_id ON tag_ancestors (ancestor_id)');
+  late final Index idxCardTagPk = Index('idx_card_tag_pk',
+      'CREATE UNIQUE INDEX idx_card_tag_pk ON card_tags (oracle_id, tag_id)');
+  late final Index idxCardTagOracleId = Index('idx_card_tag_oracle_id',
+      'CREATE INDEX idx_card_tag_oracle_id ON card_tags (oracle_id)');
+  late final Index idxCardTagTagId = Index('idx_card_tag_tag_id',
+      'CREATE INDEX idx_card_tag_tag_id ON card_tags (tag_id)');
+  late final Index idxCardRelRelationshipId = Index(
+      'idx_card_rel_relationship_id',
+      'CREATE UNIQUE INDEX idx_card_rel_relationship_id ON card_relationships (relationship_id)');
+  late final Index idxCardRelSubject = Index('idx_card_rel_subject',
+      'CREATE INDEX idx_card_rel_subject ON card_relationships (subject_oracle_id)');
+  late final Index idxCardRelRelated = Index('idx_card_rel_related',
+      'CREATE INDEX idx_card_rel_related ON card_relationships (related_oracle_id)');
+  late final Index idxTaggerStatusOracle = Index('idx_tagger_status_oracle',
+      'CREATE UNIQUE INDEX idx_tagger_status_oracle ON tagger_crawl_status (oracle_id)');
+  late final Index idxTaggerStatusLastCrawled = Index(
+      'idx_tagger_status_last_crawled',
+      'CREATE INDEX idx_tagger_status_last_crawled ON tagger_crawl_status (last_crawled_at)');
+  late final Index idxComboComboId = Index('idx_combo_combo_id',
+      'CREATE UNIQUE INDEX idx_combo_combo_id ON combos (combo_id)');
+  late final Index idxComboBracket = Index('idx_combo_bracket',
+      'CREATE INDEX idx_combo_bracket ON combos (bracket_tag)');
+  late final Index idxComboCardPk = Index('idx_combo_card_pk',
+      'CREATE UNIQUE INDEX idx_combo_card_pk ON combo_cards (combo_id, position)');
+  late final Index idxComboCardOracle = Index('idx_combo_card_oracle',
+      'CREATE INDEX idx_combo_card_oracle ON combo_cards (oracle_id)');
+  late final Index idxComboCardCombo = Index('idx_combo_card_combo',
+      'CREATE INDEX idx_combo_card_combo ON combo_cards (combo_id)');
+  late final Index idxComboFeaturePk = Index('idx_combo_feature_pk',
+      'CREATE UNIQUE INDEX idx_combo_feature_pk ON combo_features (combo_id, feature_name)');
+  late final Index idxComboFeatureCombo = Index('idx_combo_feature_combo',
+      'CREATE INDEX idx_combo_feature_combo ON combo_features (combo_id)');
+  late final Index idxComboFeatureName = Index('idx_combo_feature_name',
+      'CREATE INDEX idx_combo_feature_name ON combo_features (feature_name)');
+  late final Index idxComboFeatureId = Index('idx_combo_feature_id',
+      'CREATE INDEX idx_combo_feature_id ON combo_features (feature_id)');
+  late final Index idxEdhrecPagePk = Index('idx_edhrec_page_pk',
+      'CREATE UNIQUE INDEX idx_edhrec_page_pk ON edhrec_pages (oracle_id, kind)');
+  late final Index idxEdhrecPageOracle = Index('idx_edhrec_page_oracle',
+      'CREATE INDEX idx_edhrec_page_oracle ON edhrec_pages (oracle_id)');
+  late final Index idxEdhrecPageKind = Index('idx_edhrec_page_kind',
+      'CREATE INDEX idx_edhrec_page_kind ON edhrec_pages (kind)');
+  late final Index idxEdhrecRecPk = Index('idx_edhrec_rec_pk',
+      'CREATE UNIQUE INDEX idx_edhrec_rec_pk ON edhrec_recommendations (page_id, card_name)');
+  late final Index idxEdhrecRecPage = Index('idx_edhrec_rec_page',
+      'CREATE INDEX idx_edhrec_rec_page ON edhrec_recommendations (page_id)');
+  late final Index idxEdhrecRecOracle = Index('idx_edhrec_rec_oracle',
+      'CREATE INDEX idx_edhrec_rec_oracle ON edhrec_recommendations (oracle_id)');
+  late final Index idxEdhrecRecCategory = Index('idx_edhrec_rec_category',
+      'CREATE INDEX idx_edhrec_rec_category ON edhrec_recommendations (card_category)');
+  late final Index idxEdhrecThemePk = Index('idx_edhrec_theme_pk',
+      'CREATE UNIQUE INDEX idx_edhrec_theme_pk ON edhrec_themes (page_id, theme_slug)');
+  late final Index idxEdhrecThemePage = Index('idx_edhrec_theme_page',
+      'CREATE INDEX idx_edhrec_theme_page ON edhrec_themes (page_id)');
+  late final Index idxEdhrecThemeSlug = Index('idx_edhrec_theme_slug',
+      'CREATE INDEX idx_edhrec_theme_slug ON edhrec_themes (theme_slug)');
+  late final Index idxEdhrecTaglinkPk = Index('idx_edhrec_taglink_pk',
+      'CREATE UNIQUE INDEX idx_edhrec_taglink_pk ON edhrec_tag_links (page_id, slug)');
+  late final Index idxEdhrecTaglinkPage = Index('idx_edhrec_taglink_page',
+      'CREATE INDEX idx_edhrec_taglink_page ON edhrec_tag_links (page_id)');
+  late final Index idxEdhrecTaglinkSlug = Index('idx_edhrec_taglink_slug',
+      'CREATE INDEX idx_edhrec_taglink_slug ON edhrec_tag_links (slug)');
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -5811,6 +10896,18 @@ abstract class _$CardsDatabase extends GeneratedDatabase {
         cardPrices,
         filterMetadata,
         preconDecks,
+        tags,
+        tagAncestors,
+        cardTags,
+        cardRelationships,
+        taggerCrawlStatus,
+        combos,
+        comboCards,
+        comboFeatures,
+        edhrecPages,
+        edhrecRecommendations,
+        edhrecThemes,
+        edhrecTagLinks,
         idxCardScryfallId,
         idxCardMtgjsonUuid,
         idxCardOracleId,
@@ -5829,7 +10926,42 @@ abstract class _$CardsDatabase extends GeneratedDatabase {
         idxFilterMetadataKey,
         idxPreconName,
         idxPreconSetCode,
-        idxPreconType
+        idxPreconType,
+        idxTagId,
+        idxTagSlug,
+        idxTagName,
+        idxTagAncestorPk,
+        idxTagAncestorId,
+        idxCardTagPk,
+        idxCardTagOracleId,
+        idxCardTagTagId,
+        idxCardRelRelationshipId,
+        idxCardRelSubject,
+        idxCardRelRelated,
+        idxTaggerStatusOracle,
+        idxTaggerStatusLastCrawled,
+        idxComboComboId,
+        idxComboBracket,
+        idxComboCardPk,
+        idxComboCardOracle,
+        idxComboCardCombo,
+        idxComboFeaturePk,
+        idxComboFeatureCombo,
+        idxComboFeatureName,
+        idxComboFeatureId,
+        idxEdhrecPagePk,
+        idxEdhrecPageOracle,
+        idxEdhrecPageKind,
+        idxEdhrecRecPk,
+        idxEdhrecRecPage,
+        idxEdhrecRecOracle,
+        idxEdhrecRecCategory,
+        idxEdhrecThemePk,
+        idxEdhrecThemePage,
+        idxEdhrecThemeSlug,
+        idxEdhrecTaglinkPk,
+        idxEdhrecTaglinkPage,
+        idxEdhrecTaglinkSlug
       ];
 }
 
@@ -8144,6 +13276,2463 @@ typedef $$PreconDecksTableProcessedTableManager = ProcessedTableManager<
     ),
     PreconDeckRow,
     PrefetchHooks Function()>;
+typedef $$TagsTableCreateCompanionBuilder = TagsCompanion Function({
+  Value<int> id,
+  required String tagId,
+  required String slug,
+  required String name,
+  required String type,
+  Value<String?> category,
+  Value<bool> isRootCategory,
+  Value<String?> description,
+});
+typedef $$TagsTableUpdateCompanionBuilder = TagsCompanion Function({
+  Value<int> id,
+  Value<String> tagId,
+  Value<String> slug,
+  Value<String> name,
+  Value<String> type,
+  Value<String?> category,
+  Value<bool> isRootCategory,
+  Value<String?> description,
+});
+
+class $$TagsTableFilterComposer extends Composer<_$CardsDatabase, $TagsTable> {
+  $$TagsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get tagId => $composableBuilder(
+      column: $table.tagId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get slug => $composableBuilder(
+      column: $table.slug, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get type => $composableBuilder(
+      column: $table.type, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get category => $composableBuilder(
+      column: $table.category, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isRootCategory => $composableBuilder(
+      column: $table.isRootCategory,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => ColumnFilters(column));
+}
+
+class $$TagsTableOrderingComposer
+    extends Composer<_$CardsDatabase, $TagsTable> {
+  $$TagsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get tagId => $composableBuilder(
+      column: $table.tagId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get slug => $composableBuilder(
+      column: $table.slug, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get type => $composableBuilder(
+      column: $table.type, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get category => $composableBuilder(
+      column: $table.category, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get isRootCategory => $composableBuilder(
+      column: $table.isRootCategory,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => ColumnOrderings(column));
+}
+
+class $$TagsTableAnnotationComposer
+    extends Composer<_$CardsDatabase, $TagsTable> {
+  $$TagsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get tagId =>
+      $composableBuilder(column: $table.tagId, builder: (column) => column);
+
+  GeneratedColumn<String> get slug =>
+      $composableBuilder(column: $table.slug, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get type =>
+      $composableBuilder(column: $table.type, builder: (column) => column);
+
+  GeneratedColumn<String> get category =>
+      $composableBuilder(column: $table.category, builder: (column) => column);
+
+  GeneratedColumn<bool> get isRootCategory => $composableBuilder(
+      column: $table.isRootCategory, builder: (column) => column);
+
+  GeneratedColumn<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => column);
+}
+
+class $$TagsTableTableManager extends RootTableManager<
+    _$CardsDatabase,
+    $TagsTable,
+    TagRow,
+    $$TagsTableFilterComposer,
+    $$TagsTableOrderingComposer,
+    $$TagsTableAnnotationComposer,
+    $$TagsTableCreateCompanionBuilder,
+    $$TagsTableUpdateCompanionBuilder,
+    (TagRow, BaseReferences<_$CardsDatabase, $TagsTable, TagRow>),
+    TagRow,
+    PrefetchHooks Function()> {
+  $$TagsTableTableManager(_$CardsDatabase db, $TagsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$TagsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$TagsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$TagsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<String> tagId = const Value.absent(),
+            Value<String> slug = const Value.absent(),
+            Value<String> name = const Value.absent(),
+            Value<String> type = const Value.absent(),
+            Value<String?> category = const Value.absent(),
+            Value<bool> isRootCategory = const Value.absent(),
+            Value<String?> description = const Value.absent(),
+          }) =>
+              TagsCompanion(
+            id: id,
+            tagId: tagId,
+            slug: slug,
+            name: name,
+            type: type,
+            category: category,
+            isRootCategory: isRootCategory,
+            description: description,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required String tagId,
+            required String slug,
+            required String name,
+            required String type,
+            Value<String?> category = const Value.absent(),
+            Value<bool> isRootCategory = const Value.absent(),
+            Value<String?> description = const Value.absent(),
+          }) =>
+              TagsCompanion.insert(
+            id: id,
+            tagId: tagId,
+            slug: slug,
+            name: name,
+            type: type,
+            category: category,
+            isRootCategory: isRootCategory,
+            description: description,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$TagsTableProcessedTableManager = ProcessedTableManager<
+    _$CardsDatabase,
+    $TagsTable,
+    TagRow,
+    $$TagsTableFilterComposer,
+    $$TagsTableOrderingComposer,
+    $$TagsTableAnnotationComposer,
+    $$TagsTableCreateCompanionBuilder,
+    $$TagsTableUpdateCompanionBuilder,
+    (TagRow, BaseReferences<_$CardsDatabase, $TagsTable, TagRow>),
+    TagRow,
+    PrefetchHooks Function()>;
+typedef $$TagAncestorsTableCreateCompanionBuilder = TagAncestorsCompanion
+    Function({
+  Value<int> id,
+  required String tagId,
+  required String ancestorId,
+  required int depth,
+  Value<bool> isCategoryAncestor,
+});
+typedef $$TagAncestorsTableUpdateCompanionBuilder = TagAncestorsCompanion
+    Function({
+  Value<int> id,
+  Value<String> tagId,
+  Value<String> ancestorId,
+  Value<int> depth,
+  Value<bool> isCategoryAncestor,
+});
+
+class $$TagAncestorsTableFilterComposer
+    extends Composer<_$CardsDatabase, $TagAncestorsTable> {
+  $$TagAncestorsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get tagId => $composableBuilder(
+      column: $table.tagId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get ancestorId => $composableBuilder(
+      column: $table.ancestorId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get depth => $composableBuilder(
+      column: $table.depth, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isCategoryAncestor => $composableBuilder(
+      column: $table.isCategoryAncestor,
+      builder: (column) => ColumnFilters(column));
+}
+
+class $$TagAncestorsTableOrderingComposer
+    extends Composer<_$CardsDatabase, $TagAncestorsTable> {
+  $$TagAncestorsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get tagId => $composableBuilder(
+      column: $table.tagId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get ancestorId => $composableBuilder(
+      column: $table.ancestorId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get depth => $composableBuilder(
+      column: $table.depth, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get isCategoryAncestor => $composableBuilder(
+      column: $table.isCategoryAncestor,
+      builder: (column) => ColumnOrderings(column));
+}
+
+class $$TagAncestorsTableAnnotationComposer
+    extends Composer<_$CardsDatabase, $TagAncestorsTable> {
+  $$TagAncestorsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get tagId =>
+      $composableBuilder(column: $table.tagId, builder: (column) => column);
+
+  GeneratedColumn<String> get ancestorId => $composableBuilder(
+      column: $table.ancestorId, builder: (column) => column);
+
+  GeneratedColumn<int> get depth =>
+      $composableBuilder(column: $table.depth, builder: (column) => column);
+
+  GeneratedColumn<bool> get isCategoryAncestor => $composableBuilder(
+      column: $table.isCategoryAncestor, builder: (column) => column);
+}
+
+class $$TagAncestorsTableTableManager extends RootTableManager<
+    _$CardsDatabase,
+    $TagAncestorsTable,
+    TagAncestorRow,
+    $$TagAncestorsTableFilterComposer,
+    $$TagAncestorsTableOrderingComposer,
+    $$TagAncestorsTableAnnotationComposer,
+    $$TagAncestorsTableCreateCompanionBuilder,
+    $$TagAncestorsTableUpdateCompanionBuilder,
+    (
+      TagAncestorRow,
+      BaseReferences<_$CardsDatabase, $TagAncestorsTable, TagAncestorRow>
+    ),
+    TagAncestorRow,
+    PrefetchHooks Function()> {
+  $$TagAncestorsTableTableManager(_$CardsDatabase db, $TagAncestorsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$TagAncestorsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$TagAncestorsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$TagAncestorsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<String> tagId = const Value.absent(),
+            Value<String> ancestorId = const Value.absent(),
+            Value<int> depth = const Value.absent(),
+            Value<bool> isCategoryAncestor = const Value.absent(),
+          }) =>
+              TagAncestorsCompanion(
+            id: id,
+            tagId: tagId,
+            ancestorId: ancestorId,
+            depth: depth,
+            isCategoryAncestor: isCategoryAncestor,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required String tagId,
+            required String ancestorId,
+            required int depth,
+            Value<bool> isCategoryAncestor = const Value.absent(),
+          }) =>
+              TagAncestorsCompanion.insert(
+            id: id,
+            tagId: tagId,
+            ancestorId: ancestorId,
+            depth: depth,
+            isCategoryAncestor: isCategoryAncestor,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$TagAncestorsTableProcessedTableManager = ProcessedTableManager<
+    _$CardsDatabase,
+    $TagAncestorsTable,
+    TagAncestorRow,
+    $$TagAncestorsTableFilterComposer,
+    $$TagAncestorsTableOrderingComposer,
+    $$TagAncestorsTableAnnotationComposer,
+    $$TagAncestorsTableCreateCompanionBuilder,
+    $$TagAncestorsTableUpdateCompanionBuilder,
+    (
+      TagAncestorRow,
+      BaseReferences<_$CardsDatabase, $TagAncestorsTable, TagAncestorRow>
+    ),
+    TagAncestorRow,
+    PrefetchHooks Function()>;
+typedef $$CardTagsTableCreateCompanionBuilder = CardTagsCompanion Function({
+  Value<int> id,
+  required String oracleId,
+  required String tagId,
+});
+typedef $$CardTagsTableUpdateCompanionBuilder = CardTagsCompanion Function({
+  Value<int> id,
+  Value<String> oracleId,
+  Value<String> tagId,
+});
+
+class $$CardTagsTableFilterComposer
+    extends Composer<_$CardsDatabase, $CardTagsTable> {
+  $$CardTagsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get oracleId => $composableBuilder(
+      column: $table.oracleId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get tagId => $composableBuilder(
+      column: $table.tagId, builder: (column) => ColumnFilters(column));
+}
+
+class $$CardTagsTableOrderingComposer
+    extends Composer<_$CardsDatabase, $CardTagsTable> {
+  $$CardTagsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get oracleId => $composableBuilder(
+      column: $table.oracleId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get tagId => $composableBuilder(
+      column: $table.tagId, builder: (column) => ColumnOrderings(column));
+}
+
+class $$CardTagsTableAnnotationComposer
+    extends Composer<_$CardsDatabase, $CardTagsTable> {
+  $$CardTagsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get oracleId =>
+      $composableBuilder(column: $table.oracleId, builder: (column) => column);
+
+  GeneratedColumn<String> get tagId =>
+      $composableBuilder(column: $table.tagId, builder: (column) => column);
+}
+
+class $$CardTagsTableTableManager extends RootTableManager<
+    _$CardsDatabase,
+    $CardTagsTable,
+    CardTagRow,
+    $$CardTagsTableFilterComposer,
+    $$CardTagsTableOrderingComposer,
+    $$CardTagsTableAnnotationComposer,
+    $$CardTagsTableCreateCompanionBuilder,
+    $$CardTagsTableUpdateCompanionBuilder,
+    (CardTagRow, BaseReferences<_$CardsDatabase, $CardTagsTable, CardTagRow>),
+    CardTagRow,
+    PrefetchHooks Function()> {
+  $$CardTagsTableTableManager(_$CardsDatabase db, $CardTagsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CardTagsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CardTagsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$CardTagsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<String> oracleId = const Value.absent(),
+            Value<String> tagId = const Value.absent(),
+          }) =>
+              CardTagsCompanion(
+            id: id,
+            oracleId: oracleId,
+            tagId: tagId,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required String oracleId,
+            required String tagId,
+          }) =>
+              CardTagsCompanion.insert(
+            id: id,
+            oracleId: oracleId,
+            tagId: tagId,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$CardTagsTableProcessedTableManager = ProcessedTableManager<
+    _$CardsDatabase,
+    $CardTagsTable,
+    CardTagRow,
+    $$CardTagsTableFilterComposer,
+    $$CardTagsTableOrderingComposer,
+    $$CardTagsTableAnnotationComposer,
+    $$CardTagsTableCreateCompanionBuilder,
+    $$CardTagsTableUpdateCompanionBuilder,
+    (CardTagRow, BaseReferences<_$CardsDatabase, $CardTagsTable, CardTagRow>),
+    CardTagRow,
+    PrefetchHooks Function()>;
+typedef $$CardRelationshipsTableCreateCompanionBuilder
+    = CardRelationshipsCompanion Function({
+  Value<int> id,
+  required String relationshipId,
+  Value<String?> subjectOracleId,
+  Value<String?> relatedOracleId,
+  required String subjectName,
+  required String relatedName,
+  Value<String?> classifier,
+  Value<String?> classifierInverse,
+  Value<String?> annotation,
+});
+typedef $$CardRelationshipsTableUpdateCompanionBuilder
+    = CardRelationshipsCompanion Function({
+  Value<int> id,
+  Value<String> relationshipId,
+  Value<String?> subjectOracleId,
+  Value<String?> relatedOracleId,
+  Value<String> subjectName,
+  Value<String> relatedName,
+  Value<String?> classifier,
+  Value<String?> classifierInverse,
+  Value<String?> annotation,
+});
+
+class $$CardRelationshipsTableFilterComposer
+    extends Composer<_$CardsDatabase, $CardRelationshipsTable> {
+  $$CardRelationshipsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get relationshipId => $composableBuilder(
+      column: $table.relationshipId,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get subjectOracleId => $composableBuilder(
+      column: $table.subjectOracleId,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get relatedOracleId => $composableBuilder(
+      column: $table.relatedOracleId,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get subjectName => $composableBuilder(
+      column: $table.subjectName, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get relatedName => $composableBuilder(
+      column: $table.relatedName, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get classifier => $composableBuilder(
+      column: $table.classifier, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get classifierInverse => $composableBuilder(
+      column: $table.classifierInverse,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get annotation => $composableBuilder(
+      column: $table.annotation, builder: (column) => ColumnFilters(column));
+}
+
+class $$CardRelationshipsTableOrderingComposer
+    extends Composer<_$CardsDatabase, $CardRelationshipsTable> {
+  $$CardRelationshipsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get relationshipId => $composableBuilder(
+      column: $table.relationshipId,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get subjectOracleId => $composableBuilder(
+      column: $table.subjectOracleId,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get relatedOracleId => $composableBuilder(
+      column: $table.relatedOracleId,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get subjectName => $composableBuilder(
+      column: $table.subjectName, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get relatedName => $composableBuilder(
+      column: $table.relatedName, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get classifier => $composableBuilder(
+      column: $table.classifier, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get classifierInverse => $composableBuilder(
+      column: $table.classifierInverse,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get annotation => $composableBuilder(
+      column: $table.annotation, builder: (column) => ColumnOrderings(column));
+}
+
+class $$CardRelationshipsTableAnnotationComposer
+    extends Composer<_$CardsDatabase, $CardRelationshipsTable> {
+  $$CardRelationshipsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get relationshipId => $composableBuilder(
+      column: $table.relationshipId, builder: (column) => column);
+
+  GeneratedColumn<String> get subjectOracleId => $composableBuilder(
+      column: $table.subjectOracleId, builder: (column) => column);
+
+  GeneratedColumn<String> get relatedOracleId => $composableBuilder(
+      column: $table.relatedOracleId, builder: (column) => column);
+
+  GeneratedColumn<String> get subjectName => $composableBuilder(
+      column: $table.subjectName, builder: (column) => column);
+
+  GeneratedColumn<String> get relatedName => $composableBuilder(
+      column: $table.relatedName, builder: (column) => column);
+
+  GeneratedColumn<String> get classifier => $composableBuilder(
+      column: $table.classifier, builder: (column) => column);
+
+  GeneratedColumn<String> get classifierInverse => $composableBuilder(
+      column: $table.classifierInverse, builder: (column) => column);
+
+  GeneratedColumn<String> get annotation => $composableBuilder(
+      column: $table.annotation, builder: (column) => column);
+}
+
+class $$CardRelationshipsTableTableManager extends RootTableManager<
+    _$CardsDatabase,
+    $CardRelationshipsTable,
+    CardRelationshipRow,
+    $$CardRelationshipsTableFilterComposer,
+    $$CardRelationshipsTableOrderingComposer,
+    $$CardRelationshipsTableAnnotationComposer,
+    $$CardRelationshipsTableCreateCompanionBuilder,
+    $$CardRelationshipsTableUpdateCompanionBuilder,
+    (
+      CardRelationshipRow,
+      BaseReferences<_$CardsDatabase, $CardRelationshipsTable,
+          CardRelationshipRow>
+    ),
+    CardRelationshipRow,
+    PrefetchHooks Function()> {
+  $$CardRelationshipsTableTableManager(
+      _$CardsDatabase db, $CardRelationshipsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CardRelationshipsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CardRelationshipsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$CardRelationshipsTableAnnotationComposer(
+                  $db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<String> relationshipId = const Value.absent(),
+            Value<String?> subjectOracleId = const Value.absent(),
+            Value<String?> relatedOracleId = const Value.absent(),
+            Value<String> subjectName = const Value.absent(),
+            Value<String> relatedName = const Value.absent(),
+            Value<String?> classifier = const Value.absent(),
+            Value<String?> classifierInverse = const Value.absent(),
+            Value<String?> annotation = const Value.absent(),
+          }) =>
+              CardRelationshipsCompanion(
+            id: id,
+            relationshipId: relationshipId,
+            subjectOracleId: subjectOracleId,
+            relatedOracleId: relatedOracleId,
+            subjectName: subjectName,
+            relatedName: relatedName,
+            classifier: classifier,
+            classifierInverse: classifierInverse,
+            annotation: annotation,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required String relationshipId,
+            Value<String?> subjectOracleId = const Value.absent(),
+            Value<String?> relatedOracleId = const Value.absent(),
+            required String subjectName,
+            required String relatedName,
+            Value<String?> classifier = const Value.absent(),
+            Value<String?> classifierInverse = const Value.absent(),
+            Value<String?> annotation = const Value.absent(),
+          }) =>
+              CardRelationshipsCompanion.insert(
+            id: id,
+            relationshipId: relationshipId,
+            subjectOracleId: subjectOracleId,
+            relatedOracleId: relatedOracleId,
+            subjectName: subjectName,
+            relatedName: relatedName,
+            classifier: classifier,
+            classifierInverse: classifierInverse,
+            annotation: annotation,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$CardRelationshipsTableProcessedTableManager = ProcessedTableManager<
+    _$CardsDatabase,
+    $CardRelationshipsTable,
+    CardRelationshipRow,
+    $$CardRelationshipsTableFilterComposer,
+    $$CardRelationshipsTableOrderingComposer,
+    $$CardRelationshipsTableAnnotationComposer,
+    $$CardRelationshipsTableCreateCompanionBuilder,
+    $$CardRelationshipsTableUpdateCompanionBuilder,
+    (
+      CardRelationshipRow,
+      BaseReferences<_$CardsDatabase, $CardRelationshipsTable,
+          CardRelationshipRow>
+    ),
+    CardRelationshipRow,
+    PrefetchHooks Function()>;
+typedef $$TaggerCrawlStatusTableCreateCompanionBuilder
+    = TaggerCrawlStatusCompanion Function({
+  Value<int> id,
+  required String oracleId,
+  required DateTime lastCrawledAt,
+});
+typedef $$TaggerCrawlStatusTableUpdateCompanionBuilder
+    = TaggerCrawlStatusCompanion Function({
+  Value<int> id,
+  Value<String> oracleId,
+  Value<DateTime> lastCrawledAt,
+});
+
+class $$TaggerCrawlStatusTableFilterComposer
+    extends Composer<_$CardsDatabase, $TaggerCrawlStatusTable> {
+  $$TaggerCrawlStatusTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get oracleId => $composableBuilder(
+      column: $table.oracleId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get lastCrawledAt => $composableBuilder(
+      column: $table.lastCrawledAt, builder: (column) => ColumnFilters(column));
+}
+
+class $$TaggerCrawlStatusTableOrderingComposer
+    extends Composer<_$CardsDatabase, $TaggerCrawlStatusTable> {
+  $$TaggerCrawlStatusTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get oracleId => $composableBuilder(
+      column: $table.oracleId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get lastCrawledAt => $composableBuilder(
+      column: $table.lastCrawledAt,
+      builder: (column) => ColumnOrderings(column));
+}
+
+class $$TaggerCrawlStatusTableAnnotationComposer
+    extends Composer<_$CardsDatabase, $TaggerCrawlStatusTable> {
+  $$TaggerCrawlStatusTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get oracleId =>
+      $composableBuilder(column: $table.oracleId, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastCrawledAt => $composableBuilder(
+      column: $table.lastCrawledAt, builder: (column) => column);
+}
+
+class $$TaggerCrawlStatusTableTableManager extends RootTableManager<
+    _$CardsDatabase,
+    $TaggerCrawlStatusTable,
+    TaggerCrawlStatusRow,
+    $$TaggerCrawlStatusTableFilterComposer,
+    $$TaggerCrawlStatusTableOrderingComposer,
+    $$TaggerCrawlStatusTableAnnotationComposer,
+    $$TaggerCrawlStatusTableCreateCompanionBuilder,
+    $$TaggerCrawlStatusTableUpdateCompanionBuilder,
+    (
+      TaggerCrawlStatusRow,
+      BaseReferences<_$CardsDatabase, $TaggerCrawlStatusTable,
+          TaggerCrawlStatusRow>
+    ),
+    TaggerCrawlStatusRow,
+    PrefetchHooks Function()> {
+  $$TaggerCrawlStatusTableTableManager(
+      _$CardsDatabase db, $TaggerCrawlStatusTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$TaggerCrawlStatusTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$TaggerCrawlStatusTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$TaggerCrawlStatusTableAnnotationComposer(
+                  $db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<String> oracleId = const Value.absent(),
+            Value<DateTime> lastCrawledAt = const Value.absent(),
+          }) =>
+              TaggerCrawlStatusCompanion(
+            id: id,
+            oracleId: oracleId,
+            lastCrawledAt: lastCrawledAt,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required String oracleId,
+            required DateTime lastCrawledAt,
+          }) =>
+              TaggerCrawlStatusCompanion.insert(
+            id: id,
+            oracleId: oracleId,
+            lastCrawledAt: lastCrawledAt,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$TaggerCrawlStatusTableProcessedTableManager = ProcessedTableManager<
+    _$CardsDatabase,
+    $TaggerCrawlStatusTable,
+    TaggerCrawlStatusRow,
+    $$TaggerCrawlStatusTableFilterComposer,
+    $$TaggerCrawlStatusTableOrderingComposer,
+    $$TaggerCrawlStatusTableAnnotationComposer,
+    $$TaggerCrawlStatusTableCreateCompanionBuilder,
+    $$TaggerCrawlStatusTableUpdateCompanionBuilder,
+    (
+      TaggerCrawlStatusRow,
+      BaseReferences<_$CardsDatabase, $TaggerCrawlStatusTable,
+          TaggerCrawlStatusRow>
+    ),
+    TaggerCrawlStatusRow,
+    PrefetchHooks Function()>;
+typedef $$CombosTableCreateCompanionBuilder = CombosCompanion Function({
+  Value<int> id,
+  required String comboId,
+  Value<String?> description,
+  Value<String?> notes,
+  Value<String?> bracketTag,
+  Value<String?> identity,
+  Value<String?> status,
+  Value<int?> popularity,
+  Value<int?> manaValueNeeded,
+  Value<String?> manaNeeded,
+  Value<String?> easyPrerequisites,
+  Value<String?> notablePrerequisites,
+  required DateTime lastUpdated,
+});
+typedef $$CombosTableUpdateCompanionBuilder = CombosCompanion Function({
+  Value<int> id,
+  Value<String> comboId,
+  Value<String?> description,
+  Value<String?> notes,
+  Value<String?> bracketTag,
+  Value<String?> identity,
+  Value<String?> status,
+  Value<int?> popularity,
+  Value<int?> manaValueNeeded,
+  Value<String?> manaNeeded,
+  Value<String?> easyPrerequisites,
+  Value<String?> notablePrerequisites,
+  Value<DateTime> lastUpdated,
+});
+
+class $$CombosTableFilterComposer
+    extends Composer<_$CardsDatabase, $CombosTable> {
+  $$CombosTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get comboId => $composableBuilder(
+      column: $table.comboId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get notes => $composableBuilder(
+      column: $table.notes, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get bracketTag => $composableBuilder(
+      column: $table.bracketTag, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get identity => $composableBuilder(
+      column: $table.identity, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get status => $composableBuilder(
+      column: $table.status, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get popularity => $composableBuilder(
+      column: $table.popularity, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get manaValueNeeded => $composableBuilder(
+      column: $table.manaValueNeeded,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get manaNeeded => $composableBuilder(
+      column: $table.manaNeeded, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get easyPrerequisites => $composableBuilder(
+      column: $table.easyPrerequisites,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get notablePrerequisites => $composableBuilder(
+      column: $table.notablePrerequisites,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get lastUpdated => $composableBuilder(
+      column: $table.lastUpdated, builder: (column) => ColumnFilters(column));
+}
+
+class $$CombosTableOrderingComposer
+    extends Composer<_$CardsDatabase, $CombosTable> {
+  $$CombosTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get comboId => $composableBuilder(
+      column: $table.comboId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get notes => $composableBuilder(
+      column: $table.notes, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get bracketTag => $composableBuilder(
+      column: $table.bracketTag, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get identity => $composableBuilder(
+      column: $table.identity, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get status => $composableBuilder(
+      column: $table.status, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get popularity => $composableBuilder(
+      column: $table.popularity, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get manaValueNeeded => $composableBuilder(
+      column: $table.manaValueNeeded,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get manaNeeded => $composableBuilder(
+      column: $table.manaNeeded, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get easyPrerequisites => $composableBuilder(
+      column: $table.easyPrerequisites,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get notablePrerequisites => $composableBuilder(
+      column: $table.notablePrerequisites,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get lastUpdated => $composableBuilder(
+      column: $table.lastUpdated, builder: (column) => ColumnOrderings(column));
+}
+
+class $$CombosTableAnnotationComposer
+    extends Composer<_$CardsDatabase, $CombosTable> {
+  $$CombosTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get comboId =>
+      $composableBuilder(column: $table.comboId, builder: (column) => column);
+
+  GeneratedColumn<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => column);
+
+  GeneratedColumn<String> get notes =>
+      $composableBuilder(column: $table.notes, builder: (column) => column);
+
+  GeneratedColumn<String> get bracketTag => $composableBuilder(
+      column: $table.bracketTag, builder: (column) => column);
+
+  GeneratedColumn<String> get identity =>
+      $composableBuilder(column: $table.identity, builder: (column) => column);
+
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<int> get popularity => $composableBuilder(
+      column: $table.popularity, builder: (column) => column);
+
+  GeneratedColumn<int> get manaValueNeeded => $composableBuilder(
+      column: $table.manaValueNeeded, builder: (column) => column);
+
+  GeneratedColumn<String> get manaNeeded => $composableBuilder(
+      column: $table.manaNeeded, builder: (column) => column);
+
+  GeneratedColumn<String> get easyPrerequisites => $composableBuilder(
+      column: $table.easyPrerequisites, builder: (column) => column);
+
+  GeneratedColumn<String> get notablePrerequisites => $composableBuilder(
+      column: $table.notablePrerequisites, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastUpdated => $composableBuilder(
+      column: $table.lastUpdated, builder: (column) => column);
+}
+
+class $$CombosTableTableManager extends RootTableManager<
+    _$CardsDatabase,
+    $CombosTable,
+    ComboRow,
+    $$CombosTableFilterComposer,
+    $$CombosTableOrderingComposer,
+    $$CombosTableAnnotationComposer,
+    $$CombosTableCreateCompanionBuilder,
+    $$CombosTableUpdateCompanionBuilder,
+    (ComboRow, BaseReferences<_$CardsDatabase, $CombosTable, ComboRow>),
+    ComboRow,
+    PrefetchHooks Function()> {
+  $$CombosTableTableManager(_$CardsDatabase db, $CombosTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CombosTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CombosTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$CombosTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<String> comboId = const Value.absent(),
+            Value<String?> description = const Value.absent(),
+            Value<String?> notes = const Value.absent(),
+            Value<String?> bracketTag = const Value.absent(),
+            Value<String?> identity = const Value.absent(),
+            Value<String?> status = const Value.absent(),
+            Value<int?> popularity = const Value.absent(),
+            Value<int?> manaValueNeeded = const Value.absent(),
+            Value<String?> manaNeeded = const Value.absent(),
+            Value<String?> easyPrerequisites = const Value.absent(),
+            Value<String?> notablePrerequisites = const Value.absent(),
+            Value<DateTime> lastUpdated = const Value.absent(),
+          }) =>
+              CombosCompanion(
+            id: id,
+            comboId: comboId,
+            description: description,
+            notes: notes,
+            bracketTag: bracketTag,
+            identity: identity,
+            status: status,
+            popularity: popularity,
+            manaValueNeeded: manaValueNeeded,
+            manaNeeded: manaNeeded,
+            easyPrerequisites: easyPrerequisites,
+            notablePrerequisites: notablePrerequisites,
+            lastUpdated: lastUpdated,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required String comboId,
+            Value<String?> description = const Value.absent(),
+            Value<String?> notes = const Value.absent(),
+            Value<String?> bracketTag = const Value.absent(),
+            Value<String?> identity = const Value.absent(),
+            Value<String?> status = const Value.absent(),
+            Value<int?> popularity = const Value.absent(),
+            Value<int?> manaValueNeeded = const Value.absent(),
+            Value<String?> manaNeeded = const Value.absent(),
+            Value<String?> easyPrerequisites = const Value.absent(),
+            Value<String?> notablePrerequisites = const Value.absent(),
+            required DateTime lastUpdated,
+          }) =>
+              CombosCompanion.insert(
+            id: id,
+            comboId: comboId,
+            description: description,
+            notes: notes,
+            bracketTag: bracketTag,
+            identity: identity,
+            status: status,
+            popularity: popularity,
+            manaValueNeeded: manaValueNeeded,
+            manaNeeded: manaNeeded,
+            easyPrerequisites: easyPrerequisites,
+            notablePrerequisites: notablePrerequisites,
+            lastUpdated: lastUpdated,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$CombosTableProcessedTableManager = ProcessedTableManager<
+    _$CardsDatabase,
+    $CombosTable,
+    ComboRow,
+    $$CombosTableFilterComposer,
+    $$CombosTableOrderingComposer,
+    $$CombosTableAnnotationComposer,
+    $$CombosTableCreateCompanionBuilder,
+    $$CombosTableUpdateCompanionBuilder,
+    (ComboRow, BaseReferences<_$CardsDatabase, $CombosTable, ComboRow>),
+    ComboRow,
+    PrefetchHooks Function()>;
+typedef $$ComboCardsTableCreateCompanionBuilder = ComboCardsCompanion Function({
+  Value<int> id,
+  required int comboId,
+  required int position,
+  Value<String?> oracleId,
+  required String cardName,
+  Value<String?> zoneLocations,
+  Value<int> quantity,
+  Value<bool> mustBeCommander,
+  Value<String?> battlefieldCardState,
+  Value<String?> exileCardState,
+  Value<String?> graveyardCardState,
+  Value<String?> libraryCardState,
+});
+typedef $$ComboCardsTableUpdateCompanionBuilder = ComboCardsCompanion Function({
+  Value<int> id,
+  Value<int> comboId,
+  Value<int> position,
+  Value<String?> oracleId,
+  Value<String> cardName,
+  Value<String?> zoneLocations,
+  Value<int> quantity,
+  Value<bool> mustBeCommander,
+  Value<String?> battlefieldCardState,
+  Value<String?> exileCardState,
+  Value<String?> graveyardCardState,
+  Value<String?> libraryCardState,
+});
+
+class $$ComboCardsTableFilterComposer
+    extends Composer<_$CardsDatabase, $ComboCardsTable> {
+  $$ComboCardsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get comboId => $composableBuilder(
+      column: $table.comboId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get position => $composableBuilder(
+      column: $table.position, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get oracleId => $composableBuilder(
+      column: $table.oracleId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get cardName => $composableBuilder(
+      column: $table.cardName, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get zoneLocations => $composableBuilder(
+      column: $table.zoneLocations, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get quantity => $composableBuilder(
+      column: $table.quantity, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get mustBeCommander => $composableBuilder(
+      column: $table.mustBeCommander,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get battlefieldCardState => $composableBuilder(
+      column: $table.battlefieldCardState,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get exileCardState => $composableBuilder(
+      column: $table.exileCardState,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get graveyardCardState => $composableBuilder(
+      column: $table.graveyardCardState,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get libraryCardState => $composableBuilder(
+      column: $table.libraryCardState,
+      builder: (column) => ColumnFilters(column));
+}
+
+class $$ComboCardsTableOrderingComposer
+    extends Composer<_$CardsDatabase, $ComboCardsTable> {
+  $$ComboCardsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get comboId => $composableBuilder(
+      column: $table.comboId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get position => $composableBuilder(
+      column: $table.position, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get oracleId => $composableBuilder(
+      column: $table.oracleId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get cardName => $composableBuilder(
+      column: $table.cardName, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get zoneLocations => $composableBuilder(
+      column: $table.zoneLocations,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get quantity => $composableBuilder(
+      column: $table.quantity, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get mustBeCommander => $composableBuilder(
+      column: $table.mustBeCommander,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get battlefieldCardState => $composableBuilder(
+      column: $table.battlefieldCardState,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get exileCardState => $composableBuilder(
+      column: $table.exileCardState,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get graveyardCardState => $composableBuilder(
+      column: $table.graveyardCardState,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get libraryCardState => $composableBuilder(
+      column: $table.libraryCardState,
+      builder: (column) => ColumnOrderings(column));
+}
+
+class $$ComboCardsTableAnnotationComposer
+    extends Composer<_$CardsDatabase, $ComboCardsTable> {
+  $$ComboCardsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get comboId =>
+      $composableBuilder(column: $table.comboId, builder: (column) => column);
+
+  GeneratedColumn<int> get position =>
+      $composableBuilder(column: $table.position, builder: (column) => column);
+
+  GeneratedColumn<String> get oracleId =>
+      $composableBuilder(column: $table.oracleId, builder: (column) => column);
+
+  GeneratedColumn<String> get cardName =>
+      $composableBuilder(column: $table.cardName, builder: (column) => column);
+
+  GeneratedColumn<String> get zoneLocations => $composableBuilder(
+      column: $table.zoneLocations, builder: (column) => column);
+
+  GeneratedColumn<int> get quantity =>
+      $composableBuilder(column: $table.quantity, builder: (column) => column);
+
+  GeneratedColumn<bool> get mustBeCommander => $composableBuilder(
+      column: $table.mustBeCommander, builder: (column) => column);
+
+  GeneratedColumn<String> get battlefieldCardState => $composableBuilder(
+      column: $table.battlefieldCardState, builder: (column) => column);
+
+  GeneratedColumn<String> get exileCardState => $composableBuilder(
+      column: $table.exileCardState, builder: (column) => column);
+
+  GeneratedColumn<String> get graveyardCardState => $composableBuilder(
+      column: $table.graveyardCardState, builder: (column) => column);
+
+  GeneratedColumn<String> get libraryCardState => $composableBuilder(
+      column: $table.libraryCardState, builder: (column) => column);
+}
+
+class $$ComboCardsTableTableManager extends RootTableManager<
+    _$CardsDatabase,
+    $ComboCardsTable,
+    ComboCardRow,
+    $$ComboCardsTableFilterComposer,
+    $$ComboCardsTableOrderingComposer,
+    $$ComboCardsTableAnnotationComposer,
+    $$ComboCardsTableCreateCompanionBuilder,
+    $$ComboCardsTableUpdateCompanionBuilder,
+    (
+      ComboCardRow,
+      BaseReferences<_$CardsDatabase, $ComboCardsTable, ComboCardRow>
+    ),
+    ComboCardRow,
+    PrefetchHooks Function()> {
+  $$ComboCardsTableTableManager(_$CardsDatabase db, $ComboCardsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ComboCardsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ComboCardsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ComboCardsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<int> comboId = const Value.absent(),
+            Value<int> position = const Value.absent(),
+            Value<String?> oracleId = const Value.absent(),
+            Value<String> cardName = const Value.absent(),
+            Value<String?> zoneLocations = const Value.absent(),
+            Value<int> quantity = const Value.absent(),
+            Value<bool> mustBeCommander = const Value.absent(),
+            Value<String?> battlefieldCardState = const Value.absent(),
+            Value<String?> exileCardState = const Value.absent(),
+            Value<String?> graveyardCardState = const Value.absent(),
+            Value<String?> libraryCardState = const Value.absent(),
+          }) =>
+              ComboCardsCompanion(
+            id: id,
+            comboId: comboId,
+            position: position,
+            oracleId: oracleId,
+            cardName: cardName,
+            zoneLocations: zoneLocations,
+            quantity: quantity,
+            mustBeCommander: mustBeCommander,
+            battlefieldCardState: battlefieldCardState,
+            exileCardState: exileCardState,
+            graveyardCardState: graveyardCardState,
+            libraryCardState: libraryCardState,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required int comboId,
+            required int position,
+            Value<String?> oracleId = const Value.absent(),
+            required String cardName,
+            Value<String?> zoneLocations = const Value.absent(),
+            Value<int> quantity = const Value.absent(),
+            Value<bool> mustBeCommander = const Value.absent(),
+            Value<String?> battlefieldCardState = const Value.absent(),
+            Value<String?> exileCardState = const Value.absent(),
+            Value<String?> graveyardCardState = const Value.absent(),
+            Value<String?> libraryCardState = const Value.absent(),
+          }) =>
+              ComboCardsCompanion.insert(
+            id: id,
+            comboId: comboId,
+            position: position,
+            oracleId: oracleId,
+            cardName: cardName,
+            zoneLocations: zoneLocations,
+            quantity: quantity,
+            mustBeCommander: mustBeCommander,
+            battlefieldCardState: battlefieldCardState,
+            exileCardState: exileCardState,
+            graveyardCardState: graveyardCardState,
+            libraryCardState: libraryCardState,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$ComboCardsTableProcessedTableManager = ProcessedTableManager<
+    _$CardsDatabase,
+    $ComboCardsTable,
+    ComboCardRow,
+    $$ComboCardsTableFilterComposer,
+    $$ComboCardsTableOrderingComposer,
+    $$ComboCardsTableAnnotationComposer,
+    $$ComboCardsTableCreateCompanionBuilder,
+    $$ComboCardsTableUpdateCompanionBuilder,
+    (
+      ComboCardRow,
+      BaseReferences<_$CardsDatabase, $ComboCardsTable, ComboCardRow>
+    ),
+    ComboCardRow,
+    PrefetchHooks Function()>;
+typedef $$ComboFeaturesTableCreateCompanionBuilder = ComboFeaturesCompanion
+    Function({
+  Value<int> id,
+  required int comboId,
+  Value<int?> featureId,
+  required String featureName,
+  Value<int> quantity,
+});
+typedef $$ComboFeaturesTableUpdateCompanionBuilder = ComboFeaturesCompanion
+    Function({
+  Value<int> id,
+  Value<int> comboId,
+  Value<int?> featureId,
+  Value<String> featureName,
+  Value<int> quantity,
+});
+
+class $$ComboFeaturesTableFilterComposer
+    extends Composer<_$CardsDatabase, $ComboFeaturesTable> {
+  $$ComboFeaturesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get comboId => $composableBuilder(
+      column: $table.comboId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get featureId => $composableBuilder(
+      column: $table.featureId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get featureName => $composableBuilder(
+      column: $table.featureName, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get quantity => $composableBuilder(
+      column: $table.quantity, builder: (column) => ColumnFilters(column));
+}
+
+class $$ComboFeaturesTableOrderingComposer
+    extends Composer<_$CardsDatabase, $ComboFeaturesTable> {
+  $$ComboFeaturesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get comboId => $composableBuilder(
+      column: $table.comboId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get featureId => $composableBuilder(
+      column: $table.featureId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get featureName => $composableBuilder(
+      column: $table.featureName, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get quantity => $composableBuilder(
+      column: $table.quantity, builder: (column) => ColumnOrderings(column));
+}
+
+class $$ComboFeaturesTableAnnotationComposer
+    extends Composer<_$CardsDatabase, $ComboFeaturesTable> {
+  $$ComboFeaturesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get comboId =>
+      $composableBuilder(column: $table.comboId, builder: (column) => column);
+
+  GeneratedColumn<int> get featureId =>
+      $composableBuilder(column: $table.featureId, builder: (column) => column);
+
+  GeneratedColumn<String> get featureName => $composableBuilder(
+      column: $table.featureName, builder: (column) => column);
+
+  GeneratedColumn<int> get quantity =>
+      $composableBuilder(column: $table.quantity, builder: (column) => column);
+}
+
+class $$ComboFeaturesTableTableManager extends RootTableManager<
+    _$CardsDatabase,
+    $ComboFeaturesTable,
+    ComboFeatureRow,
+    $$ComboFeaturesTableFilterComposer,
+    $$ComboFeaturesTableOrderingComposer,
+    $$ComboFeaturesTableAnnotationComposer,
+    $$ComboFeaturesTableCreateCompanionBuilder,
+    $$ComboFeaturesTableUpdateCompanionBuilder,
+    (
+      ComboFeatureRow,
+      BaseReferences<_$CardsDatabase, $ComboFeaturesTable, ComboFeatureRow>
+    ),
+    ComboFeatureRow,
+    PrefetchHooks Function()> {
+  $$ComboFeaturesTableTableManager(
+      _$CardsDatabase db, $ComboFeaturesTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ComboFeaturesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ComboFeaturesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ComboFeaturesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<int> comboId = const Value.absent(),
+            Value<int?> featureId = const Value.absent(),
+            Value<String> featureName = const Value.absent(),
+            Value<int> quantity = const Value.absent(),
+          }) =>
+              ComboFeaturesCompanion(
+            id: id,
+            comboId: comboId,
+            featureId: featureId,
+            featureName: featureName,
+            quantity: quantity,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required int comboId,
+            Value<int?> featureId = const Value.absent(),
+            required String featureName,
+            Value<int> quantity = const Value.absent(),
+          }) =>
+              ComboFeaturesCompanion.insert(
+            id: id,
+            comboId: comboId,
+            featureId: featureId,
+            featureName: featureName,
+            quantity: quantity,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$ComboFeaturesTableProcessedTableManager = ProcessedTableManager<
+    _$CardsDatabase,
+    $ComboFeaturesTable,
+    ComboFeatureRow,
+    $$ComboFeaturesTableFilterComposer,
+    $$ComboFeaturesTableOrderingComposer,
+    $$ComboFeaturesTableAnnotationComposer,
+    $$ComboFeaturesTableCreateCompanionBuilder,
+    $$ComboFeaturesTableUpdateCompanionBuilder,
+    (
+      ComboFeatureRow,
+      BaseReferences<_$CardsDatabase, $ComboFeaturesTable, ComboFeatureRow>
+    ),
+    ComboFeatureRow,
+    PrefetchHooks Function()>;
+typedef $$EdhrecPagesTableCreateCompanionBuilder = EdhrecPagesCompanion
+    Function({
+  Value<int> id,
+  required String oracleId,
+  required String kind,
+  Value<int?> rank,
+  Value<int?> numDecks,
+  Value<String?> url,
+  required DateTime lastUpdated,
+});
+typedef $$EdhrecPagesTableUpdateCompanionBuilder = EdhrecPagesCompanion
+    Function({
+  Value<int> id,
+  Value<String> oracleId,
+  Value<String> kind,
+  Value<int?> rank,
+  Value<int?> numDecks,
+  Value<String?> url,
+  Value<DateTime> lastUpdated,
+});
+
+class $$EdhrecPagesTableFilterComposer
+    extends Composer<_$CardsDatabase, $EdhrecPagesTable> {
+  $$EdhrecPagesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get oracleId => $composableBuilder(
+      column: $table.oracleId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get kind => $composableBuilder(
+      column: $table.kind, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get rank => $composableBuilder(
+      column: $table.rank, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get numDecks => $composableBuilder(
+      column: $table.numDecks, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get url => $composableBuilder(
+      column: $table.url, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get lastUpdated => $composableBuilder(
+      column: $table.lastUpdated, builder: (column) => ColumnFilters(column));
+}
+
+class $$EdhrecPagesTableOrderingComposer
+    extends Composer<_$CardsDatabase, $EdhrecPagesTable> {
+  $$EdhrecPagesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get oracleId => $composableBuilder(
+      column: $table.oracleId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get kind => $composableBuilder(
+      column: $table.kind, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get rank => $composableBuilder(
+      column: $table.rank, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get numDecks => $composableBuilder(
+      column: $table.numDecks, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get url => $composableBuilder(
+      column: $table.url, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get lastUpdated => $composableBuilder(
+      column: $table.lastUpdated, builder: (column) => ColumnOrderings(column));
+}
+
+class $$EdhrecPagesTableAnnotationComposer
+    extends Composer<_$CardsDatabase, $EdhrecPagesTable> {
+  $$EdhrecPagesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get oracleId =>
+      $composableBuilder(column: $table.oracleId, builder: (column) => column);
+
+  GeneratedColumn<String> get kind =>
+      $composableBuilder(column: $table.kind, builder: (column) => column);
+
+  GeneratedColumn<int> get rank =>
+      $composableBuilder(column: $table.rank, builder: (column) => column);
+
+  GeneratedColumn<int> get numDecks =>
+      $composableBuilder(column: $table.numDecks, builder: (column) => column);
+
+  GeneratedColumn<String> get url =>
+      $composableBuilder(column: $table.url, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastUpdated => $composableBuilder(
+      column: $table.lastUpdated, builder: (column) => column);
+}
+
+class $$EdhrecPagesTableTableManager extends RootTableManager<
+    _$CardsDatabase,
+    $EdhrecPagesTable,
+    EdhrecPageRow,
+    $$EdhrecPagesTableFilterComposer,
+    $$EdhrecPagesTableOrderingComposer,
+    $$EdhrecPagesTableAnnotationComposer,
+    $$EdhrecPagesTableCreateCompanionBuilder,
+    $$EdhrecPagesTableUpdateCompanionBuilder,
+    (
+      EdhrecPageRow,
+      BaseReferences<_$CardsDatabase, $EdhrecPagesTable, EdhrecPageRow>
+    ),
+    EdhrecPageRow,
+    PrefetchHooks Function()> {
+  $$EdhrecPagesTableTableManager(_$CardsDatabase db, $EdhrecPagesTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$EdhrecPagesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$EdhrecPagesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$EdhrecPagesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<String> oracleId = const Value.absent(),
+            Value<String> kind = const Value.absent(),
+            Value<int?> rank = const Value.absent(),
+            Value<int?> numDecks = const Value.absent(),
+            Value<String?> url = const Value.absent(),
+            Value<DateTime> lastUpdated = const Value.absent(),
+          }) =>
+              EdhrecPagesCompanion(
+            id: id,
+            oracleId: oracleId,
+            kind: kind,
+            rank: rank,
+            numDecks: numDecks,
+            url: url,
+            lastUpdated: lastUpdated,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required String oracleId,
+            required String kind,
+            Value<int?> rank = const Value.absent(),
+            Value<int?> numDecks = const Value.absent(),
+            Value<String?> url = const Value.absent(),
+            required DateTime lastUpdated,
+          }) =>
+              EdhrecPagesCompanion.insert(
+            id: id,
+            oracleId: oracleId,
+            kind: kind,
+            rank: rank,
+            numDecks: numDecks,
+            url: url,
+            lastUpdated: lastUpdated,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$EdhrecPagesTableProcessedTableManager = ProcessedTableManager<
+    _$CardsDatabase,
+    $EdhrecPagesTable,
+    EdhrecPageRow,
+    $$EdhrecPagesTableFilterComposer,
+    $$EdhrecPagesTableOrderingComposer,
+    $$EdhrecPagesTableAnnotationComposer,
+    $$EdhrecPagesTableCreateCompanionBuilder,
+    $$EdhrecPagesTableUpdateCompanionBuilder,
+    (
+      EdhrecPageRow,
+      BaseReferences<_$CardsDatabase, $EdhrecPagesTable, EdhrecPageRow>
+    ),
+    EdhrecPageRow,
+    PrefetchHooks Function()>;
+typedef $$EdhrecRecommendationsTableCreateCompanionBuilder
+    = EdhrecRecommendationsCompanion Function({
+  Value<int> id,
+  required int pageId,
+  Value<String?> oracleId,
+  required String cardName,
+  Value<String?> cardCategory,
+  Value<String?> recommendationType,
+  Value<int?> inclusionCount,
+  Value<double?> inclusionPercent,
+  Value<double?> synergyScore,
+  Value<int?> rankInCategory,
+});
+typedef $$EdhrecRecommendationsTableUpdateCompanionBuilder
+    = EdhrecRecommendationsCompanion Function({
+  Value<int> id,
+  Value<int> pageId,
+  Value<String?> oracleId,
+  Value<String> cardName,
+  Value<String?> cardCategory,
+  Value<String?> recommendationType,
+  Value<int?> inclusionCount,
+  Value<double?> inclusionPercent,
+  Value<double?> synergyScore,
+  Value<int?> rankInCategory,
+});
+
+class $$EdhrecRecommendationsTableFilterComposer
+    extends Composer<_$CardsDatabase, $EdhrecRecommendationsTable> {
+  $$EdhrecRecommendationsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get pageId => $composableBuilder(
+      column: $table.pageId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get oracleId => $composableBuilder(
+      column: $table.oracleId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get cardName => $composableBuilder(
+      column: $table.cardName, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get cardCategory => $composableBuilder(
+      column: $table.cardCategory, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get recommendationType => $composableBuilder(
+      column: $table.recommendationType,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get inclusionCount => $composableBuilder(
+      column: $table.inclusionCount,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get inclusionPercent => $composableBuilder(
+      column: $table.inclusionPercent,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get synergyScore => $composableBuilder(
+      column: $table.synergyScore, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get rankInCategory => $composableBuilder(
+      column: $table.rankInCategory,
+      builder: (column) => ColumnFilters(column));
+}
+
+class $$EdhrecRecommendationsTableOrderingComposer
+    extends Composer<_$CardsDatabase, $EdhrecRecommendationsTable> {
+  $$EdhrecRecommendationsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get pageId => $composableBuilder(
+      column: $table.pageId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get oracleId => $composableBuilder(
+      column: $table.oracleId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get cardName => $composableBuilder(
+      column: $table.cardName, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get cardCategory => $composableBuilder(
+      column: $table.cardCategory,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get recommendationType => $composableBuilder(
+      column: $table.recommendationType,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get inclusionCount => $composableBuilder(
+      column: $table.inclusionCount,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get inclusionPercent => $composableBuilder(
+      column: $table.inclusionPercent,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get synergyScore => $composableBuilder(
+      column: $table.synergyScore,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get rankInCategory => $composableBuilder(
+      column: $table.rankInCategory,
+      builder: (column) => ColumnOrderings(column));
+}
+
+class $$EdhrecRecommendationsTableAnnotationComposer
+    extends Composer<_$CardsDatabase, $EdhrecRecommendationsTable> {
+  $$EdhrecRecommendationsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get pageId =>
+      $composableBuilder(column: $table.pageId, builder: (column) => column);
+
+  GeneratedColumn<String> get oracleId =>
+      $composableBuilder(column: $table.oracleId, builder: (column) => column);
+
+  GeneratedColumn<String> get cardName =>
+      $composableBuilder(column: $table.cardName, builder: (column) => column);
+
+  GeneratedColumn<String> get cardCategory => $composableBuilder(
+      column: $table.cardCategory, builder: (column) => column);
+
+  GeneratedColumn<String> get recommendationType => $composableBuilder(
+      column: $table.recommendationType, builder: (column) => column);
+
+  GeneratedColumn<int> get inclusionCount => $composableBuilder(
+      column: $table.inclusionCount, builder: (column) => column);
+
+  GeneratedColumn<double> get inclusionPercent => $composableBuilder(
+      column: $table.inclusionPercent, builder: (column) => column);
+
+  GeneratedColumn<double> get synergyScore => $composableBuilder(
+      column: $table.synergyScore, builder: (column) => column);
+
+  GeneratedColumn<int> get rankInCategory => $composableBuilder(
+      column: $table.rankInCategory, builder: (column) => column);
+}
+
+class $$EdhrecRecommendationsTableTableManager extends RootTableManager<
+    _$CardsDatabase,
+    $EdhrecRecommendationsTable,
+    EdhrecRecommendationRow,
+    $$EdhrecRecommendationsTableFilterComposer,
+    $$EdhrecRecommendationsTableOrderingComposer,
+    $$EdhrecRecommendationsTableAnnotationComposer,
+    $$EdhrecRecommendationsTableCreateCompanionBuilder,
+    $$EdhrecRecommendationsTableUpdateCompanionBuilder,
+    (
+      EdhrecRecommendationRow,
+      BaseReferences<_$CardsDatabase, $EdhrecRecommendationsTable,
+          EdhrecRecommendationRow>
+    ),
+    EdhrecRecommendationRow,
+    PrefetchHooks Function()> {
+  $$EdhrecRecommendationsTableTableManager(
+      _$CardsDatabase db, $EdhrecRecommendationsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$EdhrecRecommendationsTableFilterComposer(
+                  $db: db, $table: table),
+          createOrderingComposer: () =>
+              $$EdhrecRecommendationsTableOrderingComposer(
+                  $db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$EdhrecRecommendationsTableAnnotationComposer(
+                  $db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<int> pageId = const Value.absent(),
+            Value<String?> oracleId = const Value.absent(),
+            Value<String> cardName = const Value.absent(),
+            Value<String?> cardCategory = const Value.absent(),
+            Value<String?> recommendationType = const Value.absent(),
+            Value<int?> inclusionCount = const Value.absent(),
+            Value<double?> inclusionPercent = const Value.absent(),
+            Value<double?> synergyScore = const Value.absent(),
+            Value<int?> rankInCategory = const Value.absent(),
+          }) =>
+              EdhrecRecommendationsCompanion(
+            id: id,
+            pageId: pageId,
+            oracleId: oracleId,
+            cardName: cardName,
+            cardCategory: cardCategory,
+            recommendationType: recommendationType,
+            inclusionCount: inclusionCount,
+            inclusionPercent: inclusionPercent,
+            synergyScore: synergyScore,
+            rankInCategory: rankInCategory,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required int pageId,
+            Value<String?> oracleId = const Value.absent(),
+            required String cardName,
+            Value<String?> cardCategory = const Value.absent(),
+            Value<String?> recommendationType = const Value.absent(),
+            Value<int?> inclusionCount = const Value.absent(),
+            Value<double?> inclusionPercent = const Value.absent(),
+            Value<double?> synergyScore = const Value.absent(),
+            Value<int?> rankInCategory = const Value.absent(),
+          }) =>
+              EdhrecRecommendationsCompanion.insert(
+            id: id,
+            pageId: pageId,
+            oracleId: oracleId,
+            cardName: cardName,
+            cardCategory: cardCategory,
+            recommendationType: recommendationType,
+            inclusionCount: inclusionCount,
+            inclusionPercent: inclusionPercent,
+            synergyScore: synergyScore,
+            rankInCategory: rankInCategory,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$EdhrecRecommendationsTableProcessedTableManager
+    = ProcessedTableManager<
+        _$CardsDatabase,
+        $EdhrecRecommendationsTable,
+        EdhrecRecommendationRow,
+        $$EdhrecRecommendationsTableFilterComposer,
+        $$EdhrecRecommendationsTableOrderingComposer,
+        $$EdhrecRecommendationsTableAnnotationComposer,
+        $$EdhrecRecommendationsTableCreateCompanionBuilder,
+        $$EdhrecRecommendationsTableUpdateCompanionBuilder,
+        (
+          EdhrecRecommendationRow,
+          BaseReferences<_$CardsDatabase, $EdhrecRecommendationsTable,
+              EdhrecRecommendationRow>
+        ),
+        EdhrecRecommendationRow,
+        PrefetchHooks Function()>;
+typedef $$EdhrecThemesTableCreateCompanionBuilder = EdhrecThemesCompanion
+    Function({
+  Value<int> id,
+  required int pageId,
+  required String themeSlug,
+  required String themeName,
+  Value<int?> totalDecks,
+  Value<int?> inclusionCount,
+  Value<double?> rankInTheme,
+  Value<double?> synergyScore,
+});
+typedef $$EdhrecThemesTableUpdateCompanionBuilder = EdhrecThemesCompanion
+    Function({
+  Value<int> id,
+  Value<int> pageId,
+  Value<String> themeSlug,
+  Value<String> themeName,
+  Value<int?> totalDecks,
+  Value<int?> inclusionCount,
+  Value<double?> rankInTheme,
+  Value<double?> synergyScore,
+});
+
+class $$EdhrecThemesTableFilterComposer
+    extends Composer<_$CardsDatabase, $EdhrecThemesTable> {
+  $$EdhrecThemesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get pageId => $composableBuilder(
+      column: $table.pageId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get themeSlug => $composableBuilder(
+      column: $table.themeSlug, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get themeName => $composableBuilder(
+      column: $table.themeName, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get totalDecks => $composableBuilder(
+      column: $table.totalDecks, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get inclusionCount => $composableBuilder(
+      column: $table.inclusionCount,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get rankInTheme => $composableBuilder(
+      column: $table.rankInTheme, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get synergyScore => $composableBuilder(
+      column: $table.synergyScore, builder: (column) => ColumnFilters(column));
+}
+
+class $$EdhrecThemesTableOrderingComposer
+    extends Composer<_$CardsDatabase, $EdhrecThemesTable> {
+  $$EdhrecThemesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get pageId => $composableBuilder(
+      column: $table.pageId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get themeSlug => $composableBuilder(
+      column: $table.themeSlug, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get themeName => $composableBuilder(
+      column: $table.themeName, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get totalDecks => $composableBuilder(
+      column: $table.totalDecks, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get inclusionCount => $composableBuilder(
+      column: $table.inclusionCount,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get rankInTheme => $composableBuilder(
+      column: $table.rankInTheme, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get synergyScore => $composableBuilder(
+      column: $table.synergyScore,
+      builder: (column) => ColumnOrderings(column));
+}
+
+class $$EdhrecThemesTableAnnotationComposer
+    extends Composer<_$CardsDatabase, $EdhrecThemesTable> {
+  $$EdhrecThemesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get pageId =>
+      $composableBuilder(column: $table.pageId, builder: (column) => column);
+
+  GeneratedColumn<String> get themeSlug =>
+      $composableBuilder(column: $table.themeSlug, builder: (column) => column);
+
+  GeneratedColumn<String> get themeName =>
+      $composableBuilder(column: $table.themeName, builder: (column) => column);
+
+  GeneratedColumn<int> get totalDecks => $composableBuilder(
+      column: $table.totalDecks, builder: (column) => column);
+
+  GeneratedColumn<int> get inclusionCount => $composableBuilder(
+      column: $table.inclusionCount, builder: (column) => column);
+
+  GeneratedColumn<double> get rankInTheme => $composableBuilder(
+      column: $table.rankInTheme, builder: (column) => column);
+
+  GeneratedColumn<double> get synergyScore => $composableBuilder(
+      column: $table.synergyScore, builder: (column) => column);
+}
+
+class $$EdhrecThemesTableTableManager extends RootTableManager<
+    _$CardsDatabase,
+    $EdhrecThemesTable,
+    EdhrecThemeRow,
+    $$EdhrecThemesTableFilterComposer,
+    $$EdhrecThemesTableOrderingComposer,
+    $$EdhrecThemesTableAnnotationComposer,
+    $$EdhrecThemesTableCreateCompanionBuilder,
+    $$EdhrecThemesTableUpdateCompanionBuilder,
+    (
+      EdhrecThemeRow,
+      BaseReferences<_$CardsDatabase, $EdhrecThemesTable, EdhrecThemeRow>
+    ),
+    EdhrecThemeRow,
+    PrefetchHooks Function()> {
+  $$EdhrecThemesTableTableManager(_$CardsDatabase db, $EdhrecThemesTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$EdhrecThemesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$EdhrecThemesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$EdhrecThemesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<int> pageId = const Value.absent(),
+            Value<String> themeSlug = const Value.absent(),
+            Value<String> themeName = const Value.absent(),
+            Value<int?> totalDecks = const Value.absent(),
+            Value<int?> inclusionCount = const Value.absent(),
+            Value<double?> rankInTheme = const Value.absent(),
+            Value<double?> synergyScore = const Value.absent(),
+          }) =>
+              EdhrecThemesCompanion(
+            id: id,
+            pageId: pageId,
+            themeSlug: themeSlug,
+            themeName: themeName,
+            totalDecks: totalDecks,
+            inclusionCount: inclusionCount,
+            rankInTheme: rankInTheme,
+            synergyScore: synergyScore,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required int pageId,
+            required String themeSlug,
+            required String themeName,
+            Value<int?> totalDecks = const Value.absent(),
+            Value<int?> inclusionCount = const Value.absent(),
+            Value<double?> rankInTheme = const Value.absent(),
+            Value<double?> synergyScore = const Value.absent(),
+          }) =>
+              EdhrecThemesCompanion.insert(
+            id: id,
+            pageId: pageId,
+            themeSlug: themeSlug,
+            themeName: themeName,
+            totalDecks: totalDecks,
+            inclusionCount: inclusionCount,
+            rankInTheme: rankInTheme,
+            synergyScore: synergyScore,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$EdhrecThemesTableProcessedTableManager = ProcessedTableManager<
+    _$CardsDatabase,
+    $EdhrecThemesTable,
+    EdhrecThemeRow,
+    $$EdhrecThemesTableFilterComposer,
+    $$EdhrecThemesTableOrderingComposer,
+    $$EdhrecThemesTableAnnotationComposer,
+    $$EdhrecThemesTableCreateCompanionBuilder,
+    $$EdhrecThemesTableUpdateCompanionBuilder,
+    (
+      EdhrecThemeRow,
+      BaseReferences<_$CardsDatabase, $EdhrecThemesTable, EdhrecThemeRow>
+    ),
+    EdhrecThemeRow,
+    PrefetchHooks Function()>;
+typedef $$EdhrecTagLinksTableCreateCompanionBuilder = EdhrecTagLinksCompanion
+    Function({
+  Value<int> id,
+  required int pageId,
+  required String slug,
+  required String name,
+  Value<int> count,
+});
+typedef $$EdhrecTagLinksTableUpdateCompanionBuilder = EdhrecTagLinksCompanion
+    Function({
+  Value<int> id,
+  Value<int> pageId,
+  Value<String> slug,
+  Value<String> name,
+  Value<int> count,
+});
+
+class $$EdhrecTagLinksTableFilterComposer
+    extends Composer<_$CardsDatabase, $EdhrecTagLinksTable> {
+  $$EdhrecTagLinksTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get pageId => $composableBuilder(
+      column: $table.pageId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get slug => $composableBuilder(
+      column: $table.slug, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get count => $composableBuilder(
+      column: $table.count, builder: (column) => ColumnFilters(column));
+}
+
+class $$EdhrecTagLinksTableOrderingComposer
+    extends Composer<_$CardsDatabase, $EdhrecTagLinksTable> {
+  $$EdhrecTagLinksTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get pageId => $composableBuilder(
+      column: $table.pageId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get slug => $composableBuilder(
+      column: $table.slug, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get count => $composableBuilder(
+      column: $table.count, builder: (column) => ColumnOrderings(column));
+}
+
+class $$EdhrecTagLinksTableAnnotationComposer
+    extends Composer<_$CardsDatabase, $EdhrecTagLinksTable> {
+  $$EdhrecTagLinksTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get pageId =>
+      $composableBuilder(column: $table.pageId, builder: (column) => column);
+
+  GeneratedColumn<String> get slug =>
+      $composableBuilder(column: $table.slug, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<int> get count =>
+      $composableBuilder(column: $table.count, builder: (column) => column);
+}
+
+class $$EdhrecTagLinksTableTableManager extends RootTableManager<
+    _$CardsDatabase,
+    $EdhrecTagLinksTable,
+    EdhrecTagLinkRow,
+    $$EdhrecTagLinksTableFilterComposer,
+    $$EdhrecTagLinksTableOrderingComposer,
+    $$EdhrecTagLinksTableAnnotationComposer,
+    $$EdhrecTagLinksTableCreateCompanionBuilder,
+    $$EdhrecTagLinksTableUpdateCompanionBuilder,
+    (
+      EdhrecTagLinkRow,
+      BaseReferences<_$CardsDatabase, $EdhrecTagLinksTable, EdhrecTagLinkRow>
+    ),
+    EdhrecTagLinkRow,
+    PrefetchHooks Function()> {
+  $$EdhrecTagLinksTableTableManager(
+      _$CardsDatabase db, $EdhrecTagLinksTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$EdhrecTagLinksTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$EdhrecTagLinksTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$EdhrecTagLinksTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<int> pageId = const Value.absent(),
+            Value<String> slug = const Value.absent(),
+            Value<String> name = const Value.absent(),
+            Value<int> count = const Value.absent(),
+          }) =>
+              EdhrecTagLinksCompanion(
+            id: id,
+            pageId: pageId,
+            slug: slug,
+            name: name,
+            count: count,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required int pageId,
+            required String slug,
+            required String name,
+            Value<int> count = const Value.absent(),
+          }) =>
+              EdhrecTagLinksCompanion.insert(
+            id: id,
+            pageId: pageId,
+            slug: slug,
+            name: name,
+            count: count,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$EdhrecTagLinksTableProcessedTableManager = ProcessedTableManager<
+    _$CardsDatabase,
+    $EdhrecTagLinksTable,
+    EdhrecTagLinkRow,
+    $$EdhrecTagLinksTableFilterComposer,
+    $$EdhrecTagLinksTableOrderingComposer,
+    $$EdhrecTagLinksTableAnnotationComposer,
+    $$EdhrecTagLinksTableCreateCompanionBuilder,
+    $$EdhrecTagLinksTableUpdateCompanionBuilder,
+    (
+      EdhrecTagLinkRow,
+      BaseReferences<_$CardsDatabase, $EdhrecTagLinksTable, EdhrecTagLinkRow>
+    ),
+    EdhrecTagLinkRow,
+    PrefetchHooks Function()>;
 
 class $CardsDatabaseManager {
   final _$CardsDatabase _db;
@@ -8156,4 +15745,27 @@ class $CardsDatabaseManager {
       $$FilterMetadataTableTableManager(_db, _db.filterMetadata);
   $$PreconDecksTableTableManager get preconDecks =>
       $$PreconDecksTableTableManager(_db, _db.preconDecks);
+  $$TagsTableTableManager get tags => $$TagsTableTableManager(_db, _db.tags);
+  $$TagAncestorsTableTableManager get tagAncestors =>
+      $$TagAncestorsTableTableManager(_db, _db.tagAncestors);
+  $$CardTagsTableTableManager get cardTags =>
+      $$CardTagsTableTableManager(_db, _db.cardTags);
+  $$CardRelationshipsTableTableManager get cardRelationships =>
+      $$CardRelationshipsTableTableManager(_db, _db.cardRelationships);
+  $$TaggerCrawlStatusTableTableManager get taggerCrawlStatus =>
+      $$TaggerCrawlStatusTableTableManager(_db, _db.taggerCrawlStatus);
+  $$CombosTableTableManager get combos =>
+      $$CombosTableTableManager(_db, _db.combos);
+  $$ComboCardsTableTableManager get comboCards =>
+      $$ComboCardsTableTableManager(_db, _db.comboCards);
+  $$ComboFeaturesTableTableManager get comboFeatures =>
+      $$ComboFeaturesTableTableManager(_db, _db.comboFeatures);
+  $$EdhrecPagesTableTableManager get edhrecPages =>
+      $$EdhrecPagesTableTableManager(_db, _db.edhrecPages);
+  $$EdhrecRecommendationsTableTableManager get edhrecRecommendations =>
+      $$EdhrecRecommendationsTableTableManager(_db, _db.edhrecRecommendations);
+  $$EdhrecThemesTableTableManager get edhrecThemes =>
+      $$EdhrecThemesTableTableManager(_db, _db.edhrecThemes);
+  $$EdhrecTagLinksTableTableManager get edhrecTagLinks =>
+      $$EdhrecTagLinksTableTableManager(_db, _db.edhrecTagLinks);
 }

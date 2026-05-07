@@ -36,6 +36,10 @@ import '../lib/canonical_printings.dart';
 import '../lib/cards_schema.dart';
 import '../lib/db/cards_database.dart';
 import '../lib/filter_metadata.dart';
+import '../lib/insights/edhrec_crawler.dart';
+import '../lib/insights/previous_bundle.dart';
+import '../lib/insights/spellbook_fetcher.dart';
+import '../lib/insights/tagger_crawler.dart';
 import '../lib/mtgjson_card_mapper.dart';
 import '../lib/precon_parser.dart';
 import '../lib/prices_parser.dart';
@@ -62,48 +66,237 @@ Future<void> main(List<String> args) async {
   final dbGz = File('${workDir.path}/cards.sqlite.gz');
   final manifestFile = File('${workDir.path}/latest.json');
 
-  // Start fresh — leftover files from a prior failed run would corrupt
-  // the new DB.
-  if (dbFile.existsSync()) dbFile.deleteSync();
-  if (dbGz.existsSync()) dbGz.deleteSync();
+  // `REUSE_EXISTING_DB=1` skips the MTGJSON pipeline and opens the
+  // cards.sqlite already on disk (downloaded as a CI artifact from a
+  // prior `build-base` job). Used by matrix-shard jobs that only need
+  // to run a single insights phase against a pre-built base.
+  final reuseExisting =
+      (Platform.environment['REUSE_EXISTING_DB'] ?? '0') == '1';
 
-  await _download(_allPrintingsUrl, printingsGz);
-  await _gunzip(printingsGz, printingsJson);
+  final CardsDatabase db;
+  final _BuildStats? stats;
+  final String pricesDate;
+  final int preconCount;
 
-  // Prices are best-effort — MTGJSON has had multi-day outages on the
-  // prices feed before. We don't want a transient 404 there to block
-  // shipping a fresh cards/precons bundle, so fall back to an empty
-  // price set and let the next run pick prices back up.
-  PricesParseResult prices;
-  try {
-    await _download(_allPricesUrl, pricesBz2);
-    final pricesPayload = await _decodeBz2(pricesBz2);
-    _log('Parsing prices…');
-    prices = parseAllPricesToday(pricesPayload);
-    _log('  ${prices.byMtgjsonUuid.length} priced cards (date=${prices.date})');
-  } catch (e) {
-    _log('⚠ Prices feed unavailable ($e) — shipping bundle without prices');
-    prices = PricesParseResult(date: 'unavailable', byMtgjsonUuid: const {});
+  if (reuseExisting) {
+    if (!dbFile.existsSync()) {
+      throw 'REUSE_EXISTING_DB=1 but ${dbFile.path} does not exist';
+    }
+    if (dbGz.existsSync()) dbGz.deleteSync();
+    _log('Opening existing cards.sqlite (REUSE_EXISTING_DB=1)');
+    db = CardsDatabase.file(dbFile);
+    stats = null;
+    // Read aggregates back out of the existing DB so the manifest stays
+    // accurate. Combo / precon counts may be stale-relative-to-this-run
+    // — that's fine; the merge step authors the final manifest.
+    pricesDate = await _readPricesDateFromDb(db);
+    preconCount = await _countTable(db, 'precon_decks');
+  } else {
+    // Start fresh — leftover files from a prior failed run would corrupt
+    // the new DB.
+    if (dbFile.existsSync()) dbFile.deleteSync();
+    if (dbGz.existsSync()) dbGz.deleteSync();
+
+    await _download(_allPrintingsUrl, printingsGz);
+    await _gunzip(printingsGz, printingsJson);
+
+    // Prices are best-effort — MTGJSON has had multi-day outages on the
+    // prices feed before. We don't want a transient 404 there to block
+    // shipping a fresh cards/precons bundle, so fall back to an empty
+    // price set and let the next run pick prices back up.
+    PricesParseResult prices;
+    try {
+      await _download(_allPricesUrl, pricesBz2);
+      final pricesPayload = await _decodeBz2(pricesBz2);
+      _log('Parsing prices…');
+      prices = parseAllPricesToday(pricesPayload);
+      _log('  ${prices.byMtgjsonUuid.length} priced cards (date=${prices.date})');
+    } catch (e) {
+      _log('⚠ Prices feed unavailable ($e) — shipping bundle without prices');
+      prices = PricesParseResult(date: 'unavailable', byMtgjsonUuid: const {});
+    }
+    pricesDate = prices.date;
+
+    _log('Opening cards.sqlite');
+    db = CardsDatabase.file(dbFile);
+
+    stats = await _writeCardsAndPrices(
+      db,
+      printingsJson,
+      prices,
+    );
+
+    _log('Computing canonical printings…');
+    await _writeCanonicalPrintings(db, stats.mappedCards);
+
+    _log('Aggregating filter metadata…');
+    await _writeFilterMetadata(db, stats.mappedCards);
+
+    await _download(_allDeckFilesUrl, preconsZip);
+    _log('Importing precon decks…');
+    preconCount = await _writePrecons(db, preconsZip, stats.mappedCards);
   }
 
-  _log('Opening cards.sqlite');
-  final db = CardsDatabase.file(dbFile);
+  // Insights phases — best-effort. A transient Spellbook outage or
+  // crawler hiccup must not block shipping the cards bundle.
+  // `INSIGHTS_PHASES` is a comma-separated set of phases to run; defaults
+  // to "combos". Set to "all" to enable everything, "" / "none" to skip.
+  final phases = _enabledPhases();
 
-  final stats = await _writeCardsAndPrices(
-    db,
-    printingsJson,
-    prices,
-  );
+  // Seed: download last week's bundle and copy its insights tables (tags,
+  // EDHREC) forward. Combos aren't seeded since they're refetched every
+  // run. First run / schema bumps gracefully fall through to a full
+  // crawl. Skipped when no insights phase is enabled.
+  Map<String, int> seedRowsCopied = const {};
+  String? seedSkipReason;
+  if (phases.intersection({'tagger', 'edhrec'}).isNotEmpty) {
+    final publicBaseUrlStrip = (Platform.environment['PUBLIC_BASE_URL'] ?? '')
+        .replaceAll(RegExp(r'/$'), '');
+    if (publicBaseUrlStrip.isEmpty) {
+      _log('⚠ PUBLIC_BASE_URL unset — skipping previous-bundle seed');
+      seedSkipReason = 'PUBLIC_BASE_URL unset';
+    } else {
+      try {
+        final seed = await seedFromPreviousBundle(
+          db,
+          bundleUrl: '$publicBaseUrlStrip/cards-latest.sqlite.gz',
+          workDir: workDir,
+          log: _log,
+        );
+        if (seed.used) {
+          seedRowsCopied = seed.rowsCopied;
+          _log(
+            '  seeded from previous bundle: ${seed.totalRows} rows '
+            '(${seed.rowsCopied.entries.map((e) => '${e.key}=${e.value}').join(', ')})',
+          );
+        } else {
+          seedSkipReason = seed.skipReason;
+          _log('  seed skipped: ${seed.skipReason}');
+        }
+      } catch (e, st) {
+        seedSkipReason = 'seed error: $e';
+        _log('⚠ Previous-bundle seed failed: $e');
+        _log('$st');
+      }
+    }
+  }
 
-  _log('Computing canonical printings…');
-  await _writeCanonicalPrintings(db, stats.mappedCards);
+  int comboCount = 0;
+  int comboCardCount = 0;
+  int comboFeatureCount = 0;
+  int unresolvedComboSlots = 0;
+  if (phases.contains('combos')) {
+    try {
+      _log('Fetching Commander Spellbook combos…');
+      final result = await writeCombos(db, workDir: workDir, log: _log);
+      comboCount = result.combosInserted;
+      comboCardCount = result.comboCardsInserted;
+      comboFeatureCount = result.comboFeaturesInserted;
+      unresolvedComboSlots = result.unresolvedCardSlots;
+      _log(
+        '  $comboCount combos · $comboCardCount card slots · '
+        '$comboFeatureCount features '
+        '(dump=${result.dumpVersion}, ${result.totalVariantsInDump} variants, '
+        '${(result.dumpSizeBytes / 1_000_000).toStringAsFixed(1)} MB, '
+        '${result.fetchElapsed.inSeconds}s)',
+      );
+    } catch (e, st) {
+      _log('⚠ Spellbook combo fetch failed: $e');
+      _log('$st');
+    }
+  } else {
+    _log('Skipping combos phase (INSIGHTS_PHASES=${phases.join(',')})');
+  }
 
-  _log('Aggregating filter metadata…');
-  await _writeFilterMetadata(db, stats.mappedCards);
+  TaggerCrawlResult? taggerResult;
+  if (phases.contains('tagger')) {
+    try {
+      final cfg = TaggerCrawlConfig(
+        shardIndex: _intEnv('TAGGER_SHARD_INDEX', 0),
+        shardCount: _intEnv('TAGGER_SHARD_COUNT', 1),
+        pacing: Duration(milliseconds: _intEnv('TAGGER_PACING_MS', 1500)),
+        maxRuntime: _durationEnv('TAGGER_MAX_RUNTIME_S'),
+        staleness: Duration(days: _intEnv('TAGGER_STALENESS_DAYS', 30)),
+      );
+      _log(
+        'Tagger crawl: shard=${cfg.shardIndex}/${cfg.shardCount} '
+        'pacing=${cfg.pacing.inMilliseconds}ms '
+        'maxRuntime=${cfg.maxRuntime?.inSeconds}s '
+        'staleness=${cfg.staleness.inDays}d',
+      );
+      taggerResult = await runTaggerCrawl(db, cfg, log: _log);
+      _log(
+        '  tagger done: succeeded=${taggerResult.cardsSucceeded} '
+        '(refreshed=${taggerResult.cardsRefreshed}) '
+        'failed=${taggerResult.cardsFailed} '
+        'fresh-skipped=${taggerResult.cardsFresh} '
+        'rateLimitHits=${taggerResult.rateLimitHits} '
+        'newTags=${taggerResult.newTags} '
+        'newAncestorEdges=${taggerResult.newAncestorEdges} '
+        'newCardTagEdges=${taggerResult.newCardTagEdges} '
+        'newRelationships=${taggerResult.newRelationships} '
+        'elapsed=${taggerResult.elapsed.inSeconds}s'
+        '${taggerResult.stoppedByRateLimit ? ' [rate-limit-bailout]' : ''}'
+        '${taggerResult.stoppedByTimeBudget ? ' [time-budget]' : ''}',
+      );
+    } catch (e, st) {
+      _log('⚠ Tagger crawl failed: $e');
+      _log('$st');
+    }
+  } else {
+    _log('Skipping tagger phase');
+  }
 
-  await _download(_allDeckFilesUrl, preconsZip);
-  _log('Importing precon decks…');
-  final preconCount = await _writePrecons(db, preconsZip, stats.mappedCards);
+  EdhrecCrawlResult? edhrecResult;
+  if (phases.contains('edhrec')) {
+    try {
+      final cfg = EdhrecCrawlConfig(
+        shardIndex: _intEnv('EDHREC_SHARD_INDEX', 0),
+        shardCount: _intEnv('EDHREC_SHARD_COUNT', 1),
+        pacing: Duration(milliseconds: _intEnv('EDHREC_PACING_MS', 1000)),
+        maxRuntime: _durationEnv('EDHREC_MAX_RUNTIME_S'),
+        staleness: Duration(days: _intEnv('EDHREC_STALENESS_DAYS', 7)),
+        fetchCommanderPages:
+            (Platform.environment['EDHREC_FETCH_COMMANDER_PAGES'] ?? '1') !=
+                '0',
+        keepCategories: _categoriesEnv('EDHREC_KEEP_CATEGORIES'),
+      );
+      _log(
+        'EDHREC crawl: shard=${cfg.shardIndex}/${cfg.shardCount} '
+        'pacing=${cfg.pacing.inMilliseconds}ms '
+        'maxRuntime=${cfg.maxRuntime?.inSeconds}s '
+        'staleness=${cfg.staleness.inDays}d '
+        'fetchCommander=${cfg.fetchCommanderPages} '
+        'keepCategories=${cfg.keepCategories.length}'
+        '${cfg.keepCategories.isEmpty ? ' (no filter)' : ''}',
+      );
+      edhrecResult = await runEdhrecCrawl(db, cfg, log: _log);
+      _log(
+        '  edhrec done: succeeded=${edhrecResult.pagesSucceeded} '
+        '(refreshed=${edhrecResult.pagesRefreshed}) '
+        'failed=${edhrecResult.pagesFailed} '
+        'notFound=${edhrecResult.pagesNotFound} '
+        'fresh-skipped=${edhrecResult.pagesFresh} '
+        'rateLimitHits=${edhrecResult.rateLimitHits} '
+        'newRecs=${edhrecResult.newRecommendations} '
+        'newThemes=${edhrecResult.newThemes} '
+        'newTagLinks=${edhrecResult.newTagLinks} '
+        'elapsed=${edhrecResult.elapsed.inSeconds}s'
+        '${edhrecResult.stoppedByRateLimit ? ' [rate-limit-bailout]' : ''}'
+        '${edhrecResult.stoppedByTimeBudget ? ' [time-budget]' : ''}',
+      );
+    } catch (e, st) {
+      _log('⚠ EDHREC crawl failed: $e');
+      _log('$st');
+    }
+  } else {
+    _log('Skipping edhrec phase');
+  }
+
+  // Snapshot the manifest counts before closing the DB.
+  final cardsCount = stats?.cardsInserted ?? await _countTable(db, 'cards');
+  final pricesCount =
+      stats?.pricesInserted ?? await _countTable(db, 'card_prices');
 
   // VACUUM rewrites the DB packed; same data, smaller file. Done outside
   // any transaction.
@@ -132,10 +325,54 @@ Future<void> main(List<String> args) async {
     'sha256': digest,
     'size_bytes': gzSize,
     'uncompressed_bytes': dbSize,
-    'row_count': stats.cardsInserted,
-    'priced_row_count': stats.pricesInserted,
+    'row_count': cardsCount,
+    'priced_row_count': pricesCount,
     'precon_row_count': preconCount,
-    'prices_date': prices.date,
+    'combo_row_count': comboCount,
+    'combo_card_row_count': comboCardCount,
+    'combo_feature_row_count': comboFeatureCount,
+    'combo_unresolved_slot_count': unresolvedComboSlots,
+    'seed_rows_copied': seedRowsCopied,
+    if (seedSkipReason != null) 'seed_skip_reason': seedSkipReason,
+    if (edhrecResult != null)
+      'edhrec': {
+        'shard_index': _intEnv('EDHREC_SHARD_INDEX', 0),
+        'shard_count': _intEnv('EDHREC_SHARD_COUNT', 1),
+        'staleness_days': _intEnv('EDHREC_STALENESS_DAYS', 7),
+        'pages_attempted': edhrecResult.pagesAttempted,
+        'pages_succeeded': edhrecResult.pagesSucceeded,
+        'pages_failed': edhrecResult.pagesFailed,
+        'pages_not_found': edhrecResult.pagesNotFound,
+        'pages_fresh_skipped': edhrecResult.pagesFresh,
+        'pages_refreshed': edhrecResult.pagesRefreshed,
+        'rate_limit_hits': edhrecResult.rateLimitHits,
+        'new_recommendations': edhrecResult.newRecommendations,
+        'new_themes': edhrecResult.newThemes,
+        'new_tag_links': edhrecResult.newTagLinks,
+        'stopped_by_rate_limit': edhrecResult.stoppedByRateLimit,
+        'stopped_by_time_budget': edhrecResult.stoppedByTimeBudget,
+        'elapsed_seconds': edhrecResult.elapsed.inSeconds,
+      },
+    if (taggerResult != null)
+      'tagger': {
+        'shard_index': _intEnv('TAGGER_SHARD_INDEX', 0),
+        'shard_count': _intEnv('TAGGER_SHARD_COUNT', 1),
+        'staleness_days': _intEnv('TAGGER_STALENESS_DAYS', 30),
+        'cards_attempted': taggerResult.cardsAttempted,
+        'cards_succeeded': taggerResult.cardsSucceeded,
+        'cards_failed': taggerResult.cardsFailed,
+        'cards_fresh_skipped': taggerResult.cardsFresh,
+        'cards_refreshed': taggerResult.cardsRefreshed,
+        'rate_limit_hits': taggerResult.rateLimitHits,
+        'new_tags': taggerResult.newTags,
+        'new_ancestor_edges': taggerResult.newAncestorEdges,
+        'new_card_tag_edges': taggerResult.newCardTagEdges,
+        'new_relationships': taggerResult.newRelationships,
+        'stopped_by_rate_limit': taggerResult.stoppedByRateLimit,
+        'stopped_by_time_budget': taggerResult.stoppedByTimeBudget,
+        'elapsed_seconds': taggerResult.elapsed.inSeconds,
+      },
+    'prices_date': pricesDate,
     'generated_at': DateTime.now().toUtc().toIso8601String(),
   };
   await manifestFile.writeAsString(
@@ -163,11 +400,74 @@ Future<void> main(List<String> args) async {
     '✅ Build complete: ${dbGz.path} '
     '(${(gzSize / 1_000_000).toStringAsFixed(1)} MB gz, '
     '${(dbSize / 1_000_000).toStringAsFixed(1)} MB raw, '
-    '${stats.cardsInserted} cards, '
-    '${stats.pricesInserted} priced, '
+    '$cardsCount cards, '
+    '$pricesCount priced, '
     '$preconCount precons, '
+    '$comboCount combos, '
     'sha256=${digest.substring(0, 12)}…)',
   );
+}
+
+/// Comma-separated set of insight phases to run, from `INSIGHTS_PHASES`.
+/// Defaults to "combos" so the workflow ships the safe phase by default
+/// until tagger/edhrec are explicitly opted in. Set to "all" to enable
+/// everything, or "" / "none" to skip insights entirely.
+Set<String> _enabledPhases() {
+  final raw = (Platform.environment['INSIGHTS_PHASES'] ?? 'combos').trim();
+  if (raw.isEmpty || raw.toLowerCase() == 'none') return const {};
+  if (raw.toLowerCase() == 'all') return const {'combos', 'tagger', 'edhrec'};
+  return raw
+      .split(',')
+      .map((p) => p.trim().toLowerCase())
+      .where((p) => p.isNotEmpty)
+      .toSet();
+}
+
+Future<int> _countTable(CardsDatabase db, String table) async {
+  final rows = await db.customSelect('SELECT COUNT(*) AS c FROM $table').get();
+  return rows.isEmpty ? 0 : (rows.first.data['c'] as int? ?? 0);
+}
+
+/// Read a representative `card_prices.fetched_date` from the DB so the
+/// reused-bundle path can still surface the freshness in the manifest.
+/// Returns 'unknown' if the table is empty.
+Future<String> _readPricesDateFromDb(CardsDatabase db) async {
+  final rows = await db
+      .customSelect('SELECT fetched_date FROM card_prices LIMIT 1')
+      .get();
+  if (rows.isEmpty) return 'unknown';
+  return (rows.first.data['fetched_date'] as String?) ?? 'unknown';
+}
+
+int _intEnv(String key, int fallback) {
+  final raw = Platform.environment[key];
+  if (raw == null || raw.isEmpty) return fallback;
+  return int.tryParse(raw) ?? fallback;
+}
+
+Duration? _durationEnv(String key) {
+  final raw = Platform.environment[key];
+  if (raw == null || raw.isEmpty) return null;
+  final seconds = int.tryParse(raw);
+  if (seconds == null || seconds <= 0) return null;
+  return Duration(seconds: seconds);
+}
+
+/// Parse a `|`-separated list of EDHREC category names. `EDHREC_KEEP_
+/// CATEGORIES=all` (or unset) → use the crawler default whitelist;
+/// `EDHREC_KEEP_CATEGORIES=none` → empty filter (keep every category).
+/// Otherwise: the literal list, e.g.
+/// `EDHREC_KEEP_CATEGORIES=Top Cards|High Synergy Cards|Game Changers`.
+Set<String>? _categoriesEnv(String key) {
+  final raw = Platform.environment[key];
+  if (raw == null || raw.isEmpty) return null; // → default whitelist
+  if (raw.toLowerCase() == 'all') return null;
+  if (raw.toLowerCase() == 'none') return const <String>{};
+  return raw
+      .split('|')
+      .map((s) => s.trim())
+      .where((s) => s.isNotEmpty)
+      .toSet();
 }
 
 Future<int> _writePrecons(
