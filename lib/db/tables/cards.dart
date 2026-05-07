@@ -117,6 +117,16 @@ class Cards extends Table {
   TextColumn get legalPremodern => text()();
   TextColumn get legalPredh => text()();
 
+  /// True when this card can BE the commander of a deck — derived from
+  /// MTGJSON's `leadershipSkills.commander` boolean, which already
+  /// resolves type-line + rules-text patterns ("can be your commander",
+  /// Background, Doctor's Companion, Spacecraft commanders, …) into a
+  /// single signal. Use this (not `legalCommander`) for any "is this
+  /// thing eligible to lead a deck" check; `legalCommander` only means
+  /// "allowed in some Commander deck", which is true for ~99% of cards.
+  BoolColumn get canBeCommander =>
+      boolean().withDefault(const Constant(false))();
+
   TextColumn get priceUsd => text().nullable()();
   TextColumn get priceUsdFoil => text().nullable()();
   TextColumn get priceUsdEtched => text().nullable()();

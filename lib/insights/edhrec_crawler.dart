@@ -47,29 +47,17 @@ class EdhrecCrawlConfig {
   final bool fetchCommanderPages;
 
   /// Whitelist of EDHREC category names to keep in `edhrec_recommendations`.
-  /// EDHREC returns ~13–14 categories per page, of which only a handful
-  /// power the medal / synergy / AI features in the app. Type-bucketed
-  /// categories ("Creatures", "Instants", "Lands", …) are essentially the
-  /// "average decklist" view — high row count, low query value — so we
-  /// drop them by default. Setting this to an empty set disables the
-  /// filter (keeps everything).
+  /// Empty set (the default) means "keep everything" — including the
+  /// type-bucketed categories ("Creatures", "Instants", "Lands", …) that
+  /// constitute EDHREC's average-decklist view. Bundle size grows
+  /// roughly 4× when the type buckets are kept; we accept that cost so
+  /// downstream features (deck advisor, AI snapshots, future analyses)
+  /// have the full recommendation graph available.
+  ///
+  /// Pass an explicit set to gate categories — e.g.
+  /// `{'Top Cards', 'High Synergy Cards', 'Game Changers'}` — when
+  /// experimenting with smaller bundles.
   final Set<String> keepCategories;
-
-  /// EDHREC category names dropped by default. Pre-aligned with the
-  /// observed bundle distribution (Creatures + Instants + Sorceries +
-  /// Enchantments + Utility Lands + Utility Artifacts + Lands account
-  /// for ~80% of rows in the sample run). Updating this list later only
-  /// affects future builds — existing seeded rows are dropped per
-  /// page during refresh, then the new (filtered) data is written.
-  static const Set<String> defaultKeepCategories = {
-    'High Synergy Cards',
-    'Top Cards',
-    'Game Changers',
-    'Mana Artifacts',
-    'New Cards',
-    'Planeswalkers',
-    'Battles',
-  };
 
   EdhrecCrawlConfig({
     this.shardIndex = 0,
@@ -80,7 +68,7 @@ class EdhrecCrawlConfig {
     this.staleness = const Duration(days: 7),
     this.fetchCommanderPages = true,
     Set<String>? keepCategories,
-  }) : keepCategories = keepCategories ?? defaultKeepCategories;
+  }) : keepCategories = keepCategories ?? const <String>{};
 }
 
 class EdhrecCrawlResult {
@@ -141,18 +129,43 @@ Future<EdhrecCrawlResult> runEdhrecCrawl(
       ? await _buildCommanderWorkList(db, config, freshCommanderPages)
       : <_EdhrecWorkItem>[];
 
+  // Partnership commander pages — Tymna+Thrasios, Doctor + Companion,
+  // Choose-a-Background pairs, etc. Discovery walks EDHREC's own
+  // `/partners/*` index so we only crawl pairings that have at least
+  // one observed deck (the combinatorial product of all partner cards
+  // would be ~22k pairs, of which only ~2-3k are actually played).
+  // Skipped entirely when commander pages are disabled.
+  final discoveryClient = http.Client();
+  List<_EdhrecWorkItem> partnershipWork = const [];
+  try {
+    if (config.fetchCommanderPages) {
+      final freshPairs = await _loadFreshPartnerPairs(db, freshCutoff);
+      partnershipWork = await _buildPartnershipWorkList(
+        discoveryClient,
+        db,
+        config,
+        freshPairs,
+        nameToOracleId,
+        emit,
+      );
+    }
+  } finally {
+    discoveryClient.close();
+  }
+
   emit(
     '  shard ${config.shardIndex}/${config.shardCount} '
     'work list: ${cardWork.length} card pages · '
-    '${commanderWork.length} commander pages',
+    '${commanderWork.length} commander pages · '
+    '${partnershipWork.length} partnership pages',
   );
 
-  // Commander pages first: they're a small fraction of the work list
-  // (~3k vs 30k+) but carry the high-value data (themes, tag_links,
-  // synergy scores) the app uses for "synergize with my commander"
-  // queries. A time-bounded run that drops out mid-card-list still
-  // ships full commander coverage that way.
-  final allWork = [...commanderWork, ...cardWork];
+  // Commander pages (solo + partnership) first: they're a small
+  // fraction of the work list but carry the high-value data (themes,
+  // tag_links, synergy scores) the app uses for "synergize with my
+  // commander" queries. A time-bounded run that drops out mid-card-list
+  // still ships full commander coverage that way.
+  final allWork = [...commanderWork, ...partnershipWork, ...cardWork];
   if (allWork.isEmpty) {
     return EdhrecCrawlResult(
       pagesAttempted: 0,
@@ -171,11 +184,16 @@ Future<EdhrecCrawlResult> runEdhrecCrawl(
     );
   }
 
-  // Whether each (oracle_id, kind) pair already has a page row from a
-  // previous bundle — used to count refreshes vs first-time crawls and
-  // to decide whether to DELETE child rows before INSERT.
-  final cardPagePresent = await _loadAllPageOracles(db, 'card');
-  final commanderPagePresent = await _loadAllPageOracles(db, 'commander');
+  // Whether each (oracle_id, kind, partner_oracle_id) row already has
+  // a page row from a previous bundle — used to count refreshes vs
+  // first-time crawls and to decide whether to DELETE child rows
+  // before INSERT. Keys are encoded as `oracleId|partnerOracleId`
+  // (partnerOracleId is empty for solo rows).
+  final cardPagePresent = await _loadAllPageKeys(db, 'card');
+  final commanderPagePresent = await _loadAllPageKeys(db, 'commander');
+
+  String workKey(_EdhrecWorkItem w) =>
+      '${w.oracleId}|${w.partnerOracleId ?? ''}';
 
   final client = http.Client();
 
@@ -215,8 +233,8 @@ Future<EdhrecCrawlResult> runEdhrecCrawl(
         );
       }
       final wasRefresh = w.kind == 'card'
-          ? cardPagePresent.contains(w.oracleId)
-          : commanderPagePresent.contains(w.oracleId);
+          ? cardPagePresent.contains(workKey(w))
+          : commanderPagePresent.contains(workKey(w));
 
       final fetch = await _fetchPage(client, w);
       switch (fetch.outcome) {
@@ -298,13 +316,32 @@ class _EdhrecWorkItem {
   final String name;
   final String sanitized;
   final String kind; // 'card' | 'commander'
+
+  /// Set on partnership commander pages only. The lex-smaller oracle
+  /// is stored in [oracleId] / [sanitized] and the larger here, so
+  /// every pair is represented by a single work item with a stable
+  /// canonical key. The fetched URL still uses the *original* slug
+  /// pair EDHREC published — see [pairUrlSlug].
+  final String? partnerOracleId;
+  final String? partnerSanitized;
+
+  /// For partnership rows: the URL slug EDHREC actually serves
+  /// (`/commanders/<a>-<b>`), in whatever order EDHREC chose. Null for
+  /// solo rows.
+  final String? pairUrlSlug;
+
   _EdhrecWorkItem({
     required this.scryfallId,
     required this.oracleId,
     required this.name,
     required this.sanitized,
     required this.kind,
+    this.partnerOracleId,
+    this.partnerSanitized,
+    this.pairUrlSlug,
   });
+
+  bool get isPartnership => partnerOracleId != null;
 }
 
 Future<List<_EdhrecWorkItem>> _buildCardWorkList(
@@ -321,30 +358,234 @@ Future<List<_EdhrecWorkItem>> _buildCardWorkList(
   return _filterRows(rows, cfg, fresh, 'card');
 }
 
+/// Builds work items for partnership commander pages by walking
+/// EDHREC's `/pages/partners.json` index → per-card `/pages/partners/<slug>.json`
+/// → unique pairs.
+///
+/// Closed by EDHREC's index (only pairings with at least one observed
+/// deck are listed), so this naturally bounds the crawl to "real"
+/// pairings rather than the combinatorial product of all partner
+/// cards. The returned list is deduplicated by canonical oracle pair
+/// (`(min, max)`); each work item carries the lex-smaller oracle as
+/// `oracleId` and the larger as `partnerOracleId`, plus EDHREC's
+/// original URL slug so we fetch the page that actually exists.
+///
+/// Cards on the partnership index whose names don't resolve to oracle
+/// IDs in our local catalog are skipped silently (rare — usually
+/// whitespace / casing edge cases EDHREC differs on).
+Future<List<_EdhrecWorkItem>> _buildPartnershipWorkList(
+  http.Client client,
+  CardsDatabase db,
+  EdhrecCrawlConfig cfg,
+  Set<({String a, String b})> freshPairs,
+  Map<String, String> nameToOracleId,
+  void Function(String) emit,
+) async {
+  // 1. Fetch the `/pages/partners.json` index. Lists every partner-
+  //    eligible card across all mechanics (Partner, Friends Forever,
+  //    Doctor, Doctor's Companion, Choose-a-Background, Background, …)
+  //    with URLs `/partners/<slug>`.
+  final indexResp = await _fetchRawJson(
+    client,
+    '$_edhrecBaseUrl/pages/partners.json',
+  );
+  if (indexResp == null) {
+    emit('  partner index fetch failed — skipping partnership crawl');
+    return const [];
+  }
+
+  final indexEntries = _extractCardviews(indexResp, tag: 'partners');
+  emit('  partner index: ${indexEntries.length} partner-eligible cards');
+  if (indexEntries.isEmpty) return const [];
+
+  // 2. For each partner card, fetch its per-card page and collect
+  //    pairings. Each pairing has `cardviews[].url` =
+  //    "/commanders/<a-slug>-<b-slug>"; the queried card's slug is
+  //    always one of the two halves, so we can split on it.
+  final pairs = <String, _EdhrecWorkItem>{}; // canonical key → work item
+  var indexed = 0;
+  for (final entry in indexEntries) {
+    final lhsSlug = (entry['sanitized'] as String?) ??
+        _slugFromPartnersUrl(entry['url'] as String?);
+    final lhsName = entry['name'] as String?;
+    if (lhsSlug == null || lhsName == null) continue;
+    final lhsOracle = _resolveName(lhsName, nameToOracleId);
+    if (lhsOracle == null) continue;
+
+    final perCard = await _fetchRawJson(
+      client,
+      '$_edhrecBaseUrl/pages/partners/$lhsSlug.json',
+    );
+    await Future<void>.delayed(cfg.pacing);
+    if (perCard == null) continue;
+
+    for (final cv in _extractCardviews(perCard, tag: 'pairings')) {
+      final pairUrl = cv['url'] as String?;
+      final rhsName = cv['name'] as String?;
+      if (pairUrl == null || rhsName == null) continue;
+      final pairSlug =
+          pairUrl.startsWith('/commanders/') ? pairUrl.substring(12) : null;
+      if (pairSlug == null) continue;
+      final rhsSlug = _splitPairSlug(pairSlug, lhsSlug);
+      if (rhsSlug == null) continue;
+      final rhsOracle = _resolveName(rhsName, nameToOracleId);
+      if (rhsOracle == null) continue;
+      if (rhsOracle == lhsOracle) continue; // self-pairings are nonsense
+
+      // Canonicalise so we dedupe (A,B) and (B,A) seen from each side.
+      final (a, b) = lhsOracle.compareTo(rhsOracle) < 0
+          ? (lhsOracle, rhsOracle)
+          : (rhsOracle, lhsOracle);
+      final key = '$a|$b';
+      if (pairs.containsKey(key)) continue;
+      if (freshPairs.contains((a: a, b: b))) continue;
+
+      // Pair work items use the *original* EDHREC URL slug so we hit
+      // the page that exists (some pairs only exist under one ordering
+      // of the slugs). Both halves' display names are stored so we can
+      // surface a user-facing label in the bundle if needed.
+      pairs[key] = _EdhrecWorkItem(
+        scryfallId: '$a-$b', // synthetic, only used for sharding hash
+        oracleId: a,
+        name: '$lhsName // $rhsName',
+        sanitized: a == lhsOracle ? lhsSlug : rhsSlug,
+        kind: 'commander',
+        partnerOracleId: b,
+        partnerSanitized: a == lhsOracle ? rhsSlug : lhsSlug,
+        pairUrlSlug: pairSlug,
+      );
+    }
+    indexed++;
+    if (indexed % 25 == 0) {
+      emit('  partner discovery: $indexed/${indexEntries.length} '
+          '· unique pairs so far: ${pairs.length}');
+    }
+  }
+  emit('  partner discovery done: ${pairs.length} unique pairs '
+      '(after dedup against fresh)');
+
+  // Apply the same shard hashing as solo work items so multiple bundle
+  // builders divide the partnership crawl evenly.
+  final out = <_EdhrecWorkItem>[];
+  for (final w in pairs.values) {
+    if (cfg.shardCount > 1 &&
+        _fnv1a(w.scryfallId) % cfg.shardCount != cfg.shardIndex) {
+      continue;
+    }
+    out.add(w);
+  }
+  return out;
+}
+
+/// Pulls `(canonicalSmaller, canonicalLarger)` pairs from
+/// `edhrec_pages` whose `last_updated` is within the staleness window.
+/// Used to skip partnership pages we already have on a re-run.
+Future<Set<({String a, String b})>> _loadFreshPartnerPairs(
+  CardsDatabase db,
+  DateTime cutoff,
+) async {
+  final cutoffEpoch = cutoff.millisecondsSinceEpoch ~/ 1000;
+  final rows = await db.customSelect(
+    "SELECT oracle_id, partner_oracle_id FROM edhrec_pages "
+    "WHERE kind = 'commander' "
+    "  AND partner_oracle_id IS NOT NULL "
+    "  AND last_updated >= ?",
+    variables: [Variable<int>(cutoffEpoch)],
+  ).get();
+  return {
+    for (final r in rows)
+      (
+        a: r.data['oracle_id'] as String,
+        b: r.data['partner_oracle_id'] as String,
+      ),
+  };
+}
+
+/// Strips a `/partners/<slug>` href back to the slug.
+String? _slugFromPartnersUrl(String? url) {
+  if (url == null) return null;
+  const prefix = '/partners/';
+  if (!url.startsWith(prefix)) return null;
+  return url.substring(prefix.length);
+}
+
+/// Given a combined pair slug (`a-slug-b-slug`) and the slug of one
+/// known half, returns the other half. Robust against either-order
+/// concatenation.
+String? _splitPairSlug(String pairSlug, String knownSlug) {
+  final prefix = '$knownSlug-';
+  if (pairSlug.startsWith(prefix)) {
+    final tail = pairSlug.substring(prefix.length);
+    return tail.isEmpty ? null : tail;
+  }
+  final suffix = '-$knownSlug';
+  if (pairSlug.endsWith(suffix)) {
+    final head = pairSlug.substring(0, pairSlug.length - suffix.length);
+    return head.isEmpty ? null : head;
+  }
+  return null;
+}
+
+List<Map<String, dynamic>> _extractCardviews(
+  Map<String, dynamic> page, {
+  required String tag,
+}) {
+  final container = page['container'] as Map<String, dynamic>?;
+  final jsonDict = container?['json_dict'] as Map<String, dynamic>?;
+  final cardlists = jsonDict?['cardlists'] as List<dynamic>? ?? const [];
+  for (final cl in cardlists) {
+    if (cl is! Map<String, dynamic>) continue;
+    if (cl['tag'] != tag) continue;
+    final cardviews = cl['cardviews'] as List<dynamic>? ?? const [];
+    return [
+      for (final cv in cardviews)
+        if (cv is Map<String, dynamic>) cv,
+    ];
+  }
+  return const [];
+}
+
+Future<Map<String, dynamic>?> _fetchRawJson(
+  http.Client client,
+  String url,
+) async {
+  try {
+    final resp = await client
+        .get(
+          Uri.parse(url),
+          headers: const {
+            'User-Agent': _userAgent,
+            'Accept': 'application/json',
+          },
+        )
+        .timeout(const Duration(seconds: 20));
+    if (resp.statusCode != 200) return null;
+    return jsonDecode(resp.body) as Map<String, dynamic>;
+  } catch (_) {
+    return null;
+  }
+}
+
 Future<List<_EdhrecWorkItem>> _buildCommanderWorkList(
   CardsDatabase db,
   EdhrecCrawlConfig cfg,
   Set<String> fresh,
 ) async {
-  // Only request commander pages for cards that can plausibly *be* a
-  // commander. EDHREC returns 403 (not 404) for non-commander pages,
-  // which is indistinguishable from a real rate-limit at HTTP level —
-  // so a tight type-line filter keeps us from triggering the
-  // consecutive-403 bailout on a mostly-non-commander batch. Catches
-  // legendary creatures, planeswalkers (with "can be your commander"
-  // text), and Backgrounds; misses the handful of legendary-artifact /
-  // -enchantment / -land "can be commander" cards, which is fine —
-  // those will fall through to a 403 and get counted as notFound.
+  // Only request commander pages for cards MTGJSON has flagged as
+  // commander-eligible. `can_be_commander` reflects MTGJSON's
+  // `leadershipSkills.commander` boolean, which already resolves rules
+  // text + type line into a single signal — covers Spacecraft,
+  // Backgrounds, Doctor's Companion, "can be your commander"
+  // planeswalkers, and any future commander-archetype card uniformly,
+  // without us having to maintain a type-line whitelist. A tight gate
+  // here also keeps us off EDHREC's 403-cascade tripwire (its 403 for
+  // missing commander pages is indistinguishable from a real
+  // rate-limit response at HTTP level).
   final rows = await db.customSelect(
     "SELECT scryfall_id, name, oracle_id, edhrec_rank "
     "FROM cards "
     "WHERE is_canonical_printing = 1 "
-    "  AND legal_commander = 'legal' "
-    "  AND ( "
-    "    type_line LIKE '%Legendary Creature%' OR "
-    "    type_line LIKE '%Legendary Planeswalker%' OR "
-    "    type_line LIKE '%Background%' "
-    "  ) "
+    "  AND can_be_commander = 1 "
     "ORDER BY CASE WHEN edhrec_rank IS NULL THEN 1 ELSE 0 END, edhrec_rank ASC",
   ).get();
   return _filterRows(rows, cfg, fresh, 'commander');
@@ -403,6 +644,8 @@ Future<Map<String, String>> _buildNameToOracleIdMap(CardsDatabase db) async {
   return map;
 }
 
+/// Solo-page freshness check. Skips partnership rows so a fresh
+/// solo Tymna page doesn't suppress a stale Tymna+Thrasios crawl.
 Future<Set<String>> _loadFreshPageOracles(
   CardsDatabase db,
   String kind,
@@ -411,21 +654,28 @@ Future<Set<String>> _loadFreshPageOracles(
   final cutoffEpoch = cutoff.millisecondsSinceEpoch ~/ 1000;
   final rows = await db.customSelect(
     'SELECT oracle_id FROM edhrec_pages '
-    'WHERE kind = ? AND last_updated >= ?',
+    'WHERE kind = ? AND partner_oracle_id IS NULL AND last_updated >= ?',
     variables: [Variable<String>(kind), Variable<int>(cutoffEpoch)],
   ).get();
   return {for (final r in rows) r.data['oracle_id'] as String};
 }
 
-Future<Set<String>> _loadAllPageOracles(
+/// Returns `oracleId|partnerOracleId` keys for every page row of the
+/// given kind. Partnerships use the canonical (lex-smaller, larger)
+/// pair the crawler stored. Solo pages key as `oracleId|`.
+Future<Set<String>> _loadAllPageKeys(
   CardsDatabase db,
   String kind,
 ) async {
   final rows = await db.customSelect(
-    'SELECT oracle_id FROM edhrec_pages WHERE kind = ?',
+    'SELECT oracle_id, partner_oracle_id '
+    'FROM edhrec_pages WHERE kind = ?',
     variables: [Variable<String>(kind)],
   ).get();
-  return {for (final r in rows) r.data['oracle_id'] as String};
+  return {
+    for (final r in rows)
+      '${r.data['oracle_id']}|${r.data['partner_oracle_id'] ?? ''}',
+  };
 }
 
 class _PageIngestStats {
@@ -547,21 +797,40 @@ Future<_PageIngestStats> _ingestPage(
   var newTagLinks = 0;
 
   await db.transaction(() async {
-    // UPSERT page row by (oracle_id, kind). We need the resulting `id`
-    // for child inserts; on conflict the existing row is replaced.
+    // UPSERT page row by (oracle_id, kind, partner_oracle_id). Partner
+    // is NULL for solo rows; SQLite's IS-vs-= semantics mean we need
+    // separate WHERE clauses for the lookup.
     int pageId;
     if (isRefresh) {
       // Find existing id, clear child tables, then update the row.
-      final existing = await db.customSelect(
-        'SELECT id FROM edhrec_pages WHERE oracle_id = ? AND kind = ?',
-        variables: [Variable<String>(w.oracleId), Variable<String>(w.kind)],
-      ).get();
+      final List<dynamic> existing;
+      if (w.partnerOracleId == null) {
+        existing = await db.customSelect(
+          'SELECT id FROM edhrec_pages '
+          'WHERE oracle_id = ? AND kind = ? AND partner_oracle_id IS NULL',
+          variables: [
+            Variable<String>(w.oracleId),
+            Variable<String>(w.kind),
+          ],
+        ).get();
+      } else {
+        existing = await db.customSelect(
+          'SELECT id FROM edhrec_pages '
+          'WHERE oracle_id = ? AND kind = ? AND partner_oracle_id = ?',
+          variables: [
+            Variable<String>(w.oracleId),
+            Variable<String>(w.kind),
+            Variable<String>(w.partnerOracleId!),
+          ],
+        ).get();
+      }
       if (existing.isEmpty) {
         // Should be impossible (we checked), but fall through to insert.
         pageId = await db.into(db.edhrecPages).insert(
               EdhrecPagesCompanion.insert(
                 oracleId: w.oracleId,
                 kind: w.kind,
+                partnerOracleId: Value(w.partnerOracleId),
                 rank: Value(pageRank),
                 numDecks: Value(pageNumDecks),
                 url: Value(pageUrl),
@@ -603,6 +872,7 @@ Future<_PageIngestStats> _ingestPage(
             EdhrecPagesCompanion.insert(
               oracleId: w.oracleId,
               kind: w.kind,
+              partnerOracleId: Value(w.partnerOracleId),
               rank: Value(pageRank),
               numDecks: Value(pageNumDecks),
               url: Value(pageUrl),
@@ -761,7 +1031,10 @@ class _FetchResult {
 
 Future<_FetchResult> _fetchPage(http.Client client, _EdhrecWorkItem w) async {
   final pathSegment = w.kind == 'commander' ? 'commanders' : 'cards';
-  final url = '$_edhrecBaseUrl/pages/$pathSegment/${w.sanitized}.json';
+  // Partnerships use EDHREC's published combined slug (the side that
+  // actually returns 200); solo pages use the card's own slug.
+  final slug = w.pairUrlSlug ?? w.sanitized;
+  final url = '$_edhrecBaseUrl/pages/$pathSegment/$slug.json';
   try {
     final resp = await client
         .get(

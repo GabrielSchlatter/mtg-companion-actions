@@ -449,6 +449,16 @@ class $CardsTable extends Cards with TableInfo<$CardsTable, CardRow> {
   late final GeneratedColumn<String> legalPredh = GeneratedColumn<String>(
       'legal_predh', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _canBeCommanderMeta =
+      const VerificationMeta('canBeCommander');
+  @override
+  late final GeneratedColumn<bool> canBeCommander = GeneratedColumn<bool>(
+      'can_be_commander', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'CHECK ("can_be_commander" IN (0, 1))'),
+      defaultValue: const Constant(false));
   static const VerificationMeta _priceUsdMeta =
       const VerificationMeta('priceUsd');
   @override
@@ -710,6 +720,7 @@ class $CardsTable extends Cards with TableInfo<$CardsTable, CardRow> {
         legalOldschool,
         legalPremodern,
         legalPredh,
+        canBeCommander,
         priceUsd,
         priceUsdFoil,
         priceUsdEtched,
@@ -1199,6 +1210,12 @@ class $CardsTable extends Cards with TableInfo<$CardsTable, CardRow> {
     } else if (isInserting) {
       context.missing(_legalPredhMeta);
     }
+    if (data.containsKey('can_be_commander')) {
+      context.handle(
+          _canBeCommanderMeta,
+          canBeCommander.isAcceptableOrUnknown(
+              data['can_be_commander']!, _canBeCommanderMeta));
+    }
     if (data.containsKey('price_usd')) {
       context.handle(_priceUsdMeta,
           priceUsd.isAcceptableOrUnknown(data['price_usd']!, _priceUsdMeta));
@@ -1498,6 +1515,8 @@ class $CardsTable extends Cards with TableInfo<$CardsTable, CardRow> {
           DriftSqlType.string, data['${effectivePrefix}legal_premodern'])!,
       legalPredh: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}legal_predh'])!,
+      canBeCommander: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}can_be_commander'])!,
       priceUsd: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}price_usd']),
       priceUsdFoil: attachedDatabase.typeMapping
@@ -1642,6 +1661,15 @@ class CardRow extends DataClass implements Insertable<CardRow> {
   final String legalOldschool;
   final String legalPremodern;
   final String legalPredh;
+
+  /// True when this card can BE the commander of a deck — derived from
+  /// MTGJSON's `leadershipSkills.commander` boolean, which already
+  /// resolves type-line + rules-text patterns ("can be your commander",
+  /// Background, Doctor's Companion, Spacecraft commanders, …) into a
+  /// single signal. Use this (not `legalCommander`) for any "is this
+  /// thing eligible to lead a deck" check; `legalCommander` only means
+  /// "allowed in some Commander deck", which is true for ~99% of cards.
+  final bool canBeCommander;
   final String? priceUsd;
   final String? priceUsdFoil;
   final String? priceUsdEtched;
@@ -1747,6 +1775,7 @@ class CardRow extends DataClass implements Insertable<CardRow> {
       required this.legalOldschool,
       required this.legalPremodern,
       required this.legalPredh,
+      required this.canBeCommander,
       this.priceUsd,
       this.priceUsdFoil,
       this.priceUsdEtched,
@@ -1884,6 +1913,7 @@ class CardRow extends DataClass implements Insertable<CardRow> {
     map['legal_oldschool'] = Variable<String>(legalOldschool);
     map['legal_premodern'] = Variable<String>(legalPremodern);
     map['legal_predh'] = Variable<String>(legalPredh);
+    map['can_be_commander'] = Variable<bool>(canBeCommander);
     if (!nullToAbsent || priceUsd != null) {
       map['price_usd'] = Variable<String>(priceUsd);
     }
@@ -2051,6 +2081,7 @@ class CardRow extends DataClass implements Insertable<CardRow> {
       legalOldschool: Value(legalOldschool),
       legalPremodern: Value(legalPremodern),
       legalPredh: Value(legalPredh),
+      canBeCommander: Value(canBeCommander),
       priceUsd: priceUsd == null && nullToAbsent
           ? const Value.absent()
           : Value(priceUsd),
@@ -2187,6 +2218,7 @@ class CardRow extends DataClass implements Insertable<CardRow> {
       legalOldschool: serializer.fromJson<String>(json['legalOldschool']),
       legalPremodern: serializer.fromJson<String>(json['legalPremodern']),
       legalPredh: serializer.fromJson<String>(json['legalPredh']),
+      canBeCommander: serializer.fromJson<bool>(json['canBeCommander']),
       priceUsd: serializer.fromJson<String?>(json['priceUsd']),
       priceUsdFoil: serializer.fromJson<String?>(json['priceUsdFoil']),
       priceUsdEtched: serializer.fromJson<String?>(json['priceUsdEtched']),
@@ -2290,6 +2322,7 @@ class CardRow extends DataClass implements Insertable<CardRow> {
       'legalOldschool': serializer.toJson<String>(legalOldschool),
       'legalPremodern': serializer.toJson<String>(legalPremodern),
       'legalPredh': serializer.toJson<String>(legalPredh),
+      'canBeCommander': serializer.toJson<bool>(canBeCommander),
       'priceUsd': serializer.toJson<String?>(priceUsd),
       'priceUsdFoil': serializer.toJson<String?>(priceUsdFoil),
       'priceUsdEtched': serializer.toJson<String?>(priceUsdEtched),
@@ -2390,6 +2423,7 @@ class CardRow extends DataClass implements Insertable<CardRow> {
           String? legalOldschool,
           String? legalPremodern,
           String? legalPredh,
+          bool? canBeCommander,
           Value<String?> priceUsd = const Value.absent(),
           Value<String?> priceUsdFoil = const Value.absent(),
           Value<String?> priceUsdEtched = const Value.absent(),
@@ -2497,6 +2531,7 @@ class CardRow extends DataClass implements Insertable<CardRow> {
         legalOldschool: legalOldschool ?? this.legalOldschool,
         legalPremodern: legalPremodern ?? this.legalPremodern,
         legalPredh: legalPredh ?? this.legalPredh,
+        canBeCommander: canBeCommander ?? this.canBeCommander,
         priceUsd: priceUsd.present ? priceUsd.value : this.priceUsd,
         priceUsdFoil:
             priceUsdFoil.present ? priceUsdFoil.value : this.priceUsdFoil,
@@ -2674,6 +2709,9 @@ class CardRow extends DataClass implements Insertable<CardRow> {
           : this.legalPremodern,
       legalPredh:
           data.legalPredh.present ? data.legalPredh.value : this.legalPredh,
+      canBeCommander: data.canBeCommander.present
+          ? data.canBeCommander.value
+          : this.canBeCommander,
       priceUsd: data.priceUsd.present ? data.priceUsd.value : this.priceUsd,
       priceUsdFoil: data.priceUsdFoil.present
           ? data.priceUsdFoil.value
@@ -2799,6 +2837,7 @@ class CardRow extends DataClass implements Insertable<CardRow> {
           ..write('legalOldschool: $legalOldschool, ')
           ..write('legalPremodern: $legalPremodern, ')
           ..write('legalPredh: $legalPredh, ')
+          ..write('canBeCommander: $canBeCommander, ')
           ..write('priceUsd: $priceUsd, ')
           ..write('priceUsdFoil: $priceUsdFoil, ')
           ..write('priceUsdEtched: $priceUsdEtched, ')
@@ -2901,6 +2940,7 @@ class CardRow extends DataClass implements Insertable<CardRow> {
         legalOldschool,
         legalPremodern,
         legalPredh,
+        canBeCommander,
         priceUsd,
         priceUsdFoil,
         priceUsdEtched,
@@ -3002,6 +3042,7 @@ class CardRow extends DataClass implements Insertable<CardRow> {
           other.legalOldschool == this.legalOldschool &&
           other.legalPremodern == this.legalPremodern &&
           other.legalPredh == this.legalPredh &&
+          other.canBeCommander == this.canBeCommander &&
           other.priceUsd == this.priceUsd &&
           other.priceUsdFoil == this.priceUsdFoil &&
           other.priceUsdEtched == this.priceUsdEtched &&
@@ -3101,6 +3142,7 @@ class CardsCompanion extends UpdateCompanion<CardRow> {
   final Value<String> legalOldschool;
   final Value<String> legalPremodern;
   final Value<String> legalPredh;
+  final Value<bool> canBeCommander;
   final Value<String?> priceUsd;
   final Value<String?> priceUsdFoil;
   final Value<String?> priceUsdEtched;
@@ -3198,6 +3240,7 @@ class CardsCompanion extends UpdateCompanion<CardRow> {
     this.legalOldschool = const Value.absent(),
     this.legalPremodern = const Value.absent(),
     this.legalPredh = const Value.absent(),
+    this.canBeCommander = const Value.absent(),
     this.priceUsd = const Value.absent(),
     this.priceUsdFoil = const Value.absent(),
     this.priceUsdEtched = const Value.absent(),
@@ -3296,6 +3339,7 @@ class CardsCompanion extends UpdateCompanion<CardRow> {
     required String legalOldschool,
     required String legalPremodern,
     required String legalPredh,
+    this.canBeCommander = const Value.absent(),
     this.priceUsd = const Value.absent(),
     this.priceUsdFoil = const Value.absent(),
     this.priceUsdEtched = const Value.absent(),
@@ -3443,6 +3487,7 @@ class CardsCompanion extends UpdateCompanion<CardRow> {
     Expression<String>? legalOldschool,
     Expression<String>? legalPremodern,
     Expression<String>? legalPredh,
+    Expression<bool>? canBeCommander,
     Expression<String>? priceUsd,
     Expression<String>? priceUsdFoil,
     Expression<String>? priceUsdEtched,
@@ -3544,6 +3589,7 @@ class CardsCompanion extends UpdateCompanion<CardRow> {
       if (legalOldschool != null) 'legal_oldschool': legalOldschool,
       if (legalPremodern != null) 'legal_premodern': legalPremodern,
       if (legalPredh != null) 'legal_predh': legalPredh,
+      if (canBeCommander != null) 'can_be_commander': canBeCommander,
       if (priceUsd != null) 'price_usd': priceUsd,
       if (priceUsdFoil != null) 'price_usd_foil': priceUsdFoil,
       if (priceUsdEtched != null) 'price_usd_etched': priceUsdEtched,
@@ -3645,6 +3691,7 @@ class CardsCompanion extends UpdateCompanion<CardRow> {
       Value<String>? legalOldschool,
       Value<String>? legalPremodern,
       Value<String>? legalPredh,
+      Value<bool>? canBeCommander,
       Value<String?>? priceUsd,
       Value<String?>? priceUsdFoil,
       Value<String?>? priceUsdEtched,
@@ -3742,6 +3789,7 @@ class CardsCompanion extends UpdateCompanion<CardRow> {
       legalOldschool: legalOldschool ?? this.legalOldschool,
       legalPremodern: legalPremodern ?? this.legalPremodern,
       legalPredh: legalPredh ?? this.legalPredh,
+      canBeCommander: canBeCommander ?? this.canBeCommander,
       priceUsd: priceUsd ?? this.priceUsd,
       priceUsdFoil: priceUsdFoil ?? this.priceUsdFoil,
       priceUsdEtched: priceUsdEtched ?? this.priceUsdEtched,
@@ -3984,6 +4032,9 @@ class CardsCompanion extends UpdateCompanion<CardRow> {
     if (legalPredh.present) {
       map['legal_predh'] = Variable<String>(legalPredh.value);
     }
+    if (canBeCommander.present) {
+      map['can_be_commander'] = Variable<bool>(canBeCommander.value);
+    }
     if (priceUsd.present) {
       map['price_usd'] = Variable<String>(priceUsd.value);
     }
@@ -4141,6 +4192,7 @@ class CardsCompanion extends UpdateCompanion<CardRow> {
           ..write('legalOldschool: $legalOldschool, ')
           ..write('legalPremodern: $legalPremodern, ')
           ..write('legalPredh: $legalPredh, ')
+          ..write('canBeCommander: $canBeCommander, ')
           ..write('priceUsd: $priceUsd, ')
           ..write('priceUsdFoil: $priceUsdFoil, ')
           ..write('priceUsdEtched: $priceUsdEtched, ')
@@ -9112,6 +9164,12 @@ class $EdhrecPagesTable extends EdhrecPages
   late final GeneratedColumn<String> kind = GeneratedColumn<String>(
       'kind', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _partnerOracleIdMeta =
+      const VerificationMeta('partnerOracleId');
+  @override
+  late final GeneratedColumn<String> partnerOracleId = GeneratedColumn<String>(
+      'partner_oracle_id', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
   static const VerificationMeta _rankMeta = const VerificationMeta('rank');
   @override
   late final GeneratedColumn<int> rank = GeneratedColumn<int>(
@@ -9136,7 +9194,7 @@ class $EdhrecPagesTable extends EdhrecPages
       type: DriftSqlType.dateTime, requiredDuringInsert: true);
   @override
   List<GeneratedColumn> get $columns =>
-      [id, oracleId, kind, rank, numDecks, url, lastUpdated];
+      [id, oracleId, kind, partnerOracleId, rank, numDecks, url, lastUpdated];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -9161,6 +9219,12 @@ class $EdhrecPagesTable extends EdhrecPages
           _kindMeta, kind.isAcceptableOrUnknown(data['kind']!, _kindMeta));
     } else if (isInserting) {
       context.missing(_kindMeta);
+    }
+    if (data.containsKey('partner_oracle_id')) {
+      context.handle(
+          _partnerOracleIdMeta,
+          partnerOracleId.isAcceptableOrUnknown(
+              data['partner_oracle_id']!, _partnerOracleIdMeta));
     }
     if (data.containsKey('rank')) {
       context.handle(
@@ -9197,6 +9261,8 @@ class $EdhrecPagesTable extends EdhrecPages
           .read(DriftSqlType.string, data['${effectivePrefix}oracle_id'])!,
       kind: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}kind'])!,
+      partnerOracleId: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}partner_oracle_id']),
       rank: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}rank']),
       numDecks: attachedDatabase.typeMapping
@@ -9218,10 +9284,21 @@ class EdhrecPageRow extends DataClass implements Insertable<EdhrecPageRow> {
   final int id;
 
   /// FK → cards.oracleId. The subject of the page.
+  ///
+  /// For partnership pages this is the lexicographically-smaller of
+  /// the two pair members; the other oracle lives in
+  /// [partnerOracleId]. Canonicalising on insert means a single row
+  /// covers both `(A,B)` and `(B,A)` lookups — the client just sorts
+  /// the two commander oracles before querying.
   final String oracleId;
 
   /// `card` or `commander`.
   final String kind;
+
+  /// FK → cards.oracleId for the *partner* commander when this row
+  /// represents a Partner / Friends Forever / Doctor + Companion /
+  /// Choose-a-Background pairing. NULL for solo card / commander pages.
+  final String? partnerOracleId;
   final int? rank;
   final int? numDecks;
   final String? url;
@@ -9230,6 +9307,7 @@ class EdhrecPageRow extends DataClass implements Insertable<EdhrecPageRow> {
       {required this.id,
       required this.oracleId,
       required this.kind,
+      this.partnerOracleId,
       this.rank,
       this.numDecks,
       this.url,
@@ -9240,6 +9318,9 @@ class EdhrecPageRow extends DataClass implements Insertable<EdhrecPageRow> {
     map['id'] = Variable<int>(id);
     map['oracle_id'] = Variable<String>(oracleId);
     map['kind'] = Variable<String>(kind);
+    if (!nullToAbsent || partnerOracleId != null) {
+      map['partner_oracle_id'] = Variable<String>(partnerOracleId);
+    }
     if (!nullToAbsent || rank != null) {
       map['rank'] = Variable<int>(rank);
     }
@@ -9258,6 +9339,9 @@ class EdhrecPageRow extends DataClass implements Insertable<EdhrecPageRow> {
       id: Value(id),
       oracleId: Value(oracleId),
       kind: Value(kind),
+      partnerOracleId: partnerOracleId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(partnerOracleId),
       rank: rank == null && nullToAbsent ? const Value.absent() : Value(rank),
       numDecks: numDecks == null && nullToAbsent
           ? const Value.absent()
@@ -9274,6 +9358,7 @@ class EdhrecPageRow extends DataClass implements Insertable<EdhrecPageRow> {
       id: serializer.fromJson<int>(json['id']),
       oracleId: serializer.fromJson<String>(json['oracleId']),
       kind: serializer.fromJson<String>(json['kind']),
+      partnerOracleId: serializer.fromJson<String?>(json['partnerOracleId']),
       rank: serializer.fromJson<int?>(json['rank']),
       numDecks: serializer.fromJson<int?>(json['numDecks']),
       url: serializer.fromJson<String?>(json['url']),
@@ -9287,6 +9372,7 @@ class EdhrecPageRow extends DataClass implements Insertable<EdhrecPageRow> {
       'id': serializer.toJson<int>(id),
       'oracleId': serializer.toJson<String>(oracleId),
       'kind': serializer.toJson<String>(kind),
+      'partnerOracleId': serializer.toJson<String?>(partnerOracleId),
       'rank': serializer.toJson<int?>(rank),
       'numDecks': serializer.toJson<int?>(numDecks),
       'url': serializer.toJson<String?>(url),
@@ -9298,6 +9384,7 @@ class EdhrecPageRow extends DataClass implements Insertable<EdhrecPageRow> {
           {int? id,
           String? oracleId,
           String? kind,
+          Value<String?> partnerOracleId = const Value.absent(),
           Value<int?> rank = const Value.absent(),
           Value<int?> numDecks = const Value.absent(),
           Value<String?> url = const Value.absent(),
@@ -9306,6 +9393,9 @@ class EdhrecPageRow extends DataClass implements Insertable<EdhrecPageRow> {
         id: id ?? this.id,
         oracleId: oracleId ?? this.oracleId,
         kind: kind ?? this.kind,
+        partnerOracleId: partnerOracleId.present
+            ? partnerOracleId.value
+            : this.partnerOracleId,
         rank: rank.present ? rank.value : this.rank,
         numDecks: numDecks.present ? numDecks.value : this.numDecks,
         url: url.present ? url.value : this.url,
@@ -9316,6 +9406,9 @@ class EdhrecPageRow extends DataClass implements Insertable<EdhrecPageRow> {
       id: data.id.present ? data.id.value : this.id,
       oracleId: data.oracleId.present ? data.oracleId.value : this.oracleId,
       kind: data.kind.present ? data.kind.value : this.kind,
+      partnerOracleId: data.partnerOracleId.present
+          ? data.partnerOracleId.value
+          : this.partnerOracleId,
       rank: data.rank.present ? data.rank.value : this.rank,
       numDecks: data.numDecks.present ? data.numDecks.value : this.numDecks,
       url: data.url.present ? data.url.value : this.url,
@@ -9330,6 +9423,7 @@ class EdhrecPageRow extends DataClass implements Insertable<EdhrecPageRow> {
           ..write('id: $id, ')
           ..write('oracleId: $oracleId, ')
           ..write('kind: $kind, ')
+          ..write('partnerOracleId: $partnerOracleId, ')
           ..write('rank: $rank, ')
           ..write('numDecks: $numDecks, ')
           ..write('url: $url, ')
@@ -9339,8 +9433,8 @@ class EdhrecPageRow extends DataClass implements Insertable<EdhrecPageRow> {
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, oracleId, kind, rank, numDecks, url, lastUpdated);
+  int get hashCode => Object.hash(
+      id, oracleId, kind, partnerOracleId, rank, numDecks, url, lastUpdated);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -9348,6 +9442,7 @@ class EdhrecPageRow extends DataClass implements Insertable<EdhrecPageRow> {
           other.id == this.id &&
           other.oracleId == this.oracleId &&
           other.kind == this.kind &&
+          other.partnerOracleId == this.partnerOracleId &&
           other.rank == this.rank &&
           other.numDecks == this.numDecks &&
           other.url == this.url &&
@@ -9358,6 +9453,7 @@ class EdhrecPagesCompanion extends UpdateCompanion<EdhrecPageRow> {
   final Value<int> id;
   final Value<String> oracleId;
   final Value<String> kind;
+  final Value<String?> partnerOracleId;
   final Value<int?> rank;
   final Value<int?> numDecks;
   final Value<String?> url;
@@ -9366,6 +9462,7 @@ class EdhrecPagesCompanion extends UpdateCompanion<EdhrecPageRow> {
     this.id = const Value.absent(),
     this.oracleId = const Value.absent(),
     this.kind = const Value.absent(),
+    this.partnerOracleId = const Value.absent(),
     this.rank = const Value.absent(),
     this.numDecks = const Value.absent(),
     this.url = const Value.absent(),
@@ -9375,6 +9472,7 @@ class EdhrecPagesCompanion extends UpdateCompanion<EdhrecPageRow> {
     this.id = const Value.absent(),
     required String oracleId,
     required String kind,
+    this.partnerOracleId = const Value.absent(),
     this.rank = const Value.absent(),
     this.numDecks = const Value.absent(),
     this.url = const Value.absent(),
@@ -9386,6 +9484,7 @@ class EdhrecPagesCompanion extends UpdateCompanion<EdhrecPageRow> {
     Expression<int>? id,
     Expression<String>? oracleId,
     Expression<String>? kind,
+    Expression<String>? partnerOracleId,
     Expression<int>? rank,
     Expression<int>? numDecks,
     Expression<String>? url,
@@ -9395,6 +9494,7 @@ class EdhrecPagesCompanion extends UpdateCompanion<EdhrecPageRow> {
       if (id != null) 'id': id,
       if (oracleId != null) 'oracle_id': oracleId,
       if (kind != null) 'kind': kind,
+      if (partnerOracleId != null) 'partner_oracle_id': partnerOracleId,
       if (rank != null) 'rank': rank,
       if (numDecks != null) 'num_decks': numDecks,
       if (url != null) 'url': url,
@@ -9406,6 +9506,7 @@ class EdhrecPagesCompanion extends UpdateCompanion<EdhrecPageRow> {
       {Value<int>? id,
       Value<String>? oracleId,
       Value<String>? kind,
+      Value<String?>? partnerOracleId,
       Value<int?>? rank,
       Value<int?>? numDecks,
       Value<String?>? url,
@@ -9414,6 +9515,7 @@ class EdhrecPagesCompanion extends UpdateCompanion<EdhrecPageRow> {
       id: id ?? this.id,
       oracleId: oracleId ?? this.oracleId,
       kind: kind ?? this.kind,
+      partnerOracleId: partnerOracleId ?? this.partnerOracleId,
       rank: rank ?? this.rank,
       numDecks: numDecks ?? this.numDecks,
       url: url ?? this.url,
@@ -9432,6 +9534,9 @@ class EdhrecPagesCompanion extends UpdateCompanion<EdhrecPageRow> {
     }
     if (kind.present) {
       map['kind'] = Variable<String>(kind.value);
+    }
+    if (partnerOracleId.present) {
+      map['partner_oracle_id'] = Variable<String>(partnerOracleId.value);
     }
     if (rank.present) {
       map['rank'] = Variable<int>(rank.value);
@@ -9454,6 +9559,7 @@ class EdhrecPagesCompanion extends UpdateCompanion<EdhrecPageRow> {
           ..write('id: $id, ')
           ..write('oracleId: $oracleId, ')
           ..write('kind: $kind, ')
+          ..write('partnerOracleId: $partnerOracleId, ')
           ..write('rank: $rank, ')
           ..write('numDecks: $numDecks, ')
           ..write('url: $url, ')
@@ -10862,11 +10968,13 @@ abstract class _$CardsDatabase extends GeneratedDatabase {
   late final Index idxComboFeatureId = Index('idx_combo_feature_id',
       'CREATE INDEX idx_combo_feature_id ON combo_features (feature_id)');
   late final Index idxEdhrecPagePk = Index('idx_edhrec_page_pk',
-      'CREATE UNIQUE INDEX idx_edhrec_page_pk ON edhrec_pages (oracle_id, kind)');
+      'CREATE UNIQUE INDEX idx_edhrec_page_pk ON edhrec_pages (oracle_id, kind, partner_oracle_id)');
   late final Index idxEdhrecPageOracle = Index('idx_edhrec_page_oracle',
       'CREATE INDEX idx_edhrec_page_oracle ON edhrec_pages (oracle_id)');
   late final Index idxEdhrecPageKind = Index('idx_edhrec_page_kind',
       'CREATE INDEX idx_edhrec_page_kind ON edhrec_pages (kind)');
+  late final Index idxEdhrecPagePartner = Index('idx_edhrec_page_partner',
+      'CREATE INDEX idx_edhrec_page_partner ON edhrec_pages (partner_oracle_id)');
   late final Index idxEdhrecRecPk = Index('idx_edhrec_rec_pk',
       'CREATE UNIQUE INDEX idx_edhrec_rec_pk ON edhrec_recommendations (page_id, card_name)');
   late final Index idxEdhrecRecPage = Index('idx_edhrec_rec_page',
@@ -10952,6 +11060,7 @@ abstract class _$CardsDatabase extends GeneratedDatabase {
         idxEdhrecPagePk,
         idxEdhrecPageOracle,
         idxEdhrecPageKind,
+        idxEdhrecPagePartner,
         idxEdhrecRecPk,
         idxEdhrecRecPage,
         idxEdhrecRecOracle,
@@ -11035,6 +11144,7 @@ typedef $$CardsTableCreateCompanionBuilder = CardsCompanion Function({
   required String legalOldschool,
   required String legalPremodern,
   required String legalPredh,
+  Value<bool> canBeCommander,
   Value<String?> priceUsd,
   Value<String?> priceUsdFoil,
   Value<String?> priceUsdEtched,
@@ -11133,6 +11243,7 @@ typedef $$CardsTableUpdateCompanionBuilder = CardsCompanion Function({
   Value<String> legalOldschool,
   Value<String> legalPremodern,
   Value<String> legalPredh,
+  Value<bool> canBeCommander,
   Value<String?> priceUsd,
   Value<String?> priceUsdFoil,
   Value<String?> priceUsdEtched,
@@ -11392,6 +11503,10 @@ class $$CardsTableFilterComposer
 
   ColumnFilters<String> get legalPredh => $composableBuilder(
       column: $table.legalPredh, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get canBeCommander => $composableBuilder(
+      column: $table.canBeCommander,
+      builder: (column) => ColumnFilters(column));
 
   ColumnFilters<String> get priceUsd => $composableBuilder(
       column: $table.priceUsd, builder: (column) => ColumnFilters(column));
@@ -11719,6 +11834,10 @@ class $$CardsTableOrderingComposer
   ColumnOrderings<String> get legalPredh => $composableBuilder(
       column: $table.legalPredh, builder: (column) => ColumnOrderings(column));
 
+  ColumnOrderings<bool> get canBeCommander => $composableBuilder(
+      column: $table.canBeCommander,
+      builder: (column) => ColumnOrderings(column));
+
   ColumnOrderings<String> get priceUsd => $composableBuilder(
       column: $table.priceUsd, builder: (column) => ColumnOrderings(column));
 
@@ -12027,6 +12146,9 @@ class $$CardsTableAnnotationComposer
   GeneratedColumn<String> get legalPredh => $composableBuilder(
       column: $table.legalPredh, builder: (column) => column);
 
+  GeneratedColumn<bool> get canBeCommander => $composableBuilder(
+      column: $table.canBeCommander, builder: (column) => column);
+
   GeneratedColumn<String> get priceUsd =>
       $composableBuilder(column: $table.priceUsd, builder: (column) => column);
 
@@ -12201,6 +12323,7 @@ class $$CardsTableTableManager extends RootTableManager<
             Value<String> legalOldschool = const Value.absent(),
             Value<String> legalPremodern = const Value.absent(),
             Value<String> legalPredh = const Value.absent(),
+            Value<bool> canBeCommander = const Value.absent(),
             Value<String?> priceUsd = const Value.absent(),
             Value<String?> priceUsdFoil = const Value.absent(),
             Value<String?> priceUsdEtched = const Value.absent(),
@@ -12299,6 +12422,7 @@ class $$CardsTableTableManager extends RootTableManager<
             legalOldschool: legalOldschool,
             legalPremodern: legalPremodern,
             legalPredh: legalPredh,
+            canBeCommander: canBeCommander,
             priceUsd: priceUsd,
             priceUsdFoil: priceUsdFoil,
             priceUsdEtched: priceUsdEtched,
@@ -12397,6 +12521,7 @@ class $$CardsTableTableManager extends RootTableManager<
             required String legalOldschool,
             required String legalPremodern,
             required String legalPredh,
+            Value<bool> canBeCommander = const Value.absent(),
             Value<String?> priceUsd = const Value.absent(),
             Value<String?> priceUsdFoil = const Value.absent(),
             Value<String?> priceUsdEtched = const Value.absent(),
@@ -12495,6 +12620,7 @@ class $$CardsTableTableManager extends RootTableManager<
             legalOldschool: legalOldschool,
             legalPremodern: legalPremodern,
             legalPredh: legalPredh,
+            canBeCommander: canBeCommander,
             priceUsd: priceUsd,
             priceUsdFoil: priceUsdFoil,
             priceUsdEtched: priceUsdEtched,
@@ -14899,6 +15025,7 @@ typedef $$EdhrecPagesTableCreateCompanionBuilder = EdhrecPagesCompanion
   Value<int> id,
   required String oracleId,
   required String kind,
+  Value<String?> partnerOracleId,
   Value<int?> rank,
   Value<int?> numDecks,
   Value<String?> url,
@@ -14909,6 +15036,7 @@ typedef $$EdhrecPagesTableUpdateCompanionBuilder = EdhrecPagesCompanion
   Value<int> id,
   Value<String> oracleId,
   Value<String> kind,
+  Value<String?> partnerOracleId,
   Value<int?> rank,
   Value<int?> numDecks,
   Value<String?> url,
@@ -14932,6 +15060,10 @@ class $$EdhrecPagesTableFilterComposer
 
   ColumnFilters<String> get kind => $composableBuilder(
       column: $table.kind, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get partnerOracleId => $composableBuilder(
+      column: $table.partnerOracleId,
+      builder: (column) => ColumnFilters(column));
 
   ColumnFilters<int> get rank => $composableBuilder(
       column: $table.rank, builder: (column) => ColumnFilters(column));
@@ -14964,6 +15096,10 @@ class $$EdhrecPagesTableOrderingComposer
   ColumnOrderings<String> get kind => $composableBuilder(
       column: $table.kind, builder: (column) => ColumnOrderings(column));
 
+  ColumnOrderings<String> get partnerOracleId => $composableBuilder(
+      column: $table.partnerOracleId,
+      builder: (column) => ColumnOrderings(column));
+
   ColumnOrderings<int> get rank => $composableBuilder(
       column: $table.rank, builder: (column) => ColumnOrderings(column));
 
@@ -14994,6 +15130,9 @@ class $$EdhrecPagesTableAnnotationComposer
 
   GeneratedColumn<String> get kind =>
       $composableBuilder(column: $table.kind, builder: (column) => column);
+
+  GeneratedColumn<String> get partnerOracleId => $composableBuilder(
+      column: $table.partnerOracleId, builder: (column) => column);
 
   GeneratedColumn<int> get rank =>
       $composableBuilder(column: $table.rank, builder: (column) => column);
@@ -15037,6 +15176,7 @@ class $$EdhrecPagesTableTableManager extends RootTableManager<
             Value<int> id = const Value.absent(),
             Value<String> oracleId = const Value.absent(),
             Value<String> kind = const Value.absent(),
+            Value<String?> partnerOracleId = const Value.absent(),
             Value<int?> rank = const Value.absent(),
             Value<int?> numDecks = const Value.absent(),
             Value<String?> url = const Value.absent(),
@@ -15046,6 +15186,7 @@ class $$EdhrecPagesTableTableManager extends RootTableManager<
             id: id,
             oracleId: oracleId,
             kind: kind,
+            partnerOracleId: partnerOracleId,
             rank: rank,
             numDecks: numDecks,
             url: url,
@@ -15055,6 +15196,7 @@ class $$EdhrecPagesTableTableManager extends RootTableManager<
             Value<int> id = const Value.absent(),
             required String oracleId,
             required String kind,
+            Value<String?> partnerOracleId = const Value.absent(),
             Value<int?> rank = const Value.absent(),
             Value<int?> numDecks = const Value.absent(),
             Value<String?> url = const Value.absent(),
@@ -15064,6 +15206,7 @@ class $$EdhrecPagesTableTableManager extends RootTableManager<
             id: id,
             oracleId: oracleId,
             kind: kind,
+            partnerOracleId: partnerOracleId,
             rank: rank,
             numDecks: numDecks,
             url: url,

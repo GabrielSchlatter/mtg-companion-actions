@@ -8,17 +8,36 @@ import 'package:drift/drift.dart';
 /// URLs upstream. Splitting them keeps the lookup deterministic and
 /// avoids overwriting one with the other.
 @DataClassName('EdhrecPageRow')
-@TableIndex(name: 'idx_edhrec_page_pk', columns: {#oracleId, #kind}, unique: true)
+@TableIndex(
+  name: 'idx_edhrec_page_pk',
+  columns: {#oracleId, #kind, #partnerOracleId},
+  unique: true,
+)
 @TableIndex(name: 'idx_edhrec_page_oracle', columns: {#oracleId})
 @TableIndex(name: 'idx_edhrec_page_kind', columns: {#kind})
+@TableIndex(
+  name: 'idx_edhrec_page_partner',
+  columns: {#partnerOracleId},
+)
 class EdhrecPages extends Table {
   IntColumn get id => integer().autoIncrement()();
 
   /// FK → cards.oracleId. The subject of the page.
+  ///
+  /// For partnership pages this is the lexicographically-smaller of
+  /// the two pair members; the other oracle lives in
+  /// [partnerOracleId]. Canonicalising on insert means a single row
+  /// covers both `(A,B)` and `(B,A)` lookups — the client just sorts
+  /// the two commander oracles before querying.
   TextColumn get oracleId => text()();
 
   /// `card` or `commander`.
   TextColumn get kind => text()();
+
+  /// FK → cards.oracleId for the *partner* commander when this row
+  /// represents a Partner / Friends Forever / Doctor + Companion /
+  /// Choose-a-Background pairing. NULL for solo card / commander pages.
+  TextColumn get partnerOracleId => text().nullable()();
 
   IntColumn get rank => integer().nullable()();
   IntColumn get numDecks => integer().nullable()();

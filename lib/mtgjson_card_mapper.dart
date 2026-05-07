@@ -117,6 +117,13 @@ Map<String, dynamic>? mapMtgjsonCard(
       'legalOldschool': normLegal(legalities['oldschool']),
       'legalPremodern': normLegal(legalities['premodern']),
       'legalPredh': normLegal(legalities['predh']),
+      'canBeCommander': () {
+        final ls = c['leadershipSkills'];
+        if (ls is Map<String, dynamic>) {
+          return ls['commander'] as bool? ?? false;
+        }
+        return false;
+      }(),
       'priceUsd': null,
       'priceUsdFoil': null,
       'priceUsdEtched': null,
