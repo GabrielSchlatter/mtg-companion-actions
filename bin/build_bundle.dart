@@ -910,8 +910,6 @@ CardsCompanion _cardCompanion(Map<String, dynamic> m) {
     flavorName: Value(str('flavorName')),
     lang: str('lang') ?? 'en',
     releasedAt: str('releasedAt') ?? '',
-    uri: str('uri') ?? '',
-    scryfallUri: str('scryfallUri') ?? '',
     layout: str('layout') ?? 'normal',
     manaCost: Value(str('manaCost')),
     cmc: asNum('cmc') ?? 0.0,

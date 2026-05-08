@@ -33,8 +33,6 @@ class Cards extends Table {
   TextColumn get lang => text()();
 
   TextColumn get releasedAt => text()();
-  TextColumn get uri => text()();
-  TextColumn get scryfallUri => text()();
   TextColumn get layout => text()();
 
   TextColumn get manaCost => text().nullable()();

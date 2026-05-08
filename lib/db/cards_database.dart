@@ -56,7 +56,7 @@ class CardsDatabase extends _$CardsDatabase {
   CardsDatabase(super.executor);
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -143,6 +143,55 @@ class CardsDatabase extends _$CardsDatabase {
               'DELETE FROM edhrec_recommendations',
             );
             await m.database.customStatement('DELETE FROM edhrec_pages');
+          }
+          // v5 → v6: bundle slimming.
+          //
+          // edhrec_recommendations: drop the AUTOINC `id`, drop dead
+          // `recommendation_type`, drop the redundant `(page_id)` and
+          // `(card_category)` indexes, and switch to a WITHOUT ROWID
+          // table keyed on the natural unique pair `(page_id,
+          // card_name)`. SQLite can't ALTER any of these in place, so
+          // recreate the table and copy the surviving columns.
+          //
+          // cards: drop `uri` and `scryfall_uri` (unused at the client).
+          if (from < 6) {
+            await m.database.customStatement(
+              'CREATE TABLE edhrec_recommendations_new ('
+              'page_id INTEGER NOT NULL, '
+              'card_name TEXT NOT NULL, '
+              'oracle_id TEXT, '
+              'card_category TEXT, '
+              'inclusion_count INTEGER, '
+              'inclusion_percent REAL, '
+              'synergy_score REAL, '
+              'rank_in_category INTEGER, '
+              'PRIMARY KEY (page_id, card_name)'
+              ') WITHOUT ROWID',
+            );
+            await m.database.customStatement(
+              'INSERT OR IGNORE INTO edhrec_recommendations_new '
+              '(page_id, card_name, oracle_id, card_category, '
+              ' inclusion_count, inclusion_percent, synergy_score, '
+              ' rank_in_category) '
+              'SELECT page_id, card_name, oracle_id, card_category, '
+              '       inclusion_count, inclusion_percent, synergy_score, '
+              '       rank_in_category '
+              'FROM edhrec_recommendations',
+            );
+            await m.database
+                .customStatement('DROP TABLE edhrec_recommendations');
+            await m.database.customStatement(
+              'ALTER TABLE edhrec_recommendations_new '
+              'RENAME TO edhrec_recommendations',
+            );
+            await m.database.customStatement(
+              'CREATE INDEX IF NOT EXISTS idx_edhrec_rec_oracle '
+              'ON edhrec_recommendations (oracle_id)',
+            );
+            await m.database
+                .customStatement('ALTER TABLE cards DROP COLUMN uri');
+            await m.database
+                .customStatement('ALTER TABLE cards DROP COLUMN scryfall_uri');
           }
         },
       );

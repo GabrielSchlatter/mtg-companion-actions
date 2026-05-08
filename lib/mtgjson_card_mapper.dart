@@ -51,10 +51,6 @@ Map<String, dynamic>? mapMtgjsonCard(
       'flavorName': c['flavorName'] as String?,
       'lang': lang,
       'releasedAt': releaseDate,
-      'uri':
-          'https://scryfall.com/card/${(c['setCode'] as String? ?? '').toLowerCase()}/${c['number'] ?? ''}',
-      'scryfallUri':
-          'https://scryfall.com/card/${(c['setCode'] as String? ?? '').toLowerCase()}/${c['number'] ?? ''}',
       'layout': c['layout'] as String? ?? 'normal',
       'manaCost': c['manaCost'] as String?,
       'cmc': (c['manaValue'] as num?)?.toDouble() ?? 0.0,

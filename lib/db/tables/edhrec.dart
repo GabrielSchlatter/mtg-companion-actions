@@ -46,36 +46,39 @@ class EdhrecPages extends Table {
   DateTimeColumn get lastUpdated => dateTime()();
 }
 
-/// Recommended-card edges from each EDHREC page. The `oracleId` column
-/// is the resolved recommended card (null when name didn't resolve);
-/// `cardName` always preserves the raw value.
+/// Recommended-card edges from each EDHREC page.
+///
+/// `WITHOUT ROWID` keyed on `(pageId, cardName)` — the natural unique
+/// pair. Drops the AUTOINC `id` column we never query by, drops the
+/// redundant `(pageId)`-only index (the PK leading column already
+/// covers single-page lookups), and drops the `(cardCategory)` index
+/// that was rarely useful in isolation.
 @DataClassName('EdhrecRecommendationRow')
-@TableIndex(name: 'idx_edhrec_rec_pk', columns: {#pageId, #cardName}, unique: true)
-@TableIndex(name: 'idx_edhrec_rec_page', columns: {#pageId})
 @TableIndex(name: 'idx_edhrec_rec_oracle', columns: {#oracleId})
-@TableIndex(name: 'idx_edhrec_rec_category', columns: {#cardCategory})
 class EdhrecRecommendations extends Table {
-  IntColumn get id => integer().autoIncrement()();
-
   /// FK → edhrec_pages.id.
   IntColumn get pageId => integer()();
-
-  /// FK → cards.oracleId — null when name didn't resolve.
-  TextColumn get oracleId => text().nullable()();
 
   /// Raw card name from EDHREC.
   TextColumn get cardName => text()();
 
-  /// EDHREC's categorisation of the recommendation — e.g. "high synergy
-  /// cards", "top cards", "newcards". Lowercased free text.
-  TextColumn get cardCategory => text().nullable()();
+  /// FK → cards.oracleId — null when name didn't resolve.
+  TextColumn get oracleId => text().nullable()();
 
-  TextColumn get recommendationType => text().nullable()();
+  /// EDHREC's categorisation of the recommendation — e.g. "Top Cards",
+  /// "High Synergy Cards", "Lands". Display-name form.
+  TextColumn get cardCategory => text().nullable()();
 
   IntColumn get inclusionCount => integer().nullable()();
   RealColumn get inclusionPercent => real().nullable()();
   RealColumn get synergyScore => real().nullable()();
   IntColumn get rankInCategory => integer().nullable()();
+
+  @override
+  Set<Column> get primaryKey => {pageId, cardName};
+
+  @override
+  bool get withoutRowId => true;
 }
 
 /// EDHREC themes attached to a page.

@@ -719,7 +719,6 @@ Future<_PageIngestStats> _ingestPage(
     if (keepCategories.isNotEmpty && !keepCategories.contains(category)) {
       continue;
     }
-    final tag = cardlist['tag']?.toString();
     final cardviews = cardlist['cardviews'] as List<dynamic>? ?? const [];
     var rank = 0;
     for (final cv in cardviews) {
@@ -739,7 +738,6 @@ Future<_PageIngestStats> _ingestPage(
           oracleId: _resolveName(name, nameToOracleId),
           cardName: name,
           cardCategory: category,
-          recommendationType: tag,
           inclusionCount: numDecks,
           inclusionPercent: inclusionPercent,
           synergyScore: _parseDouble(cv['synergy']),
@@ -901,7 +899,6 @@ Future<_PageIngestStats> _ingestPage(
                     oracleId: Value(p.oracleId),
                     cardName: p.cardName,
                     cardCategory: Value(p.cardCategory),
-                    recommendationType: Value(p.recommendationType),
                     inclusionCount: Value(p.inclusionCount),
                     inclusionPercent: Value(p.inclusionPercent),
                     synergyScore: Value(p.synergyScore),
@@ -974,7 +971,6 @@ class _PendingRec {
   final String? oracleId;
   final String cardName;
   final String? cardCategory;
-  final String? recommendationType;
   final int? inclusionCount;
   final double? inclusionPercent;
   final double? synergyScore;
@@ -983,7 +979,6 @@ class _PendingRec {
     required this.oracleId,
     required this.cardName,
     required this.cardCategory,
-    required this.recommendationType,
     required this.inclusionCount,
     required this.inclusionPercent,
     required this.synergyScore,

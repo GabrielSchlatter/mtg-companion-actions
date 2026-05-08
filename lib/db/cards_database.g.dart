@@ -57,17 +57,6 @@ class $CardsTable extends Cards with TableInfo<$CardsTable, CardRow> {
   late final GeneratedColumn<String> releasedAt = GeneratedColumn<String>(
       'released_at', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _uriMeta = const VerificationMeta('uri');
-  @override
-  late final GeneratedColumn<String> uri = GeneratedColumn<String>(
-      'uri', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _scryfallUriMeta =
-      const VerificationMeta('scryfallUri');
-  @override
-  late final GeneratedColumn<String> scryfallUri = GeneratedColumn<String>(
-      'scryfall_uri', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
   static const VerificationMeta _layoutMeta = const VerificationMeta('layout');
   @override
   late final GeneratedColumn<String> layout = GeneratedColumn<String>(
@@ -659,8 +648,6 @@ class $CardsTable extends Cards with TableInfo<$CardsTable, CardRow> {
         flavorName,
         lang,
         releasedAt,
-        uri,
-        scryfallUri,
         layout,
         manaCost,
         cmc,
@@ -807,20 +794,6 @@ class $CardsTable extends Cards with TableInfo<$CardsTable, CardRow> {
               data['released_at']!, _releasedAtMeta));
     } else if (isInserting) {
       context.missing(_releasedAtMeta);
-    }
-    if (data.containsKey('uri')) {
-      context.handle(
-          _uriMeta, uri.isAcceptableOrUnknown(data['uri']!, _uriMeta));
-    } else if (isInserting) {
-      context.missing(_uriMeta);
-    }
-    if (data.containsKey('scryfall_uri')) {
-      context.handle(
-          _scryfallUriMeta,
-          scryfallUri.isAcceptableOrUnknown(
-              data['scryfall_uri']!, _scryfallUriMeta));
-    } else if (isInserting) {
-      context.missing(_scryfallUriMeta);
     }
     if (data.containsKey('layout')) {
       context.handle(_layoutMeta,
@@ -1391,10 +1364,6 @@ class $CardsTable extends Cards with TableInfo<$CardsTable, CardRow> {
           .read(DriftSqlType.string, data['${effectivePrefix}lang'])!,
       releasedAt: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}released_at'])!,
-      uri: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}uri'])!,
-      scryfallUri: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}scryfall_uri'])!,
       layout: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}layout'])!,
       manaCost: attachedDatabase.typeMapping
@@ -1590,8 +1559,6 @@ class CardRow extends DataClass implements Insertable<CardRow> {
   final String? flavorName;
   final String lang;
   final String releasedAt;
-  final String uri;
-  final String scryfallUri;
   final String layout;
   final String? manaCost;
   final double cmc;
@@ -1714,8 +1681,6 @@ class CardRow extends DataClass implements Insertable<CardRow> {
       this.flavorName,
       required this.lang,
       required this.releasedAt,
-      required this.uri,
-      required this.scryfallUri,
       required this.layout,
       this.manaCost,
       required this.cmc,
@@ -1818,8 +1783,6 @@ class CardRow extends DataClass implements Insertable<CardRow> {
     }
     map['lang'] = Variable<String>(lang);
     map['released_at'] = Variable<String>(releasedAt);
-    map['uri'] = Variable<String>(uri);
-    map['scryfall_uri'] = Variable<String>(scryfallUri);
     map['layout'] = Variable<String>(layout);
     if (!nullToAbsent || manaCost != null) {
       map['mana_cost'] = Variable<String>(manaCost);
@@ -1988,8 +1951,6 @@ class CardRow extends DataClass implements Insertable<CardRow> {
           : Value(flavorName),
       lang: Value(lang),
       releasedAt: Value(releasedAt),
-      uri: Value(uri),
-      scryfallUri: Value(scryfallUri),
       layout: Value(layout),
       manaCost: manaCost == null && nullToAbsent
           ? const Value.absent()
@@ -2153,8 +2114,6 @@ class CardRow extends DataClass implements Insertable<CardRow> {
       flavorName: serializer.fromJson<String?>(json['flavorName']),
       lang: serializer.fromJson<String>(json['lang']),
       releasedAt: serializer.fromJson<String>(json['releasedAt']),
-      uri: serializer.fromJson<String>(json['uri']),
-      scryfallUri: serializer.fromJson<String>(json['scryfallUri']),
       layout: serializer.fromJson<String>(json['layout']),
       manaCost: serializer.fromJson<String?>(json['manaCost']),
       cmc: serializer.fromJson<double>(json['cmc']),
@@ -2261,8 +2220,6 @@ class CardRow extends DataClass implements Insertable<CardRow> {
       'flavorName': serializer.toJson<String?>(flavorName),
       'lang': serializer.toJson<String>(lang),
       'releasedAt': serializer.toJson<String>(releasedAt),
-      'uri': serializer.toJson<String>(uri),
-      'scryfallUri': serializer.toJson<String>(scryfallUri),
       'layout': serializer.toJson<String>(layout),
       'manaCost': serializer.toJson<String?>(manaCost),
       'cmc': serializer.toJson<double>(cmc),
@@ -2362,8 +2319,6 @@ class CardRow extends DataClass implements Insertable<CardRow> {
           Value<String?> flavorName = const Value.absent(),
           String? lang,
           String? releasedAt,
-          String? uri,
-          String? scryfallUri,
           String? layout,
           Value<String?> manaCost = const Value.absent(),
           double? cmc,
@@ -2460,8 +2415,6 @@ class CardRow extends DataClass implements Insertable<CardRow> {
         flavorName: flavorName.present ? flavorName.value : this.flavorName,
         lang: lang ?? this.lang,
         releasedAt: releasedAt ?? this.releasedAt,
-        uri: uri ?? this.uri,
-        scryfallUri: scryfallUri ?? this.scryfallUri,
         layout: layout ?? this.layout,
         manaCost: manaCost.present ? manaCost.value : this.manaCost,
         cmc: cmc ?? this.cmc,
@@ -2581,9 +2534,6 @@ class CardRow extends DataClass implements Insertable<CardRow> {
       lang: data.lang.present ? data.lang.value : this.lang,
       releasedAt:
           data.releasedAt.present ? data.releasedAt.value : this.releasedAt,
-      uri: data.uri.present ? data.uri.value : this.uri,
-      scryfallUri:
-          data.scryfallUri.present ? data.scryfallUri.value : this.scryfallUri,
       layout: data.layout.present ? data.layout.value : this.layout,
       manaCost: data.manaCost.present ? data.manaCost.value : this.manaCost,
       cmc: data.cmc.present ? data.cmc.value : this.cmc,
@@ -2776,8 +2726,6 @@ class CardRow extends DataClass implements Insertable<CardRow> {
           ..write('flavorName: $flavorName, ')
           ..write('lang: $lang, ')
           ..write('releasedAt: $releasedAt, ')
-          ..write('uri: $uri, ')
-          ..write('scryfallUri: $scryfallUri, ')
           ..write('layout: $layout, ')
           ..write('manaCost: $manaCost, ')
           ..write('cmc: $cmc, ')
@@ -2879,8 +2827,6 @@ class CardRow extends DataClass implements Insertable<CardRow> {
         flavorName,
         lang,
         releasedAt,
-        uri,
-        scryfallUri,
         layout,
         manaCost,
         cmc,
@@ -2981,8 +2927,6 @@ class CardRow extends DataClass implements Insertable<CardRow> {
           other.flavorName == this.flavorName &&
           other.lang == this.lang &&
           other.releasedAt == this.releasedAt &&
-          other.uri == this.uri &&
-          other.scryfallUri == this.scryfallUri &&
           other.layout == this.layout &&
           other.manaCost == this.manaCost &&
           other.cmc == this.cmc &&
@@ -3081,8 +3025,6 @@ class CardsCompanion extends UpdateCompanion<CardRow> {
   final Value<String?> flavorName;
   final Value<String> lang;
   final Value<String> releasedAt;
-  final Value<String> uri;
-  final Value<String> scryfallUri;
   final Value<String> layout;
   final Value<String?> manaCost;
   final Value<double> cmc;
@@ -3179,8 +3121,6 @@ class CardsCompanion extends UpdateCompanion<CardRow> {
     this.flavorName = const Value.absent(),
     this.lang = const Value.absent(),
     this.releasedAt = const Value.absent(),
-    this.uri = const Value.absent(),
-    this.scryfallUri = const Value.absent(),
     this.layout = const Value.absent(),
     this.manaCost = const Value.absent(),
     this.cmc = const Value.absent(),
@@ -3278,8 +3218,6 @@ class CardsCompanion extends UpdateCompanion<CardRow> {
     this.flavorName = const Value.absent(),
     required String lang,
     required String releasedAt,
-    required String uri,
-    required String scryfallUri,
     required String layout,
     this.manaCost = const Value.absent(),
     required double cmc,
@@ -3372,8 +3310,6 @@ class CardsCompanion extends UpdateCompanion<CardRow> {
         name = Value(name),
         lang = Value(lang),
         releasedAt = Value(releasedAt),
-        uri = Value(uri),
-        scryfallUri = Value(scryfallUri),
         layout = Value(layout),
         cmc = Value(cmc),
         typeLine = Value(typeLine),
@@ -3426,8 +3362,6 @@ class CardsCompanion extends UpdateCompanion<CardRow> {
     Expression<String>? flavorName,
     Expression<String>? lang,
     Expression<String>? releasedAt,
-    Expression<String>? uri,
-    Expression<String>? scryfallUri,
     Expression<String>? layout,
     Expression<String>? manaCost,
     Expression<double>? cmc,
@@ -3525,8 +3459,6 @@ class CardsCompanion extends UpdateCompanion<CardRow> {
       if (flavorName != null) 'flavor_name': flavorName,
       if (lang != null) 'lang': lang,
       if (releasedAt != null) 'released_at': releasedAt,
-      if (uri != null) 'uri': uri,
-      if (scryfallUri != null) 'scryfall_uri': scryfallUri,
       if (layout != null) 'layout': layout,
       if (manaCost != null) 'mana_cost': manaCost,
       if (cmc != null) 'cmc': cmc,
@@ -3630,8 +3562,6 @@ class CardsCompanion extends UpdateCompanion<CardRow> {
       Value<String?>? flavorName,
       Value<String>? lang,
       Value<String>? releasedAt,
-      Value<String>? uri,
-      Value<String>? scryfallUri,
       Value<String>? layout,
       Value<String?>? manaCost,
       Value<double>? cmc,
@@ -3728,8 +3658,6 @@ class CardsCompanion extends UpdateCompanion<CardRow> {
       flavorName: flavorName ?? this.flavorName,
       lang: lang ?? this.lang,
       releasedAt: releasedAt ?? this.releasedAt,
-      uri: uri ?? this.uri,
-      scryfallUri: scryfallUri ?? this.scryfallUri,
       layout: layout ?? this.layout,
       manaCost: manaCost ?? this.manaCost,
       cmc: cmc ?? this.cmc,
@@ -3846,12 +3774,6 @@ class CardsCompanion extends UpdateCompanion<CardRow> {
     }
     if (releasedAt.present) {
       map['released_at'] = Variable<String>(releasedAt.value);
-    }
-    if (uri.present) {
-      map['uri'] = Variable<String>(uri.value);
-    }
-    if (scryfallUri.present) {
-      map['scryfall_uri'] = Variable<String>(scryfallUri.value);
     }
     if (layout.present) {
       map['layout'] = Variable<String>(layout.value);
@@ -4131,8 +4053,6 @@ class CardsCompanion extends UpdateCompanion<CardRow> {
           ..write('flavorName: $flavorName, ')
           ..write('lang: $lang, ')
           ..write('releasedAt: $releasedAt, ')
-          ..write('uri: $uri, ')
-          ..write('scryfallUri: $scryfallUri, ')
           ..write('layout: $layout, ')
           ..write('manaCost: $manaCost, ')
           ..write('cmc: $cmc, ')
@@ -9575,44 +9495,29 @@ class $EdhrecRecommendationsTable extends EdhrecRecommendations
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $EdhrecRecommendationsTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
-      'id', aliasedName, false,
-      hasAutoIncrement: true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
   static const VerificationMeta _pageIdMeta = const VerificationMeta('pageId');
   @override
   late final GeneratedColumn<int> pageId = GeneratedColumn<int>(
       'page_id', aliasedName, false,
       type: DriftSqlType.int, requiredDuringInsert: true);
-  static const VerificationMeta _oracleIdMeta =
-      const VerificationMeta('oracleId');
-  @override
-  late final GeneratedColumn<String> oracleId = GeneratedColumn<String>(
-      'oracle_id', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
   static const VerificationMeta _cardNameMeta =
       const VerificationMeta('cardName');
   @override
   late final GeneratedColumn<String> cardName = GeneratedColumn<String>(
       'card_name', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _oracleIdMeta =
+      const VerificationMeta('oracleId');
+  @override
+  late final GeneratedColumn<String> oracleId = GeneratedColumn<String>(
+      'oracle_id', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
   static const VerificationMeta _cardCategoryMeta =
       const VerificationMeta('cardCategory');
   @override
   late final GeneratedColumn<String> cardCategory = GeneratedColumn<String>(
       'card_category', aliasedName, true,
       type: DriftSqlType.string, requiredDuringInsert: false);
-  static const VerificationMeta _recommendationTypeMeta =
-      const VerificationMeta('recommendationType');
-  @override
-  late final GeneratedColumn<String> recommendationType =
-      GeneratedColumn<String>('recommendation_type', aliasedName, true,
-          type: DriftSqlType.string, requiredDuringInsert: false);
   static const VerificationMeta _inclusionCountMeta =
       const VerificationMeta('inclusionCount');
   @override
@@ -9639,12 +9544,10 @@ class $EdhrecRecommendationsTable extends EdhrecRecommendations
       type: DriftSqlType.int, requiredDuringInsert: false);
   @override
   List<GeneratedColumn> get $columns => [
-        id,
         pageId,
-        oracleId,
         cardName,
+        oracleId,
         cardCategory,
-        recommendationType,
         inclusionCount,
         inclusionPercent,
         synergyScore,
@@ -9661,18 +9564,11 @@ class $EdhrecRecommendationsTable extends EdhrecRecommendations
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
     if (data.containsKey('page_id')) {
       context.handle(_pageIdMeta,
           pageId.isAcceptableOrUnknown(data['page_id']!, _pageIdMeta));
     } else if (isInserting) {
       context.missing(_pageIdMeta);
-    }
-    if (data.containsKey('oracle_id')) {
-      context.handle(_oracleIdMeta,
-          oracleId.isAcceptableOrUnknown(data['oracle_id']!, _oracleIdMeta));
     }
     if (data.containsKey('card_name')) {
       context.handle(_cardNameMeta,
@@ -9680,17 +9576,15 @@ class $EdhrecRecommendationsTable extends EdhrecRecommendations
     } else if (isInserting) {
       context.missing(_cardNameMeta);
     }
+    if (data.containsKey('oracle_id')) {
+      context.handle(_oracleIdMeta,
+          oracleId.isAcceptableOrUnknown(data['oracle_id']!, _oracleIdMeta));
+    }
     if (data.containsKey('card_category')) {
       context.handle(
           _cardCategoryMeta,
           cardCategory.isAcceptableOrUnknown(
               data['card_category']!, _cardCategoryMeta));
-    }
-    if (data.containsKey('recommendation_type')) {
-      context.handle(
-          _recommendationTypeMeta,
-          recommendationType.isAcceptableOrUnknown(
-              data['recommendation_type']!, _recommendationTypeMeta));
     }
     if (data.containsKey('inclusion_count')) {
       context.handle(
@@ -9720,24 +9614,20 @@ class $EdhrecRecommendationsTable extends EdhrecRecommendations
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {id};
+  Set<GeneratedColumn> get $primaryKey => {pageId, cardName};
   @override
   EdhrecRecommendationRow map(Map<String, dynamic> data,
       {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return EdhrecRecommendationRow(
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
       pageId: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}page_id'])!,
-      oracleId: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}oracle_id']),
       cardName: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}card_name'])!,
+      oracleId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}oracle_id']),
       cardCategory: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}card_category']),
-      recommendationType: attachedDatabase.typeMapping.read(
-          DriftSqlType.string, data['${effectivePrefix}recommendation_type']),
       inclusionCount: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}inclusion_count']),
       inclusionPercent: attachedDatabase.typeMapping.read(
@@ -9753,36 +9643,34 @@ class $EdhrecRecommendationsTable extends EdhrecRecommendations
   $EdhrecRecommendationsTable createAlias(String alias) {
     return $EdhrecRecommendationsTable(attachedDatabase, alias);
   }
+
+  @override
+  bool get withoutRowId => true;
 }
 
 class EdhrecRecommendationRow extends DataClass
     implements Insertable<EdhrecRecommendationRow> {
-  final int id;
-
   /// FK → edhrec_pages.id.
   final int pageId;
-
-  /// FK → cards.oracleId — null when name didn't resolve.
-  final String? oracleId;
 
   /// Raw card name from EDHREC.
   final String cardName;
 
-  /// EDHREC's categorisation of the recommendation — e.g. "high synergy
-  /// cards", "top cards", "newcards". Lowercased free text.
+  /// FK → cards.oracleId — null when name didn't resolve.
+  final String? oracleId;
+
+  /// EDHREC's categorisation of the recommendation — e.g. "Top Cards",
+  /// "High Synergy Cards", "Lands". Display-name form.
   final String? cardCategory;
-  final String? recommendationType;
   final int? inclusionCount;
   final double? inclusionPercent;
   final double? synergyScore;
   final int? rankInCategory;
   const EdhrecRecommendationRow(
-      {required this.id,
-      required this.pageId,
-      this.oracleId,
+      {required this.pageId,
       required this.cardName,
+      this.oracleId,
       this.cardCategory,
-      this.recommendationType,
       this.inclusionCount,
       this.inclusionPercent,
       this.synergyScore,
@@ -9790,17 +9678,13 @@ class EdhrecRecommendationRow extends DataClass
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    map['id'] = Variable<int>(id);
     map['page_id'] = Variable<int>(pageId);
+    map['card_name'] = Variable<String>(cardName);
     if (!nullToAbsent || oracleId != null) {
       map['oracle_id'] = Variable<String>(oracleId);
     }
-    map['card_name'] = Variable<String>(cardName);
     if (!nullToAbsent || cardCategory != null) {
       map['card_category'] = Variable<String>(cardCategory);
-    }
-    if (!nullToAbsent || recommendationType != null) {
-      map['recommendation_type'] = Variable<String>(recommendationType);
     }
     if (!nullToAbsent || inclusionCount != null) {
       map['inclusion_count'] = Variable<int>(inclusionCount);
@@ -9819,18 +9703,14 @@ class EdhrecRecommendationRow extends DataClass
 
   EdhrecRecommendationsCompanion toCompanion(bool nullToAbsent) {
     return EdhrecRecommendationsCompanion(
-      id: Value(id),
       pageId: Value(pageId),
+      cardName: Value(cardName),
       oracleId: oracleId == null && nullToAbsent
           ? const Value.absent()
           : Value(oracleId),
-      cardName: Value(cardName),
       cardCategory: cardCategory == null && nullToAbsent
           ? const Value.absent()
           : Value(cardCategory),
-      recommendationType: recommendationType == null && nullToAbsent
-          ? const Value.absent()
-          : Value(recommendationType),
       inclusionCount: inclusionCount == null && nullToAbsent
           ? const Value.absent()
           : Value(inclusionCount),
@@ -9850,13 +9730,10 @@ class EdhrecRecommendationRow extends DataClass
       {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return EdhrecRecommendationRow(
-      id: serializer.fromJson<int>(json['id']),
       pageId: serializer.fromJson<int>(json['pageId']),
-      oracleId: serializer.fromJson<String?>(json['oracleId']),
       cardName: serializer.fromJson<String>(json['cardName']),
+      oracleId: serializer.fromJson<String?>(json['oracleId']),
       cardCategory: serializer.fromJson<String?>(json['cardCategory']),
-      recommendationType:
-          serializer.fromJson<String?>(json['recommendationType']),
       inclusionCount: serializer.fromJson<int?>(json['inclusionCount']),
       inclusionPercent: serializer.fromJson<double?>(json['inclusionPercent']),
       synergyScore: serializer.fromJson<double?>(json['synergyScore']),
@@ -9867,12 +9744,10 @@ class EdhrecRecommendationRow extends DataClass
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
       'pageId': serializer.toJson<int>(pageId),
-      'oracleId': serializer.toJson<String?>(oracleId),
       'cardName': serializer.toJson<String>(cardName),
+      'oracleId': serializer.toJson<String?>(oracleId),
       'cardCategory': serializer.toJson<String?>(cardCategory),
-      'recommendationType': serializer.toJson<String?>(recommendationType),
       'inclusionCount': serializer.toJson<int?>(inclusionCount),
       'inclusionPercent': serializer.toJson<double?>(inclusionPercent),
       'synergyScore': serializer.toJson<double?>(synergyScore),
@@ -9881,26 +9756,20 @@ class EdhrecRecommendationRow extends DataClass
   }
 
   EdhrecRecommendationRow copyWith(
-          {int? id,
-          int? pageId,
-          Value<String?> oracleId = const Value.absent(),
+          {int? pageId,
           String? cardName,
+          Value<String?> oracleId = const Value.absent(),
           Value<String?> cardCategory = const Value.absent(),
-          Value<String?> recommendationType = const Value.absent(),
           Value<int?> inclusionCount = const Value.absent(),
           Value<double?> inclusionPercent = const Value.absent(),
           Value<double?> synergyScore = const Value.absent(),
           Value<int?> rankInCategory = const Value.absent()}) =>
       EdhrecRecommendationRow(
-        id: id ?? this.id,
         pageId: pageId ?? this.pageId,
-        oracleId: oracleId.present ? oracleId.value : this.oracleId,
         cardName: cardName ?? this.cardName,
+        oracleId: oracleId.present ? oracleId.value : this.oracleId,
         cardCategory:
             cardCategory.present ? cardCategory.value : this.cardCategory,
-        recommendationType: recommendationType.present
-            ? recommendationType.value
-            : this.recommendationType,
         inclusionCount:
             inclusionCount.present ? inclusionCount.value : this.inclusionCount,
         inclusionPercent: inclusionPercent.present
@@ -9914,16 +9783,12 @@ class EdhrecRecommendationRow extends DataClass
   EdhrecRecommendationRow copyWithCompanion(
       EdhrecRecommendationsCompanion data) {
     return EdhrecRecommendationRow(
-      id: data.id.present ? data.id.value : this.id,
       pageId: data.pageId.present ? data.pageId.value : this.pageId,
-      oracleId: data.oracleId.present ? data.oracleId.value : this.oracleId,
       cardName: data.cardName.present ? data.cardName.value : this.cardName,
+      oracleId: data.oracleId.present ? data.oracleId.value : this.oracleId,
       cardCategory: data.cardCategory.present
           ? data.cardCategory.value
           : this.cardCategory,
-      recommendationType: data.recommendationType.present
-          ? data.recommendationType.value
-          : this.recommendationType,
       inclusionCount: data.inclusionCount.present
           ? data.inclusionCount.value
           : this.inclusionCount,
@@ -9942,12 +9807,10 @@ class EdhrecRecommendationRow extends DataClass
   @override
   String toString() {
     return (StringBuffer('EdhrecRecommendationRow(')
-          ..write('id: $id, ')
           ..write('pageId: $pageId, ')
-          ..write('oracleId: $oracleId, ')
           ..write('cardName: $cardName, ')
+          ..write('oracleId: $oracleId, ')
           ..write('cardCategory: $cardCategory, ')
-          ..write('recommendationType: $recommendationType, ')
           ..write('inclusionCount: $inclusionCount, ')
           ..write('inclusionPercent: $inclusionPercent, ')
           ..write('synergyScore: $synergyScore, ')
@@ -9957,27 +9820,16 @@ class EdhrecRecommendationRow extends DataClass
   }
 
   @override
-  int get hashCode => Object.hash(
-      id,
-      pageId,
-      oracleId,
-      cardName,
-      cardCategory,
-      recommendationType,
-      inclusionCount,
-      inclusionPercent,
-      synergyScore,
-      rankInCategory);
+  int get hashCode => Object.hash(pageId, cardName, oracleId, cardCategory,
+      inclusionCount, inclusionPercent, synergyScore, rankInCategory);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is EdhrecRecommendationRow &&
-          other.id == this.id &&
           other.pageId == this.pageId &&
-          other.oracleId == this.oracleId &&
           other.cardName == this.cardName &&
+          other.oracleId == this.oracleId &&
           other.cardCategory == this.cardCategory &&
-          other.recommendationType == this.recommendationType &&
           other.inclusionCount == this.inclusionCount &&
           other.inclusionPercent == this.inclusionPercent &&
           other.synergyScore == this.synergyScore &&
@@ -9986,35 +9838,29 @@ class EdhrecRecommendationRow extends DataClass
 
 class EdhrecRecommendationsCompanion
     extends UpdateCompanion<EdhrecRecommendationRow> {
-  final Value<int> id;
   final Value<int> pageId;
-  final Value<String?> oracleId;
   final Value<String> cardName;
+  final Value<String?> oracleId;
   final Value<String?> cardCategory;
-  final Value<String?> recommendationType;
   final Value<int?> inclusionCount;
   final Value<double?> inclusionPercent;
   final Value<double?> synergyScore;
   final Value<int?> rankInCategory;
   const EdhrecRecommendationsCompanion({
-    this.id = const Value.absent(),
     this.pageId = const Value.absent(),
-    this.oracleId = const Value.absent(),
     this.cardName = const Value.absent(),
+    this.oracleId = const Value.absent(),
     this.cardCategory = const Value.absent(),
-    this.recommendationType = const Value.absent(),
     this.inclusionCount = const Value.absent(),
     this.inclusionPercent = const Value.absent(),
     this.synergyScore = const Value.absent(),
     this.rankInCategory = const Value.absent(),
   });
   EdhrecRecommendationsCompanion.insert({
-    this.id = const Value.absent(),
     required int pageId,
-    this.oracleId = const Value.absent(),
     required String cardName,
+    this.oracleId = const Value.absent(),
     this.cardCategory = const Value.absent(),
-    this.recommendationType = const Value.absent(),
     this.inclusionCount = const Value.absent(),
     this.inclusionPercent = const Value.absent(),
     this.synergyScore = const Value.absent(),
@@ -10022,24 +9868,20 @@ class EdhrecRecommendationsCompanion
   })  : pageId = Value(pageId),
         cardName = Value(cardName);
   static Insertable<EdhrecRecommendationRow> custom({
-    Expression<int>? id,
     Expression<int>? pageId,
-    Expression<String>? oracleId,
     Expression<String>? cardName,
+    Expression<String>? oracleId,
     Expression<String>? cardCategory,
-    Expression<String>? recommendationType,
     Expression<int>? inclusionCount,
     Expression<double>? inclusionPercent,
     Expression<double>? synergyScore,
     Expression<int>? rankInCategory,
   }) {
     return RawValuesInsertable({
-      if (id != null) 'id': id,
       if (pageId != null) 'page_id': pageId,
-      if (oracleId != null) 'oracle_id': oracleId,
       if (cardName != null) 'card_name': cardName,
+      if (oracleId != null) 'oracle_id': oracleId,
       if (cardCategory != null) 'card_category': cardCategory,
-      if (recommendationType != null) 'recommendation_type': recommendationType,
       if (inclusionCount != null) 'inclusion_count': inclusionCount,
       if (inclusionPercent != null) 'inclusion_percent': inclusionPercent,
       if (synergyScore != null) 'synergy_score': synergyScore,
@@ -10048,23 +9890,19 @@ class EdhrecRecommendationsCompanion
   }
 
   EdhrecRecommendationsCompanion copyWith(
-      {Value<int>? id,
-      Value<int>? pageId,
-      Value<String?>? oracleId,
+      {Value<int>? pageId,
       Value<String>? cardName,
+      Value<String?>? oracleId,
       Value<String?>? cardCategory,
-      Value<String?>? recommendationType,
       Value<int?>? inclusionCount,
       Value<double?>? inclusionPercent,
       Value<double?>? synergyScore,
       Value<int?>? rankInCategory}) {
     return EdhrecRecommendationsCompanion(
-      id: id ?? this.id,
       pageId: pageId ?? this.pageId,
-      oracleId: oracleId ?? this.oracleId,
       cardName: cardName ?? this.cardName,
+      oracleId: oracleId ?? this.oracleId,
       cardCategory: cardCategory ?? this.cardCategory,
-      recommendationType: recommendationType ?? this.recommendationType,
       inclusionCount: inclusionCount ?? this.inclusionCount,
       inclusionPercent: inclusionPercent ?? this.inclusionPercent,
       synergyScore: synergyScore ?? this.synergyScore,
@@ -10075,23 +9913,17 @@ class EdhrecRecommendationsCompanion
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<int>(id.value);
-    }
     if (pageId.present) {
       map['page_id'] = Variable<int>(pageId.value);
-    }
-    if (oracleId.present) {
-      map['oracle_id'] = Variable<String>(oracleId.value);
     }
     if (cardName.present) {
       map['card_name'] = Variable<String>(cardName.value);
     }
+    if (oracleId.present) {
+      map['oracle_id'] = Variable<String>(oracleId.value);
+    }
     if (cardCategory.present) {
       map['card_category'] = Variable<String>(cardCategory.value);
-    }
-    if (recommendationType.present) {
-      map['recommendation_type'] = Variable<String>(recommendationType.value);
     }
     if (inclusionCount.present) {
       map['inclusion_count'] = Variable<int>(inclusionCount.value);
@@ -10111,12 +9943,10 @@ class EdhrecRecommendationsCompanion
   @override
   String toString() {
     return (StringBuffer('EdhrecRecommendationsCompanion(')
-          ..write('id: $id, ')
           ..write('pageId: $pageId, ')
-          ..write('oracleId: $oracleId, ')
           ..write('cardName: $cardName, ')
+          ..write('oracleId: $oracleId, ')
           ..write('cardCategory: $cardCategory, ')
-          ..write('recommendationType: $recommendationType, ')
           ..write('inclusionCount: $inclusionCount, ')
           ..write('inclusionPercent: $inclusionPercent, ')
           ..write('synergyScore: $synergyScore, ')
@@ -10975,14 +10805,8 @@ abstract class _$CardsDatabase extends GeneratedDatabase {
       'CREATE INDEX idx_edhrec_page_kind ON edhrec_pages (kind)');
   late final Index idxEdhrecPagePartner = Index('idx_edhrec_page_partner',
       'CREATE INDEX idx_edhrec_page_partner ON edhrec_pages (partner_oracle_id)');
-  late final Index idxEdhrecRecPk = Index('idx_edhrec_rec_pk',
-      'CREATE UNIQUE INDEX idx_edhrec_rec_pk ON edhrec_recommendations (page_id, card_name)');
-  late final Index idxEdhrecRecPage = Index('idx_edhrec_rec_page',
-      'CREATE INDEX idx_edhrec_rec_page ON edhrec_recommendations (page_id)');
   late final Index idxEdhrecRecOracle = Index('idx_edhrec_rec_oracle',
       'CREATE INDEX idx_edhrec_rec_oracle ON edhrec_recommendations (oracle_id)');
-  late final Index idxEdhrecRecCategory = Index('idx_edhrec_rec_category',
-      'CREATE INDEX idx_edhrec_rec_category ON edhrec_recommendations (card_category)');
   late final Index idxEdhrecThemePk = Index('idx_edhrec_theme_pk',
       'CREATE UNIQUE INDEX idx_edhrec_theme_pk ON edhrec_themes (page_id, theme_slug)');
   late final Index idxEdhrecThemePage = Index('idx_edhrec_theme_page',
@@ -11061,10 +10885,7 @@ abstract class _$CardsDatabase extends GeneratedDatabase {
         idxEdhrecPageOracle,
         idxEdhrecPageKind,
         idxEdhrecPagePartner,
-        idxEdhrecRecPk,
-        idxEdhrecRecPage,
         idxEdhrecRecOracle,
-        idxEdhrecRecCategory,
         idxEdhrecThemePk,
         idxEdhrecThemePage,
         idxEdhrecThemeSlug,
@@ -11083,8 +10904,6 @@ typedef $$CardsTableCreateCompanionBuilder = CardsCompanion Function({
   Value<String?> flavorName,
   required String lang,
   required String releasedAt,
-  required String uri,
-  required String scryfallUri,
   required String layout,
   Value<String?> manaCost,
   required double cmc,
@@ -11182,8 +11001,6 @@ typedef $$CardsTableUpdateCompanionBuilder = CardsCompanion Function({
   Value<String?> flavorName,
   Value<String> lang,
   Value<String> releasedAt,
-  Value<String> uri,
-  Value<String> scryfallUri,
   Value<String> layout,
   Value<String?> manaCost,
   Value<double> cmc,
@@ -11305,12 +11122,6 @@ class $$CardsTableFilterComposer
 
   ColumnFilters<String> get releasedAt => $composableBuilder(
       column: $table.releasedAt, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get uri => $composableBuilder(
-      column: $table.uri, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get scryfallUri => $composableBuilder(
-      column: $table.scryfallUri, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<String> get layout => $composableBuilder(
       column: $table.layout, builder: (column) => ColumnFilters(column));
@@ -11625,12 +11436,6 @@ class $$CardsTableOrderingComposer
 
   ColumnOrderings<String> get releasedAt => $composableBuilder(
       column: $table.releasedAt, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get uri => $composableBuilder(
-      column: $table.uri, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get scryfallUri => $composableBuilder(
-      column: $table.scryfallUri, builder: (column) => ColumnOrderings(column));
 
   ColumnOrderings<String> get layout => $composableBuilder(
       column: $table.layout, builder: (column) => ColumnOrderings(column));
@@ -11963,12 +11768,6 @@ class $$CardsTableAnnotationComposer
   GeneratedColumn<String> get releasedAt => $composableBuilder(
       column: $table.releasedAt, builder: (column) => column);
 
-  GeneratedColumn<String> get uri =>
-      $composableBuilder(column: $table.uri, builder: (column) => column);
-
-  GeneratedColumn<String> get scryfallUri => $composableBuilder(
-      column: $table.scryfallUri, builder: (column) => column);
-
   GeneratedColumn<String> get layout =>
       $composableBuilder(column: $table.layout, builder: (column) => column);
 
@@ -12262,8 +12061,6 @@ class $$CardsTableTableManager extends RootTableManager<
             Value<String?> flavorName = const Value.absent(),
             Value<String> lang = const Value.absent(),
             Value<String> releasedAt = const Value.absent(),
-            Value<String> uri = const Value.absent(),
-            Value<String> scryfallUri = const Value.absent(),
             Value<String> layout = const Value.absent(),
             Value<String?> manaCost = const Value.absent(),
             Value<double> cmc = const Value.absent(),
@@ -12361,8 +12158,6 @@ class $$CardsTableTableManager extends RootTableManager<
             flavorName: flavorName,
             lang: lang,
             releasedAt: releasedAt,
-            uri: uri,
-            scryfallUri: scryfallUri,
             layout: layout,
             manaCost: manaCost,
             cmc: cmc,
@@ -12460,8 +12255,6 @@ class $$CardsTableTableManager extends RootTableManager<
             Value<String?> flavorName = const Value.absent(),
             required String lang,
             required String releasedAt,
-            required String uri,
-            required String scryfallUri,
             required String layout,
             Value<String?> manaCost = const Value.absent(),
             required double cmc,
@@ -12559,8 +12352,6 @@ class $$CardsTableTableManager extends RootTableManager<
             flavorName: flavorName,
             lang: lang,
             releasedAt: releasedAt,
-            uri: uri,
-            scryfallUri: scryfallUri,
             layout: layout,
             manaCost: manaCost,
             cmc: cmc,
@@ -15236,12 +15027,10 @@ typedef $$EdhrecPagesTableProcessedTableManager = ProcessedTableManager<
     PrefetchHooks Function()>;
 typedef $$EdhrecRecommendationsTableCreateCompanionBuilder
     = EdhrecRecommendationsCompanion Function({
-  Value<int> id,
   required int pageId,
-  Value<String?> oracleId,
   required String cardName,
+  Value<String?> oracleId,
   Value<String?> cardCategory,
-  Value<String?> recommendationType,
   Value<int?> inclusionCount,
   Value<double?> inclusionPercent,
   Value<double?> synergyScore,
@@ -15249,12 +15038,10 @@ typedef $$EdhrecRecommendationsTableCreateCompanionBuilder
 });
 typedef $$EdhrecRecommendationsTableUpdateCompanionBuilder
     = EdhrecRecommendationsCompanion Function({
-  Value<int> id,
   Value<int> pageId,
-  Value<String?> oracleId,
   Value<String> cardName,
+  Value<String?> oracleId,
   Value<String?> cardCategory,
-  Value<String?> recommendationType,
   Value<int?> inclusionCount,
   Value<double?> inclusionPercent,
   Value<double?> synergyScore,
@@ -15270,24 +15057,17 @@ class $$EdhrecRecommendationsTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnFilters<int> get id => $composableBuilder(
-      column: $table.id, builder: (column) => ColumnFilters(column));
-
   ColumnFilters<int> get pageId => $composableBuilder(
       column: $table.pageId, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get oracleId => $composableBuilder(
-      column: $table.oracleId, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<String> get cardName => $composableBuilder(
       column: $table.cardName, builder: (column) => ColumnFilters(column));
 
+  ColumnFilters<String> get oracleId => $composableBuilder(
+      column: $table.oracleId, builder: (column) => ColumnFilters(column));
+
   ColumnFilters<String> get cardCategory => $composableBuilder(
       column: $table.cardCategory, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get recommendationType => $composableBuilder(
-      column: $table.recommendationType,
-      builder: (column) => ColumnFilters(column));
 
   ColumnFilters<int> get inclusionCount => $composableBuilder(
       column: $table.inclusionCount,
@@ -15314,24 +15094,17 @@ class $$EdhrecRecommendationsTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnOrderings<int> get id => $composableBuilder(
-      column: $table.id, builder: (column) => ColumnOrderings(column));
-
   ColumnOrderings<int> get pageId => $composableBuilder(
       column: $table.pageId, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get oracleId => $composableBuilder(
-      column: $table.oracleId, builder: (column) => ColumnOrderings(column));
 
   ColumnOrderings<String> get cardName => $composableBuilder(
       column: $table.cardName, builder: (column) => ColumnOrderings(column));
 
+  ColumnOrderings<String> get oracleId => $composableBuilder(
+      column: $table.oracleId, builder: (column) => ColumnOrderings(column));
+
   ColumnOrderings<String> get cardCategory => $composableBuilder(
       column: $table.cardCategory,
-      builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get recommendationType => $composableBuilder(
-      column: $table.recommendationType,
       builder: (column) => ColumnOrderings(column));
 
   ColumnOrderings<int> get inclusionCount => $composableBuilder(
@@ -15360,23 +15133,17 @@ class $$EdhrecRecommendationsTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  GeneratedColumn<int> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => column);
-
   GeneratedColumn<int> get pageId =>
       $composableBuilder(column: $table.pageId, builder: (column) => column);
-
-  GeneratedColumn<String> get oracleId =>
-      $composableBuilder(column: $table.oracleId, builder: (column) => column);
 
   GeneratedColumn<String> get cardName =>
       $composableBuilder(column: $table.cardName, builder: (column) => column);
 
+  GeneratedColumn<String> get oracleId =>
+      $composableBuilder(column: $table.oracleId, builder: (column) => column);
+
   GeneratedColumn<String> get cardCategory => $composableBuilder(
       column: $table.cardCategory, builder: (column) => column);
-
-  GeneratedColumn<String> get recommendationType => $composableBuilder(
-      column: $table.recommendationType, builder: (column) => column);
 
   GeneratedColumn<int> get inclusionCount => $composableBuilder(
       column: $table.inclusionCount, builder: (column) => column);
@@ -15422,48 +15189,40 @@ class $$EdhrecRecommendationsTableTableManager extends RootTableManager<
               $$EdhrecRecommendationsTableAnnotationComposer(
                   $db: db, $table: table),
           updateCompanionCallback: ({
-            Value<int> id = const Value.absent(),
             Value<int> pageId = const Value.absent(),
-            Value<String?> oracleId = const Value.absent(),
             Value<String> cardName = const Value.absent(),
+            Value<String?> oracleId = const Value.absent(),
             Value<String?> cardCategory = const Value.absent(),
-            Value<String?> recommendationType = const Value.absent(),
             Value<int?> inclusionCount = const Value.absent(),
             Value<double?> inclusionPercent = const Value.absent(),
             Value<double?> synergyScore = const Value.absent(),
             Value<int?> rankInCategory = const Value.absent(),
           }) =>
               EdhrecRecommendationsCompanion(
-            id: id,
             pageId: pageId,
-            oracleId: oracleId,
             cardName: cardName,
+            oracleId: oracleId,
             cardCategory: cardCategory,
-            recommendationType: recommendationType,
             inclusionCount: inclusionCount,
             inclusionPercent: inclusionPercent,
             synergyScore: synergyScore,
             rankInCategory: rankInCategory,
           ),
           createCompanionCallback: ({
-            Value<int> id = const Value.absent(),
             required int pageId,
-            Value<String?> oracleId = const Value.absent(),
             required String cardName,
+            Value<String?> oracleId = const Value.absent(),
             Value<String?> cardCategory = const Value.absent(),
-            Value<String?> recommendationType = const Value.absent(),
             Value<int?> inclusionCount = const Value.absent(),
             Value<double?> inclusionPercent = const Value.absent(),
             Value<double?> synergyScore = const Value.absent(),
             Value<int?> rankInCategory = const Value.absent(),
           }) =>
               EdhrecRecommendationsCompanion.insert(
-            id: id,
             pageId: pageId,
-            oracleId: oracleId,
             cardName: cardName,
+            oracleId: oracleId,
             cardCategory: cardCategory,
-            recommendationType: recommendationType,
             inclusionCount: inclusionCount,
             inclusionPercent: inclusionPercent,
             synergyScore: synergyScore,
