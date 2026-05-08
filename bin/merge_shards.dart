@@ -120,6 +120,13 @@ Future<void> main(List<String> args) async {
       _log('  carryover: $carryoverSkipReason');
     }
 
+    // Cap edhrec_recommendations to top N per (page, category) before
+    // counting + VACUUM. EDHREC already serves max 50/category and
+    // averages 27. The UI groups by category and renders the first
+    // few — past the top 10 is dead weight. Cap takes the table from
+    // ~12M rows to ~4M and compressed bundle from ~1 GB to ~400 MB.
+    await _pruneRecsTopN(db, perCategory: 10);
+
     // Snapshot all manifest counts before VACUUM/close — so we don't
     // need to reopen the DB after gzip just to fill in the manifest.
     final cards = await _countTable(db, 'cards');
@@ -316,11 +323,11 @@ Future<void> _mergeShard(
       '  AND m.partner_oracle_id IS s.partner_oracle_id',
     );
     await db.customStatement(
-      'INSERT INTO main.edhrec_recommendations '
-      '(page_id, oracle_id, card_name, card_category, recommendation_type, '
+      'INSERT OR IGNORE INTO main.edhrec_recommendations '
+      '(page_id, oracle_id, card_name, card_category, '
       ' inclusion_count, inclusion_percent, synergy_score, rank_in_category) '
       'SELECT pr.main_id, sr.oracle_id, sr.card_name, sr.card_category, '
-      ' sr.recommendation_type, sr.inclusion_count, sr.inclusion_percent, '
+      ' sr.inclusion_count, sr.inclusion_percent, '
       ' sr.synergy_score, sr.rank_in_category '
       'FROM $attachAlias.edhrec_recommendations sr '
       'JOIN temp.page_remap pr ON pr.shard_id = sr.page_id',
@@ -477,11 +484,11 @@ Future<Map<String, int>> _carryOverFromPrev(
 
     final recsBefore = await _countTable(db, 'edhrec_recommendations');
     await db.customStatement(
-      'INSERT INTO main.edhrec_recommendations '
-      '(page_id, oracle_id, card_name, card_category, recommendation_type, '
+      'INSERT OR IGNORE INTO main.edhrec_recommendations '
+      '(page_id, oracle_id, card_name, card_category, '
       ' inclusion_count, inclusion_percent, synergy_score, rank_in_category) '
       'SELECT r.main_id, sr.oracle_id, sr.card_name, sr.card_category, '
-      ' sr.recommendation_type, sr.inclusion_count, sr.inclusion_percent, '
+      ' sr.inclusion_count, sr.inclusion_percent, '
       ' sr.synergy_score, sr.rank_in_category '
       'FROM prev.edhrec_recommendations sr '
       'JOIN temp.prev_page_remap r ON r.prev_id = sr.page_id '
@@ -585,6 +592,26 @@ Future<int> _readPrevSchemaVersion(CardsDatabase db, File prevFile) async {
 Future<int> _countTable(CardsDatabase db, String table) async {
   final rows = await db.customSelect('SELECT COUNT(*) AS c FROM $table').get();
   return rows.isEmpty ? 0 : (rows.first.data['c'] as int? ?? 0);
+}
+
+/// Cap [edhrec_recommendations] to top [perCategory] rows per
+/// (page, category) by simply trimming rows past `rank_in_category`.
+/// EDHREC's own ranks are 1..N within each category and dense, so this
+/// avoids a heavy window-function pass over a 12M-row table.
+Future<void> _pruneRecsTopN(
+  CardsDatabase db, {
+  required int perCategory,
+}) async {
+  final before = await _countTable(db, 'edhrec_recommendations');
+  await db.customStatement(
+    'DELETE FROM edhrec_recommendations '
+    'WHERE rank_in_category IS NULL OR rank_in_category > $perCategory',
+  );
+  final after = await _countTable(db, 'edhrec_recommendations');
+  _log(
+    '  prune-recs: kept top $perCategory per (page,category) — '
+    '$before → $after rows (-${before - after})',
+  );
 }
 
 /// Whether an attached SQLite database has a given column on a table.
