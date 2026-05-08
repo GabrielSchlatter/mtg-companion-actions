@@ -395,17 +395,91 @@ Future<List<_EdhrecWorkItem>> _buildPartnershipWorkList(
     return const [];
   }
 
-  final indexEntries = _extractCardviews(indexResp, tag: 'partners');
-  emit('  partner index: ${indexEntries.length} partner-eligible cards');
-  if (indexEntries.isEmpty) return const [];
+  // The index has multiple cardlists, each tagged for a different
+  // partnering mechanic — `partners` (open Partner), `partnerwith`
+  // (Partner with X), `friendsforever`, `doctors` (Doctor's
+  // Companion), `chooseabackground` × `backgrounds`, `survivors`,
+  // `father&son`, `characterselect`, plus any future EDHREC adds.
+  // Each cardview is one of two shapes:
+  //
+  //   - **Direct pair** — `url` is `/commanders/<a>-<b>` and `cards`
+  //     has both members. Used by the `partnerwith` mechanic
+  //     (Cazur+Ukkima, Frodo+Sam, Alisaie+Alphinaud, …) and by any
+  //     other mechanic where EDHREC pre-resolves the canonical pair.
+  //     We can insert these directly without a per-card walk.
+  //
+  //   - **Single card** — `url` is `/partners/<slug>` and `cards` is
+  //     null. We then have to walk `/pages/partners/<slug>.json` to
+  //     enumerate which other cards EDHREC paired it with. EDHREC
+  //     occasionally returns `AccessDenied` (HTTP 403) for those
+  //     per-card pages — we tolerate it and move on.
+  final container = indexResp['container'] as Map<String, dynamic>?;
+  final jsonDict = container?['json_dict'] as Map<String, dynamic>?;
+  final cardlists = jsonDict?['cardlists'] as List<dynamic>? ?? const [];
 
-  // 2. For each partner card, fetch its per-card page and collect
-  //    pairings. Each pairing has `cardviews[].url` =
-  //    "/commanders/<a-slug>-<b-slug>"; the queried card's slug is
-  //    always one of the two halves, so we can split on it.
   final pairs = <String, _EdhrecWorkItem>{}; // canonical key → work item
+  final singleCardEntries = <Map<String, dynamic>>[];
+  var directPairCount = 0;
+  for (final cl in cardlists) {
+    if (cl is! Map<String, dynamic>) continue;
+    final cardviews = cl['cardviews'] as List<dynamic>? ?? const [];
+    for (final cv in cardviews.whereType<Map<String, dynamic>>()) {
+      final url = cv['url'] as String?;
+      if (url == null) continue;
+      if (url.startsWith('/commanders/')) {
+        // Direct pair — extract members and add to work list.
+        final pairSlug = url.substring(12);
+        final cards = cv['cards'] as List<dynamic>?;
+        if (cards == null || cards.length < 2) continue;
+        final lhsCard = cards[0] as Map<String, dynamic>?;
+        final rhsCard = cards[1] as Map<String, dynamic>?;
+        if (lhsCard == null || rhsCard == null) continue;
+        final lhsName = lhsCard['name'] as String?;
+        final rhsName = rhsCard['name'] as String?;
+        // The per-card `url` field on members is the slug fragment
+        // (e.g. `alisaie-leveilleur`), not a full path.
+        final lhsSlug = lhsCard['url'] as String?;
+        final rhsSlug = rhsCard['url'] as String?;
+        if (lhsName == null ||
+            rhsName == null ||
+            lhsSlug == null ||
+            rhsSlug == null) continue;
+        final lhsOracle = _resolveName(lhsName, nameToOracleId);
+        final rhsOracle = _resolveName(rhsName, nameToOracleId);
+        if (lhsOracle == null ||
+            rhsOracle == null ||
+            lhsOracle == rhsOracle) continue;
+        final (a, b) = lhsOracle.compareTo(rhsOracle) < 0
+            ? (lhsOracle, rhsOracle)
+            : (rhsOracle, lhsOracle);
+        final key = '$a|$b';
+        if (pairs.containsKey(key)) continue;
+        if (freshPairs.contains((a: a, b: b))) continue;
+        pairs[key] = _EdhrecWorkItem(
+          scryfallId: '$a-$b',
+          oracleId: a,
+          name: '$lhsName // $rhsName',
+          sanitized: a == lhsOracle ? lhsSlug : rhsSlug,
+          kind: 'commander',
+          partnerOracleId: b,
+          partnerSanitized: a == lhsOracle ? rhsSlug : lhsSlug,
+          pairUrlSlug: pairSlug,
+        );
+        directPairCount++;
+      } else if (url.startsWith('/partners/')) {
+        singleCardEntries.add(cv);
+      }
+    }
+  }
+  emit('  partner index: ${directPairCount} direct pairs (Partner with X / '
+      'similar) + ${singleCardEntries.length} cards needing per-card walk');
+
+  // Walk per-card pages for the single-card entries to discover which
+  // other cards EDHREC pairs them with. 403s are expected — they mean
+  // EDHREC has the card in the index but not (yet) a per-card page;
+  // skip and keep going.
   var indexed = 0;
-  for (final entry in indexEntries) {
+  for (final entry in singleCardEntries) {
     final lhsSlug = (entry['sanitized'] as String?) ??
         _slugFromPartnersUrl(entry['url'] as String?);
     final lhsName = entry['name'] as String?;
@@ -433,7 +507,6 @@ Future<List<_EdhrecWorkItem>> _buildPartnershipWorkList(
       if (rhsOracle == null) continue;
       if (rhsOracle == lhsOracle) continue; // self-pairings are nonsense
 
-      // Canonicalise so we dedupe (A,B) and (B,A) seen from each side.
       final (a, b) = lhsOracle.compareTo(rhsOracle) < 0
           ? (lhsOracle, rhsOracle)
           : (rhsOracle, lhsOracle);
@@ -441,12 +514,8 @@ Future<List<_EdhrecWorkItem>> _buildPartnershipWorkList(
       if (pairs.containsKey(key)) continue;
       if (freshPairs.contains((a: a, b: b))) continue;
 
-      // Pair work items use the *original* EDHREC URL slug so we hit
-      // the page that exists (some pairs only exist under one ordering
-      // of the slugs). Both halves' display names are stored so we can
-      // surface a user-facing label in the bundle if needed.
       pairs[key] = _EdhrecWorkItem(
-        scryfallId: '$a-$b', // synthetic, only used for sharding hash
+        scryfallId: '$a-$b',
         oracleId: a,
         name: '$lhsName // $rhsName',
         sanitized: a == lhsOracle ? lhsSlug : rhsSlug,
@@ -458,8 +527,8 @@ Future<List<_EdhrecWorkItem>> _buildPartnershipWorkList(
     }
     indexed++;
     if (indexed % 25 == 0) {
-      emit('  partner discovery: $indexed/${indexEntries.length} '
-          '· unique pairs so far: ${pairs.length}');
+      emit('  partner discovery: $indexed/${singleCardEntries.length} '
+          'per-card pages walked · unique pairs so far: ${pairs.length}');
     }
   }
   emit('  partner discovery done: ${pairs.length} unique pairs '
