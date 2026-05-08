@@ -961,6 +961,7 @@ CardsCompanion _cardCompanion(Map<String, dynamic> m) {
     legalOldschool: str('legalOldschool') ?? 'not_legal',
     legalPremodern: str('legalPremodern') ?? 'not_legal',
     legalPredh: str('legalPredh') ?? 'not_legal',
+    canBeCommander: Value(boolOr('canBeCommander')),
     priceUsd: Value(str('priceUsd')),
     priceUsdFoil: Value(str('priceUsdFoil')),
     priceUsdEtched: Value(str('priceUsdEtched')),

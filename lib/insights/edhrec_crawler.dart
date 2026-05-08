@@ -572,21 +572,52 @@ Future<List<_EdhrecWorkItem>> _buildCommanderWorkList(
   EdhrecCrawlConfig cfg,
   Set<String> fresh,
 ) async {
-  // Only request commander pages for cards MTGJSON has flagged as
-  // commander-eligible. `can_be_commander` reflects MTGJSON's
-  // `leadershipSkills.commander` boolean, which already resolves rules
-  // text + type line into a single signal — covers Spacecraft,
-  // Backgrounds, Doctor's Companion, "can be your commander"
-  // planeswalkers, and any future commander-archetype card uniformly,
-  // without us having to maintain a type-line whitelist. A tight gate
-  // here also keeps us off EDHREC's 403-cascade tripwire (its 403 for
-  // missing commander pages is indistinguishable from a real
-  // rate-limit response at HTTP level).
+  // Filter mirrors the paths to commander eligibility in the
+  // Magic comprehensive rules:
+  //
+  //   903.3  — "Each deck has a legendary creature card designated
+  //            as its commander." (default rule, the bulk of cases)
+  //   903.3a — "Some cards have an ability that states the card can
+  //            be your commander." (covers planeswalker commanders
+  //            like Daretti / Estrid / Aminatou, artifact-walkers
+  //            like The Aetherspark, and any future commander-
+  //            archetype card uniformly.)
+  //   Spacecraft / Vehicle update (Edge of Eternities, 2025) —
+  //            "A card designated as commander must be either a
+  //            creature card, a planeswalker card, a Vehicle card,
+  //            or a Spacecraft card with one or more power/
+  //            toughness boxes." For deck-construction this means
+  //            Legendary Vehicles and Legendary Spacecraft with a
+  //            P/T are also eligible (Hearthhull the Worldseed,
+  //            The Seriema, Inspirit, Flagship Vessel, …).
+  //
+  // `legal_commander = 'legal'` excludes banned cards. We don't use
+  // MTGJSON's `leadershipSkills.commander` (`can_be_commander`)
+  // here because it's only TRUE for the 903.3a exception cases —
+  // it leaves the default-eligible Legendary Creatures FALSE,
+  // which would silently skip every "normal" commander.
+  //
+  // Backgrounds are deliberately excluded — they're co-commanders
+  // only, never standalone, and the partnership flow
+  // (`_buildPartnershipWorkList`) handles their EDHREC pages.
+  // Note on the type_line patterns: the supertype `Legendary` and the
+  // card type `Creature` can be separated by other types in type_line
+  // (e.g. "Legendary Artifact Creature — Robot", "Legendary Enchantment
+  // Creature — Background", "Legendary Snow Creature — Zombie"). So we
+  // match `%Legendary%` AND `%Creature%` separately rather than the
+  // contiguous `%Legendary Creature%` substring.
   final rows = await db.customSelect(
     "SELECT scryfall_id, name, oracle_id, edhrec_rank "
     "FROM cards "
     "WHERE is_canonical_printing = 1 "
-    "  AND can_be_commander = 1 "
+    "  AND legal_commander = 'legal' "
+    "  AND ("
+    "    (type_line LIKE '%Legendary%' AND type_line LIKE '%Creature%') "
+    "    OR ((type_line LIKE '%Legendary%' "
+    "         AND (type_line LIKE '%Vehicle%' OR type_line LIKE '%Spacecraft%')) "
+    "        AND power IS NOT NULL AND power != '') "
+    "    OR oracle_text LIKE '%can be your commander%' "
+    "  ) "
     "ORDER BY CASE WHEN edhrec_rank IS NULL THEN 1 ELSE 0 END, edhrec_rank ASC",
   ).get();
   return _filterRows(rows, cfg, fresh, 'commander');

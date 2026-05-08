@@ -454,6 +454,14 @@ class $CardsTable extends Cards with TableInfo<$CardsTable, CardRow> {
   late final GeneratedColumn<String> rulingsJson = GeneratedColumn<String>(
       'rulings_json', aliasedName, true,
       type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _producedManaJsonMeta =
+      const VerificationMeta('producedManaJson');
+  @override
+  late final GeneratedColumn<String> producedManaJson = GeneratedColumn<String>(
+      'produced_mana_json', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant('[]'));
   static const VerificationMeta _oversizedMeta =
       const VerificationMeta('oversized');
   @override
@@ -601,6 +609,7 @@ class $CardsTable extends Cards with TableInfo<$CardsTable, CardRow> {
         priceNumeric,
         cardFacesJson,
         rulingsJson,
+        producedManaJson,
         oversized,
         promo,
         reprint,
@@ -1064,6 +1073,12 @@ class $CardsTable extends Cards with TableInfo<$CardsTable, CardRow> {
           rulingsJson.isAcceptableOrUnknown(
               data['rulings_json']!, _rulingsJsonMeta));
     }
+    if (data.containsKey('produced_mana_json')) {
+      context.handle(
+          _producedManaJsonMeta,
+          producedManaJson.isAcceptableOrUnknown(
+              data['produced_mana_json']!, _producedManaJsonMeta));
+    }
     if (data.containsKey('oversized')) {
       context.handle(_oversizedMeta,
           oversized.isAcceptableOrUnknown(data['oversized']!, _oversizedMeta));
@@ -1267,6 +1282,8 @@ class $CardsTable extends Cards with TableInfo<$CardsTable, CardRow> {
           .read(DriftSqlType.string, data['${effectivePrefix}card_faces_json']),
       rulingsJson: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}rulings_json']),
+      producedManaJson: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}produced_mana_json'])!,
       oversized: attachedDatabase.typeMapping
           .read(DriftSqlType.bool, data['${effectivePrefix}oversized'])!,
       promo: attachedDatabase.typeMapping
@@ -1382,6 +1399,11 @@ class CardRow extends DataClass implements Insertable<CardRow> {
   final double? priceNumeric;
   final String? cardFacesJson;
   final String? rulingsJson;
+
+  /// JSON-encoded `List<String>` — produced mana colors (e.g.
+  /// `["W","U"]`). Used by deck/landbase analysis to detect mana
+  /// fixers; not displayed directly.
+  final String producedManaJson;
   final bool oversized;
   final bool promo;
   final bool reprint;
@@ -1461,6 +1483,7 @@ class CardRow extends DataClass implements Insertable<CardRow> {
       this.priceNumeric,
       this.cardFacesJson,
       this.rulingsJson,
+      required this.producedManaJson,
       required this.oversized,
       required this.promo,
       required this.reprint,
@@ -1584,6 +1607,7 @@ class CardRow extends DataClass implements Insertable<CardRow> {
     if (!nullToAbsent || rulingsJson != null) {
       map['rulings_json'] = Variable<String>(rulingsJson);
     }
+    map['produced_mana_json'] = Variable<String>(producedManaJson);
     map['oversized'] = Variable<bool>(oversized);
     map['promo'] = Variable<bool>(promo);
     map['reprint'] = Variable<bool>(reprint);
@@ -1711,6 +1735,7 @@ class CardRow extends DataClass implements Insertable<CardRow> {
       rulingsJson: rulingsJson == null && nullToAbsent
           ? const Value.absent()
           : Value(rulingsJson),
+      producedManaJson: Value(producedManaJson),
       oversized: Value(oversized),
       promo: Value(promo),
       reprint: Value(reprint),
@@ -1804,6 +1829,7 @@ class CardRow extends DataClass implements Insertable<CardRow> {
       priceNumeric: serializer.fromJson<double?>(json['priceNumeric']),
       cardFacesJson: serializer.fromJson<String?>(json['cardFacesJson']),
       rulingsJson: serializer.fromJson<String?>(json['rulingsJson']),
+      producedManaJson: serializer.fromJson<String>(json['producedManaJson']),
       oversized: serializer.fromJson<bool>(json['oversized']),
       promo: serializer.fromJson<bool>(json['promo']),
       reprint: serializer.fromJson<bool>(json['reprint']),
@@ -1888,6 +1914,7 @@ class CardRow extends DataClass implements Insertable<CardRow> {
       'priceNumeric': serializer.toJson<double?>(priceNumeric),
       'cardFacesJson': serializer.toJson<String?>(cardFacesJson),
       'rulingsJson': serializer.toJson<String?>(rulingsJson),
+      'producedManaJson': serializer.toJson<String>(producedManaJson),
       'oversized': serializer.toJson<bool>(oversized),
       'promo': serializer.toJson<bool>(promo),
       'reprint': serializer.toJson<bool>(reprint),
@@ -1970,6 +1997,7 @@ class CardRow extends DataClass implements Insertable<CardRow> {
           Value<double?> priceNumeric = const Value.absent(),
           Value<String?> cardFacesJson = const Value.absent(),
           Value<String?> rulingsJson = const Value.absent(),
+          String? producedManaJson,
           bool? oversized,
           bool? promo,
           bool? reprint,
@@ -2061,6 +2089,7 @@ class CardRow extends DataClass implements Insertable<CardRow> {
         cardFacesJson:
             cardFacesJson.present ? cardFacesJson.value : this.cardFacesJson,
         rulingsJson: rulingsJson.present ? rulingsJson.value : this.rulingsJson,
+        producedManaJson: producedManaJson ?? this.producedManaJson,
         oversized: oversized ?? this.oversized,
         promo: promo ?? this.promo,
         reprint: reprint ?? this.reprint,
@@ -2217,6 +2246,9 @@ class CardRow extends DataClass implements Insertable<CardRow> {
           : this.cardFacesJson,
       rulingsJson:
           data.rulingsJson.present ? data.rulingsJson.value : this.rulingsJson,
+      producedManaJson: data.producedManaJson.present
+          ? data.producedManaJson.value
+          : this.producedManaJson,
       oversized: data.oversized.present ? data.oversized.value : this.oversized,
       promo: data.promo.present ? data.promo.value : this.promo,
       reprint: data.reprint.present ? data.reprint.value : this.reprint,
@@ -2304,6 +2336,7 @@ class CardRow extends DataClass implements Insertable<CardRow> {
           ..write('priceNumeric: $priceNumeric, ')
           ..write('cardFacesJson: $cardFacesJson, ')
           ..write('rulingsJson: $rulingsJson, ')
+          ..write('producedManaJson: $producedManaJson, ')
           ..write('oversized: $oversized, ')
           ..write('promo: $promo, ')
           ..write('reprint: $reprint, ')
@@ -2388,6 +2421,7 @@ class CardRow extends DataClass implements Insertable<CardRow> {
         priceNumeric,
         cardFacesJson,
         rulingsJson,
+        producedManaJson,
         oversized,
         promo,
         reprint,
@@ -2471,6 +2505,7 @@ class CardRow extends DataClass implements Insertable<CardRow> {
           other.priceNumeric == this.priceNumeric &&
           other.cardFacesJson == this.cardFacesJson &&
           other.rulingsJson == this.rulingsJson &&
+          other.producedManaJson == this.producedManaJson &&
           other.oversized == this.oversized &&
           other.promo == this.promo &&
           other.reprint == this.reprint &&
@@ -2552,6 +2587,7 @@ class CardsCompanion extends UpdateCompanion<CardRow> {
   final Value<double?> priceNumeric;
   final Value<String?> cardFacesJson;
   final Value<String?> rulingsJson;
+  final Value<String> producedManaJson;
   final Value<bool> oversized;
   final Value<bool> promo;
   final Value<bool> reprint;
@@ -2631,6 +2667,7 @@ class CardsCompanion extends UpdateCompanion<CardRow> {
     this.priceNumeric = const Value.absent(),
     this.cardFacesJson = const Value.absent(),
     this.rulingsJson = const Value.absent(),
+    this.producedManaJson = const Value.absent(),
     this.oversized = const Value.absent(),
     this.promo = const Value.absent(),
     this.reprint = const Value.absent(),
@@ -2711,6 +2748,7 @@ class CardsCompanion extends UpdateCompanion<CardRow> {
     this.priceNumeric = const Value.absent(),
     this.cardFacesJson = const Value.absent(),
     this.rulingsJson = const Value.absent(),
+    this.producedManaJson = const Value.absent(),
     required bool oversized,
     required bool promo,
     required bool reprint,
@@ -2836,6 +2874,7 @@ class CardsCompanion extends UpdateCompanion<CardRow> {
     Expression<double>? priceNumeric,
     Expression<String>? cardFacesJson,
     Expression<String>? rulingsJson,
+    Expression<String>? producedManaJson,
     Expression<bool>? oversized,
     Expression<bool>? promo,
     Expression<bool>? reprint,
@@ -2919,6 +2958,7 @@ class CardsCompanion extends UpdateCompanion<CardRow> {
       if (priceNumeric != null) 'price_numeric': priceNumeric,
       if (cardFacesJson != null) 'card_faces_json': cardFacesJson,
       if (rulingsJson != null) 'rulings_json': rulingsJson,
+      if (producedManaJson != null) 'produced_mana_json': producedManaJson,
       if (oversized != null) 'oversized': oversized,
       if (promo != null) 'promo': promo,
       if (reprint != null) 'reprint': reprint,
@@ -3001,6 +3041,7 @@ class CardsCompanion extends UpdateCompanion<CardRow> {
       Value<double?>? priceNumeric,
       Value<String?>? cardFacesJson,
       Value<String?>? rulingsJson,
+      Value<String>? producedManaJson,
       Value<bool>? oversized,
       Value<bool>? promo,
       Value<bool>? reprint,
@@ -3080,6 +3121,7 @@ class CardsCompanion extends UpdateCompanion<CardRow> {
       priceNumeric: priceNumeric ?? this.priceNumeric,
       cardFacesJson: cardFacesJson ?? this.cardFacesJson,
       rulingsJson: rulingsJson ?? this.rulingsJson,
+      producedManaJson: producedManaJson ?? this.producedManaJson,
       oversized: oversized ?? this.oversized,
       promo: promo ?? this.promo,
       reprint: reprint ?? this.reprint,
@@ -3304,6 +3346,9 @@ class CardsCompanion extends UpdateCompanion<CardRow> {
     if (rulingsJson.present) {
       map['rulings_json'] = Variable<String>(rulingsJson.value);
     }
+    if (producedManaJson.present) {
+      map['produced_mana_json'] = Variable<String>(producedManaJson.value);
+    }
     if (oversized.present) {
       map['oversized'] = Variable<bool>(oversized.value);
     }
@@ -3406,6 +3451,7 @@ class CardsCompanion extends UpdateCompanion<CardRow> {
           ..write('priceNumeric: $priceNumeric, ')
           ..write('cardFacesJson: $cardFacesJson, ')
           ..write('rulingsJson: $rulingsJson, ')
+          ..write('producedManaJson: $producedManaJson, ')
           ..write('oversized: $oversized, ')
           ..write('promo: $promo, ')
           ..write('reprint: $reprint, ')
@@ -10191,6 +10237,7 @@ typedef $$CardsTableCreateCompanionBuilder = CardsCompanion Function({
   Value<double?> priceNumeric,
   Value<String?> cardFacesJson,
   Value<String?> rulingsJson,
+  Value<String> producedManaJson,
   required bool oversized,
   required bool promo,
   required bool reprint,
@@ -10271,6 +10318,7 @@ typedef $$CardsTableUpdateCompanionBuilder = CardsCompanion Function({
   Value<double?> priceNumeric,
   Value<String?> cardFacesJson,
   Value<String?> rulingsJson,
+  Value<String> producedManaJson,
   Value<bool> oversized,
   Value<bool> promo,
   Value<bool> reprint,
@@ -10513,6 +10561,10 @@ class $$CardsTableFilterComposer
 
   ColumnFilters<String> get rulingsJson => $composableBuilder(
       column: $table.rulingsJson, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get producedManaJson => $composableBuilder(
+      column: $table.producedManaJson,
+      builder: (column) => ColumnFilters(column));
 
   ColumnFilters<bool> get oversized => $composableBuilder(
       column: $table.oversized, builder: (column) => ColumnFilters(column));
@@ -10787,6 +10839,10 @@ class $$CardsTableOrderingComposer
   ColumnOrderings<String> get rulingsJson => $composableBuilder(
       column: $table.rulingsJson, builder: (column) => ColumnOrderings(column));
 
+  ColumnOrderings<String> get producedManaJson => $composableBuilder(
+      column: $table.producedManaJson,
+      builder: (column) => ColumnOrderings(column));
+
   ColumnOrderings<bool> get oversized => $composableBuilder(
       column: $table.oversized, builder: (column) => ColumnOrderings(column));
 
@@ -11032,6 +11088,9 @@ class $$CardsTableAnnotationComposer
   GeneratedColumn<String> get rulingsJson => $composableBuilder(
       column: $table.rulingsJson, builder: (column) => column);
 
+  GeneratedColumn<String> get producedManaJson => $composableBuilder(
+      column: $table.producedManaJson, builder: (column) => column);
+
   GeneratedColumn<bool> get oversized =>
       $composableBuilder(column: $table.oversized, builder: (column) => column);
 
@@ -11152,6 +11211,7 @@ class $$CardsTableTableManager extends RootTableManager<
             Value<double?> priceNumeric = const Value.absent(),
             Value<String?> cardFacesJson = const Value.absent(),
             Value<String?> rulingsJson = const Value.absent(),
+            Value<String> producedManaJson = const Value.absent(),
             Value<bool> oversized = const Value.absent(),
             Value<bool> promo = const Value.absent(),
             Value<bool> reprint = const Value.absent(),
@@ -11232,6 +11292,7 @@ class $$CardsTableTableManager extends RootTableManager<
             priceNumeric: priceNumeric,
             cardFacesJson: cardFacesJson,
             rulingsJson: rulingsJson,
+            producedManaJson: producedManaJson,
             oversized: oversized,
             promo: promo,
             reprint: reprint,
@@ -11312,6 +11373,7 @@ class $$CardsTableTableManager extends RootTableManager<
             Value<double?> priceNumeric = const Value.absent(),
             Value<String?> cardFacesJson = const Value.absent(),
             Value<String?> rulingsJson = const Value.absent(),
+            Value<String> producedManaJson = const Value.absent(),
             required bool oversized,
             required bool promo,
             required bool reprint,
@@ -11392,6 +11454,7 @@ class $$CardsTableTableManager extends RootTableManager<
             priceNumeric: priceNumeric,
             cardFacesJson: cardFacesJson,
             rulingsJson: rulingsJson,
+            producedManaJson: producedManaJson,
             oversized: oversized,
             promo: promo,
             reprint: reprint,
