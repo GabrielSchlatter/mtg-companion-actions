@@ -2,6 +2,7 @@
 .packages
 pubspec.lock
 build/
+credentials.env
 
 # Build artifacts
 *.sqlite
