@@ -29,6 +29,7 @@ import 'dart:io';
 
 import 'package:archive/archive.dart';
 import 'package:crypto/crypto.dart';
+import 'package:drift/drift.dart' show Variable;
 import 'package:http/http.dart' as http;
 
 import '../lib/cards_schema.dart';
@@ -241,10 +242,12 @@ _Args _parseArgs(List<String> args) {
 
 /// Merge the insights tables of [shardPath] into [db]. Each shard's
 /// data is disjoint by oracle hash, so simple INSERT OR IGNORE handles
-/// dedup against the (oracle_id, tag_id) / (oracle_id, kind) PKs. The
-/// `edhrec_pages` autoinc id is remapped via the (oracle_id, kind)
-/// UNIQUE index so child tables (recommendations, themes, tag_links)
-/// land on the right page rows in main.
+/// dedup against the (oracle_id, tag_id) / (oracle_id, kind,
+/// partner_oracle_id) PKs. The `edhrec_pages` autoinc id is remapped
+/// via that triple-column UNIQUE index so child tables
+/// (recommendations, themes, tag_links) land on the right page rows in
+/// main — including partnership pages where the same primary commander
+/// has multiple rows with different `partner_oracle_id`.
 Future<void> _mergeShard(
   CardsDatabase db,
   String shardPath, {
@@ -285,22 +288,32 @@ Future<void> _mergeShard(
 
     // ── EDHREC ────────────────────────────────────────────────────
     // Insert pages without specifying the autoinc id so main's sequence
-    // assigns fresh ones; UNIQUE (oracle_id, kind) dedupes across
-    // shards and against any seeded data.
+    // assigns fresh ones; UNIQUE (oracle_id, kind, partner_oracle_id)
+    // dedupes across shards and against any seeded data. Both the
+    // INSERT and the remap join MUST include `partner_oracle_id` —
+    // dropping it collapses every partnership row to (oracle, kind,
+    // NULL) which (a) loses the partner identity in main, and (b)
+    // makes multiple shard pages remap to the same main row, which
+    // then causes child INSERTs to collide on
+    // `(page_id, card_name)`.
     await db.customStatement(
       'INSERT OR IGNORE INTO main.edhrec_pages '
-      '(oracle_id, kind, rank, num_decks, url, last_updated) '
-      'SELECT oracle_id, kind, rank, num_decks, url, last_updated '
+      '(oracle_id, kind, partner_oracle_id, rank, num_decks, url, last_updated) '
+      'SELECT oracle_id, kind, partner_oracle_id, rank, num_decks, url, last_updated '
       'FROM $attachAlias.edhrec_pages',
     );
-    // Build the shard.id → main.id remap via the natural key.
+    // Build the shard.id → main.id remap via the natural key. `IS` is
+    // SQLite's NULL-aware equality (treats NULL as equal to NULL), so
+    // solo pages and partnership pages each match correctly.
     await db.customStatement('DROP TABLE IF EXISTS temp.page_remap');
     await db.customStatement(
       'CREATE TEMP TABLE page_remap AS '
       'SELECT s.id AS shard_id, m.id AS main_id '
       'FROM $attachAlias.edhrec_pages s '
       'JOIN main.edhrec_pages m '
-      '  ON m.oracle_id = s.oracle_id AND m.kind = s.kind',
+      '  ON m.oracle_id = s.oracle_id '
+      '  AND m.kind = s.kind '
+      '  AND m.partner_oracle_id IS s.partner_oracle_id',
     );
     await db.customStatement(
       'INSERT INTO main.edhrec_recommendations '
@@ -406,18 +419,46 @@ Future<Map<String, int>> _carryOverFromPrev(
     result['card_relationships'] =
         await _countTable(db, 'card_relationships') - relsBefore;
 
-    // EDHREC pages: only carry pages whose (oracle_id, kind) wasn't
-    // refreshed this run. Then build a remap and copy children.
+    // EDHREC pages: only carry pages whose (oracle_id, kind,
+    // partner_oracle_id) wasn't refreshed this run. Then build a remap
+    // and copy children.
+    //
+    // The `prev` bundle may be v4 (no `partner_oracle_id` column) when
+    // we're shipping the first v5 build. We detect that once and pick
+    // the right SQL fragment: pass the column through for v5+ prev,
+    // substitute literal NULL for v4 prev (every row in v4 was
+    // implicitly a solo page anyway).
+    final prevHasPartnerCol = await _columnExists(
+      db,
+      'prev',
+      'edhrec_pages',
+      'partner_oracle_id',
+    );
+    // SQL fragments tuned to where they're used:
+    //   - `insertExpr` plugs into the SELECT list (no table qualifier
+    //     because the SELECT scope already targets prev.edhrec_pages)
+    //   - `prevQualified` plugs into a correlated subquery / JOIN
+    //     where the reference is unambiguous against prev's row.
+    final insertExpr =
+        prevHasPartnerCol ? 'partner_oracle_id' : 'NULL';
+    final prevQualified = prevHasPartnerCol
+        ? 'prev.edhrec_pages.partner_oracle_id'
+        : 'NULL';
+    final joinAliasQualified =
+        prevHasPartnerCol ? 'p.partner_oracle_id' : 'NULL';
+
     final pagesBefore = await _countTable(db, 'edhrec_pages');
     await db.customStatement(
       'INSERT OR IGNORE INTO main.edhrec_pages '
-      '(oracle_id, kind, rank, num_decks, url, last_updated) '
-      'SELECT oracle_id, kind, rank, num_decks, url, last_updated '
+      '(oracle_id, kind, partner_oracle_id, rank, num_decks, url, last_updated) '
+      'SELECT oracle_id, kind, $insertExpr, rank, num_decks, url, '
+      '       last_updated '
       'FROM prev.edhrec_pages '
       'WHERE NOT EXISTS ('
       '  SELECT 1 FROM main.edhrec_pages m '
       '  WHERE m.oracle_id = prev.edhrec_pages.oracle_id '
-      '    AND m.kind = prev.edhrec_pages.kind)',
+      '    AND m.kind = prev.edhrec_pages.kind '
+      '    AND m.partner_oracle_id IS $prevQualified)',
     );
     result['edhrec_pages'] = await _countTable(db, 'edhrec_pages') - pagesBefore;
 
@@ -429,7 +470,9 @@ Future<Map<String, int>> _carryOverFromPrev(
       'SELECT p.id AS prev_id, m.id AS main_id '
       'FROM prev.edhrec_pages p '
       'JOIN main.edhrec_pages m '
-      '  ON m.oracle_id = p.oracle_id AND m.kind = p.kind',
+      '  ON m.oracle_id = p.oracle_id '
+      '  AND m.kind = p.kind '
+      '  AND m.partner_oracle_id IS $joinAliasQualified',
     );
 
     final recsBefore = await _countTable(db, 'edhrec_recommendations');
@@ -542,6 +585,29 @@ Future<int> _readPrevSchemaVersion(CardsDatabase db, File prevFile) async {
 Future<int> _countTable(CardsDatabase db, String table) async {
   final rows = await db.customSelect('SELECT COUNT(*) AS c FROM $table').get();
   return rows.isEmpty ? 0 : (rows.first.data['c'] as int? ?? 0);
+}
+
+/// Whether an attached SQLite database has a given column on a table.
+/// Used by the carry-over path to detect whether the previous bundle
+/// is on an older schema and pick fragment substitutions accordingly.
+Future<bool> _columnExists(
+  CardsDatabase db,
+  String schema,
+  String table,
+  String column,
+) async {
+  // `pragma_table_info` is a table-valued function; querying via
+  // `pragma_table_info('<table>', '<schema>')` lets us inspect an
+  // attached DB without invasive PRAGMA statements.
+  final rows = await db.customSelect(
+    "SELECT name FROM pragma_table_info(?, ?) WHERE name = ?",
+    variables: [
+      Variable<String>(table),
+      Variable<String>(schema),
+      Variable<String>(column),
+    ],
+  ).get();
+  return rows.isNotEmpty;
 }
 
 Future<String> _readPricesDateFromDb(CardsDatabase db) async {
