@@ -9963,6 +9963,235 @@ class EdhrecTagLinksCompanion extends UpdateCompanion<EdhrecTagLinkRow> {
   }
 }
 
+class $EdhrecNotFoundTable extends EdhrecNotFound
+    with TableInfo<$EdhrecNotFoundTable, EdhrecNotFoundRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $EdhrecNotFoundTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _oracleIdMeta =
+      const VerificationMeta('oracleId');
+  @override
+  late final GeneratedColumn<String> oracleId = GeneratedColumn<String>(
+      'oracle_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _kindMeta = const VerificationMeta('kind');
+  @override
+  late final GeneratedColumn<String> kind = GeneratedColumn<String>(
+      'kind', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _lastSeenMeta =
+      const VerificationMeta('lastSeen');
+  @override
+  late final GeneratedColumn<DateTime> lastSeen = GeneratedColumn<DateTime>(
+      'last_seen', aliasedName, false,
+      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [oracleId, kind, lastSeen];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'edhrec_not_found';
+  @override
+  VerificationContext validateIntegrity(Insertable<EdhrecNotFoundRow> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('oracle_id')) {
+      context.handle(_oracleIdMeta,
+          oracleId.isAcceptableOrUnknown(data['oracle_id']!, _oracleIdMeta));
+    } else if (isInserting) {
+      context.missing(_oracleIdMeta);
+    }
+    if (data.containsKey('kind')) {
+      context.handle(
+          _kindMeta, kind.isAcceptableOrUnknown(data['kind']!, _kindMeta));
+    } else if (isInserting) {
+      context.missing(_kindMeta);
+    }
+    if (data.containsKey('last_seen')) {
+      context.handle(_lastSeenMeta,
+          lastSeen.isAcceptableOrUnknown(data['last_seen']!, _lastSeenMeta));
+    } else if (isInserting) {
+      context.missing(_lastSeenMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {oracleId, kind};
+  @override
+  EdhrecNotFoundRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return EdhrecNotFoundRow(
+      oracleId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}oracle_id'])!,
+      kind: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}kind'])!,
+      lastSeen: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}last_seen'])!,
+    );
+  }
+
+  @override
+  $EdhrecNotFoundTable createAlias(String alias) {
+    return $EdhrecNotFoundTable(attachedDatabase, alias);
+  }
+
+  @override
+  bool get withoutRowId => true;
+}
+
+class EdhrecNotFoundRow extends DataClass
+    implements Insertable<EdhrecNotFoundRow> {
+  final String oracleId;
+
+  /// `'card'` or `'commander'` — the same axis as `edhrec_pages.kind`.
+  /// A given oracle can be 404 on one kind but 200 on the other (a
+  /// recently-printed card may have a card page but no commander
+  /// page yet, or vice versa).
+  final String kind;
+  final DateTime lastSeen;
+  const EdhrecNotFoundRow(
+      {required this.oracleId, required this.kind, required this.lastSeen});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['oracle_id'] = Variable<String>(oracleId);
+    map['kind'] = Variable<String>(kind);
+    map['last_seen'] = Variable<DateTime>(lastSeen);
+    return map;
+  }
+
+  EdhrecNotFoundCompanion toCompanion(bool nullToAbsent) {
+    return EdhrecNotFoundCompanion(
+      oracleId: Value(oracleId),
+      kind: Value(kind),
+      lastSeen: Value(lastSeen),
+    );
+  }
+
+  factory EdhrecNotFoundRow.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return EdhrecNotFoundRow(
+      oracleId: serializer.fromJson<String>(json['oracleId']),
+      kind: serializer.fromJson<String>(json['kind']),
+      lastSeen: serializer.fromJson<DateTime>(json['lastSeen']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'oracleId': serializer.toJson<String>(oracleId),
+      'kind': serializer.toJson<String>(kind),
+      'lastSeen': serializer.toJson<DateTime>(lastSeen),
+    };
+  }
+
+  EdhrecNotFoundRow copyWith(
+          {String? oracleId, String? kind, DateTime? lastSeen}) =>
+      EdhrecNotFoundRow(
+        oracleId: oracleId ?? this.oracleId,
+        kind: kind ?? this.kind,
+        lastSeen: lastSeen ?? this.lastSeen,
+      );
+  EdhrecNotFoundRow copyWithCompanion(EdhrecNotFoundCompanion data) {
+    return EdhrecNotFoundRow(
+      oracleId: data.oracleId.present ? data.oracleId.value : this.oracleId,
+      kind: data.kind.present ? data.kind.value : this.kind,
+      lastSeen: data.lastSeen.present ? data.lastSeen.value : this.lastSeen,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('EdhrecNotFoundRow(')
+          ..write('oracleId: $oracleId, ')
+          ..write('kind: $kind, ')
+          ..write('lastSeen: $lastSeen')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(oracleId, kind, lastSeen);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is EdhrecNotFoundRow &&
+          other.oracleId == this.oracleId &&
+          other.kind == this.kind &&
+          other.lastSeen == this.lastSeen);
+}
+
+class EdhrecNotFoundCompanion extends UpdateCompanion<EdhrecNotFoundRow> {
+  final Value<String> oracleId;
+  final Value<String> kind;
+  final Value<DateTime> lastSeen;
+  const EdhrecNotFoundCompanion({
+    this.oracleId = const Value.absent(),
+    this.kind = const Value.absent(),
+    this.lastSeen = const Value.absent(),
+  });
+  EdhrecNotFoundCompanion.insert({
+    required String oracleId,
+    required String kind,
+    required DateTime lastSeen,
+  })  : oracleId = Value(oracleId),
+        kind = Value(kind),
+        lastSeen = Value(lastSeen);
+  static Insertable<EdhrecNotFoundRow> custom({
+    Expression<String>? oracleId,
+    Expression<String>? kind,
+    Expression<DateTime>? lastSeen,
+  }) {
+    return RawValuesInsertable({
+      if (oracleId != null) 'oracle_id': oracleId,
+      if (kind != null) 'kind': kind,
+      if (lastSeen != null) 'last_seen': lastSeen,
+    });
+  }
+
+  EdhrecNotFoundCompanion copyWith(
+      {Value<String>? oracleId,
+      Value<String>? kind,
+      Value<DateTime>? lastSeen}) {
+    return EdhrecNotFoundCompanion(
+      oracleId: oracleId ?? this.oracleId,
+      kind: kind ?? this.kind,
+      lastSeen: lastSeen ?? this.lastSeen,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (oracleId.present) {
+      map['oracle_id'] = Variable<String>(oracleId.value);
+    }
+    if (kind.present) {
+      map['kind'] = Variable<String>(kind.value);
+    }
+    if (lastSeen.present) {
+      map['last_seen'] = Variable<DateTime>(lastSeen.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('EdhrecNotFoundCompanion(')
+          ..write('oracleId: $oracleId, ')
+          ..write('kind: $kind, ')
+          ..write('lastSeen: $lastSeen')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$CardsDatabase extends GeneratedDatabase {
   _$CardsDatabase(QueryExecutor e) : super(e);
   $CardsDatabaseManager get managers => $CardsDatabaseManager(this);
@@ -9985,6 +10214,7 @@ abstract class _$CardsDatabase extends GeneratedDatabase {
       $EdhrecRecommendationsTable(this);
   late final $EdhrecThemesTable edhrecThemes = $EdhrecThemesTable(this);
   late final $EdhrecTagLinksTable edhrecTagLinks = $EdhrecTagLinksTable(this);
+  late final $EdhrecNotFoundTable edhrecNotFound = $EdhrecNotFoundTable(this);
   late final Index idxCardScryfallId = Index('idx_card_scryfall_id',
       'CREATE UNIQUE INDEX idx_card_scryfall_id ON cards (scryfall_id)');
   late final Index idxCardOracleId = Index('idx_card_oracle_id',
@@ -10113,6 +10343,7 @@ abstract class _$CardsDatabase extends GeneratedDatabase {
         edhrecRecommendations,
         edhrecThemes,
         edhrecTagLinks,
+        edhrecNotFound,
         idxCardScryfallId,
         idxCardOracleId,
         idxCardName,
@@ -14644,6 +14875,144 @@ typedef $$EdhrecTagLinksTableProcessedTableManager = ProcessedTableManager<
     ),
     EdhrecTagLinkRow,
     PrefetchHooks Function()>;
+typedef $$EdhrecNotFoundTableCreateCompanionBuilder = EdhrecNotFoundCompanion
+    Function({
+  required String oracleId,
+  required String kind,
+  required DateTime lastSeen,
+});
+typedef $$EdhrecNotFoundTableUpdateCompanionBuilder = EdhrecNotFoundCompanion
+    Function({
+  Value<String> oracleId,
+  Value<String> kind,
+  Value<DateTime> lastSeen,
+});
+
+class $$EdhrecNotFoundTableFilterComposer
+    extends Composer<_$CardsDatabase, $EdhrecNotFoundTable> {
+  $$EdhrecNotFoundTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get oracleId => $composableBuilder(
+      column: $table.oracleId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get kind => $composableBuilder(
+      column: $table.kind, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get lastSeen => $composableBuilder(
+      column: $table.lastSeen, builder: (column) => ColumnFilters(column));
+}
+
+class $$EdhrecNotFoundTableOrderingComposer
+    extends Composer<_$CardsDatabase, $EdhrecNotFoundTable> {
+  $$EdhrecNotFoundTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get oracleId => $composableBuilder(
+      column: $table.oracleId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get kind => $composableBuilder(
+      column: $table.kind, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get lastSeen => $composableBuilder(
+      column: $table.lastSeen, builder: (column) => ColumnOrderings(column));
+}
+
+class $$EdhrecNotFoundTableAnnotationComposer
+    extends Composer<_$CardsDatabase, $EdhrecNotFoundTable> {
+  $$EdhrecNotFoundTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get oracleId =>
+      $composableBuilder(column: $table.oracleId, builder: (column) => column);
+
+  GeneratedColumn<String> get kind =>
+      $composableBuilder(column: $table.kind, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastSeen =>
+      $composableBuilder(column: $table.lastSeen, builder: (column) => column);
+}
+
+class $$EdhrecNotFoundTableTableManager extends RootTableManager<
+    _$CardsDatabase,
+    $EdhrecNotFoundTable,
+    EdhrecNotFoundRow,
+    $$EdhrecNotFoundTableFilterComposer,
+    $$EdhrecNotFoundTableOrderingComposer,
+    $$EdhrecNotFoundTableAnnotationComposer,
+    $$EdhrecNotFoundTableCreateCompanionBuilder,
+    $$EdhrecNotFoundTableUpdateCompanionBuilder,
+    (
+      EdhrecNotFoundRow,
+      BaseReferences<_$CardsDatabase, $EdhrecNotFoundTable, EdhrecNotFoundRow>
+    ),
+    EdhrecNotFoundRow,
+    PrefetchHooks Function()> {
+  $$EdhrecNotFoundTableTableManager(
+      _$CardsDatabase db, $EdhrecNotFoundTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$EdhrecNotFoundTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$EdhrecNotFoundTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$EdhrecNotFoundTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> oracleId = const Value.absent(),
+            Value<String> kind = const Value.absent(),
+            Value<DateTime> lastSeen = const Value.absent(),
+          }) =>
+              EdhrecNotFoundCompanion(
+            oracleId: oracleId,
+            kind: kind,
+            lastSeen: lastSeen,
+          ),
+          createCompanionCallback: ({
+            required String oracleId,
+            required String kind,
+            required DateTime lastSeen,
+          }) =>
+              EdhrecNotFoundCompanion.insert(
+            oracleId: oracleId,
+            kind: kind,
+            lastSeen: lastSeen,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$EdhrecNotFoundTableProcessedTableManager = ProcessedTableManager<
+    _$CardsDatabase,
+    $EdhrecNotFoundTable,
+    EdhrecNotFoundRow,
+    $$EdhrecNotFoundTableFilterComposer,
+    $$EdhrecNotFoundTableOrderingComposer,
+    $$EdhrecNotFoundTableAnnotationComposer,
+    $$EdhrecNotFoundTableCreateCompanionBuilder,
+    $$EdhrecNotFoundTableUpdateCompanionBuilder,
+    (
+      EdhrecNotFoundRow,
+      BaseReferences<_$CardsDatabase, $EdhrecNotFoundTable, EdhrecNotFoundRow>
+    ),
+    EdhrecNotFoundRow,
+    PrefetchHooks Function()>;
 
 class $CardsDatabaseManager {
   final _$CardsDatabase _db;
@@ -14679,4 +15048,6 @@ class $CardsDatabaseManager {
       $$EdhrecThemesTableTableManager(_db, _db.edhrecThemes);
   $$EdhrecTagLinksTableTableManager get edhrecTagLinks =>
       $$EdhrecTagLinksTableTableManager(_db, _db.edhrecTagLinks);
+  $$EdhrecNotFoundTableTableManager get edhrecNotFound =>
+      $$EdhrecNotFoundTableTableManager(_db, _db.edhrecNotFound);
 }

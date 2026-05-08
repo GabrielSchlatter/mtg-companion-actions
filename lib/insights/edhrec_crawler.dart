@@ -43,6 +43,13 @@ class EdhrecCrawlConfig {
   /// Longer windows leave more rows in the bundle stale.
   final Duration staleness;
 
+  /// Retry window for the `edhrec_not_found` negative cache. We don't
+  /// want to ping EDHREC for joke-set / mystery-booster / "Unknown
+  /// Event" oracles every weekly run, but recent printings often start
+  /// 404 and pick up a real page within a few weeks — so the window
+  /// is much longer than `staleness` but not permanent.
+  final Duration notFoundRetry;
+
   /// Whether to fetch the commander page for cards legal in Commander.
   /// On by default; turn off to skip the second request per card.
   final bool fetchCommanderPages;
@@ -67,6 +74,7 @@ class EdhrecCrawlConfig {
     this.maxRuntime,
     this.maxConsecutiveRateLimits = 3,
     this.staleness = const Duration(days: 7),
+    this.notFoundRetry = const Duration(days: 30),
     this.fetchCommanderPages = true,
     Set<String>? keepCategories,
   }) : keepCategories = keepCategories ?? const <String>{};
@@ -119,15 +127,39 @@ Future<EdhrecCrawlResult> runEdhrecCrawl(
   final freshCardPages = await _loadFreshPageOracles(db, 'card', freshCutoff);
   final freshCommanderPages =
       await _loadFreshPageOracles(db, 'commander', freshCutoff);
+
+  // Negative cache — oracles that 404'd within the retry window. Merged
+  // into the fresh sets so the work-list filter skips them. The retry
+  // window is intentionally much longer than `staleness` (30d vs 7d):
+  // recent printings often 404 then pick up a real page within a few
+  // weeks, but joke-set / mystery-booster / "Unknown Event" oracles
+  // stay 404 forever and there's no point pinging EDHREC for them on
+  // every weekly bundle build.
+  final notFoundCutoff =
+      DateTime.now().toUtc().subtract(config.notFoundRetry);
+  final notFoundCards =
+      await _loadFreshNotFoundOracles(db, 'card', notFoundCutoff);
+  final notFoundCommanders =
+      await _loadFreshNotFoundOracles(db, 'commander', notFoundCutoff);
   emit(
     '  refresh window: staleness=${config.staleness.inDays}d · '
     '${freshCardPages.length} card pages fresh · '
-    '${freshCommanderPages.length} commander pages fresh',
+    '${freshCommanderPages.length} commander pages fresh · '
+    '404-cache=${config.notFoundRetry.inDays}d '
+    '(${notFoundCards.length} card / ${notFoundCommanders.length} commander)',
   );
 
-  final cardWork = await _buildCardWorkList(db, config, freshCardPages);
+  final cardWork = await _buildCardWorkList(
+    db,
+    config,
+    {...freshCardPages, ...notFoundCards},
+  );
   final commanderWork = config.fetchCommanderPages
-      ? await _buildCommanderWorkList(db, config, freshCommanderPages)
+      ? await _buildCommanderWorkList(
+          db,
+          config,
+          {...freshCommanderPages, ...notFoundCommanders},
+        )
       : <_EdhrecWorkItem>[];
 
   // Partnership commander pages — Tymna+Thrasios, Doctor + Companion,
@@ -261,8 +293,20 @@ Future<EdhrecCrawlResult> runEdhrecCrawl(
           // EDHREC has no entry for this card/commander — totally normal
           // (e.g. brand-new card not yet indexed, or a card that's legal
           // commander but never built into a deck on EDHREC).
+          //
+          // Stamp the negative cache so the next bundle build (and the
+          // ~30 daily builds after) skip this oracle entirely instead
+          // of re-pinging EDHREC just to get another 404.
           consecutiveRateLimits = 0;
           notFound++;
+          await db.into(db.edhrecNotFound).insert(
+                EdhrecNotFoundCompanion.insert(
+                  oracleId: w.oracleId,
+                  kind: w.kind,
+                  lastSeen: DateTime.now().toUtc(),
+                ),
+                mode: InsertMode.insertOrReplace,
+              );
           break;
         case _FetchOutcome.rateLimited:
           rateLimitHits++;
@@ -756,6 +800,24 @@ Future<Set<String>> _loadFreshPageOracles(
   final rows = await db.customSelect(
     'SELECT oracle_id FROM edhrec_pages '
     'WHERE kind = ? AND partner_oracle_id IS NULL AND last_updated >= ?',
+    variables: [Variable<String>(kind), Variable<int>(cutoffEpoch)],
+  ).get();
+  return {for (final r in rows) r.data['oracle_id'] as String};
+}
+
+/// 404 negative-cache freshness check. Returns oracles that EDHREC
+/// has already returned 404 for within the retry window — these get
+/// merged with the positive-page fresh set so the work-list filter
+/// drops them in one pass.
+Future<Set<String>> _loadFreshNotFoundOracles(
+  CardsDatabase db,
+  String kind,
+  DateTime cutoff,
+) async {
+  final cutoffEpoch = cutoff.millisecondsSinceEpoch ~/ 1000;
+  final rows = await db.customSelect(
+    'SELECT oracle_id FROM edhrec_not_found '
+    'WHERE kind = ? AND last_seen >= ?',
     variables: [Variable<String>(kind), Variable<int>(cutoffEpoch)],
   ).get();
   return {for (final r in rows) r.data['oracle_id'] as String};

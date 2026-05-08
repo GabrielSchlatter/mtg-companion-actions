@@ -50,13 +50,14 @@ part 'cards_database.g.dart';
     EdhrecRecommendations,
     EdhrecThemes,
     EdhrecTagLinks,
+    EdhrecNotFound,
   ],
 )
 class CardsDatabase extends _$CardsDatabase {
   CardsDatabase(super.executor);
 
   @override
-  int get schemaVersion => 7;
+  int get schemaVersion => 8;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -302,6 +303,16 @@ class CardsDatabase extends _$CardsDatabase {
             // that had a dedicated index.
             await m.database.customStatement(
                 'DROP INDEX IF EXISTS idx_card_mtgjson_uuid');
+          }
+          // v7 → v8: introduce `edhrec_not_found` — a negative cache
+          // for `(oracle, kind)` pairs EDHREC returned 404 for. The
+          // crawler upserts a row on every 404 and skips entries
+          // whose last_seen is within the retry window. Cuts ~1k–2k
+          // wasted requests per CI run on joke sets, mystery
+          // boosters, "Unknown Event" tokens, and brand-new printings
+          // that EDHREC hasn't indexed yet.
+          if (from < 8) {
+            await m.createTable(edhrecNotFound);
           }
         },
       );

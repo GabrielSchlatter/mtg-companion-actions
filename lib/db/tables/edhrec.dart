@@ -79,6 +79,39 @@ class EdhrecRecommendations extends Table {
   bool get withoutRowId => true;
 }
 
+/// Negative cache for `(oracle, kind)` pairs that EDHREC returned 404
+/// for. The crawler hits ~1k–2k of these per run — joke sets, mystery
+/// boosters, "Unknown Event" tokens, brand-new cards EDHREC hasn't
+/// indexed yet. Each one wastes a request *and* the pacing delay
+/// every CI run.
+///
+/// `_buildCardWorkList` / `_buildCommanderWorkList` filter against
+/// this table, skipping any oracle whose `last_seen` is within the
+/// retry window (currently 30 days). After the window elapses the
+/// card cycles back into the work list — recent printings get a real
+/// EDHREC page within a week or two and we want to catch them.
+///
+/// `WITHOUT ROWID` keyed on `(oracleId, kind)`: the natural unique
+/// pair, lookups are point-equality, no need for a separate rowid.
+@DataClassName('EdhrecNotFoundRow')
+class EdhrecNotFound extends Table {
+  TextColumn get oracleId => text()();
+
+  /// `'card'` or `'commander'` — the same axis as `edhrec_pages.kind`.
+  /// A given oracle can be 404 on one kind but 200 on the other (a
+  /// recently-printed card may have a card page but no commander
+  /// page yet, or vice versa).
+  TextColumn get kind => text()();
+
+  DateTimeColumn get lastSeen => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {oracleId, kind};
+
+  @override
+  bool get withoutRowId => true;
+}
+
 /// EDHREC themes attached to a page.
 @DataClassName('EdhrecThemeRow')
 @TableIndex(name: 'idx_edhrec_theme_pk', columns: {#pageId, #themeSlug}, unique: true)
