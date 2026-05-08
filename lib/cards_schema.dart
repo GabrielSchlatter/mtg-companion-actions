@@ -12,4 +12,4 @@
 ///
 /// Keep aligned with:
 ///   flutter_mtg_app/lib/core/database/drift/cards_database.dart
-const int schemaVersion = 6;
+const int schemaVersion = 7;

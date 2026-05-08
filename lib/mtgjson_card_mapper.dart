@@ -37,14 +37,11 @@ Map<String, dynamic>? mapMtgjsonCard(
     final colors = toStringList(c['colors']);
     final colorIdentity = toStringList(c['colorIdentity']);
     final finishes = toStringList(c['finishes']);
-    final side = c['side'] as String?;
-    final layout = (c['layout'] as String? ?? 'normal').toLowerCase();
-    final imgFace = (side == 'b' && !singleSideLayouts.contains(layout))
-        ? 'back'
-        : 'front';
 
     return {
       'scryfallId': scryfallId,
+      // Transient build-time only — used by build_bundle.dart to look
+      // up prices by MTGJSON UUID, not stored in the bundle.
       'mtgjsonUuid': c['uuid'] as String?,
       'oracleId': ids['scryfallOracleId'] as String? ?? '',
       'name': c['name'] as String? ?? '',
@@ -81,14 +78,6 @@ Map<String, dynamic>? mapMtgjsonCard(
       'textless': c['isTextless'] as bool? ?? false,
       'booster': (c['boosterTypes'] as List?)?.isNotEmpty == true,
       'storySpotlight': c['isStorySpotlight'] as bool? ?? false,
-      'imageStatus': 'highres_scan',
-      'imageSmall': scryfallImageUrl(scryfallId, 'small', face: imgFace),
-      'imageNormal': scryfallImageUrl(scryfallId, 'normal', face: imgFace),
-      'imageLarge': scryfallImageUrl(scryfallId, 'large', face: imgFace),
-      'imagePng': scryfallImageUrl(scryfallId, 'png', face: imgFace),
-      'imageArtCrop': scryfallImageUrl(scryfallId, 'art_crop', face: imgFace),
-      'imageBorderCrop':
-          scryfallImageUrl(scryfallId, 'border_crop', face: imgFace),
       'legalStandard': normLegal(legalities['standard']),
       'legalFuture': normLegal(legalities['future']),
       'legalHistoric': normLegal(legalities['historic']),
@@ -129,24 +118,16 @@ Map<String, dynamic>? mapMtgjsonCard(
       'priceNumeric': null,
       'cardFacesJson': buildCardFacesJson(c, uuidMap: uuidMap),
       'rulingsJson': buildRulingsJson(c['rulings']),
-      'object': 'card',
       'oversized': c['isOversized'] as bool? ?? false,
       'promo': c['isPromo'] as bool? ?? false,
       'reprint': c['isReprint'] as bool? ?? false,
       'variation': c['isAlternative'] as bool? ?? false,
-      'games': toStringList(c['availability']),
       'reserved': c['isReserved'] as bool? ?? false,
       'foil': finishes.contains('foil') || finishes.contains('etched'),
       'nonfoil': finishes.contains('nonfoil'),
-      'finishes': finishes,
       'producedMana': toStringList(c['producedMana']),
       'edhrecRank': c['edhrecRank'] as int?,
       'isGameChanger': c['isGameChanger'] as bool?,
-      'relatedTokenIds': toStringList(c['tokens']),
-      'mtgoId': parseInt(ids['mtgoId']),
-      'arenaId': parseInt(ids['mtgArenaId']),
-      'tcgplayerId': parseInt(ids['tcgplayerProductId']),
-      'cardmarketId': parseInt(ids['mcmId']),
     };
   } catch (_) {
     return null;

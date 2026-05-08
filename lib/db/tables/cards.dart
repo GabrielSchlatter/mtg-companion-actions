@@ -1,15 +1,35 @@
 import 'package:drift/drift.dart';
 
-/// Drift table mirroring the full Scryfall card catalog — replaces
-/// ObjectBox `CardEntity`. This is the largest table in the app (~225 MB of
-/// card data on a typical English-only sync).
+/// Drift table mirroring the slice of Scryfall card metadata the
+/// Flutter client actually reads.
 ///
-/// Indexed fields follow the ObjectBox schema and optimize the search paths
-/// in `CardRepository.searchCards`. `List<String>` fields are stored as
-/// JSON-encoded TEXT for simplicity.
+/// **v7 audit**: dropped 17 columns the client never read after
+/// initial Card-model construction:
+///   * 6 Scryfall image URL columns (derived from `scryfallId` at
+///     render time via `Card.imageUrl`).
+///   * 4 marketplace ids (`mtgoId`, `arenaId`, `tcgplayerId`,
+///     `cardmarketId`).
+///   * 4 dead JSON blobs (`gamesJson`, `finishesJson`,
+///     `producedManaJson`, `relatedTokenIdsJson`).
+///   * `mtgjsonUuid` (build-time-only matching key, never queried
+///     by the client).
+///   * `imageStatus`, `object` (always 'card').
+///
+/// Kept (despite "looks dead" at first glance): every column the
+/// client *queries* — `digital` for the digital-only filter,
+/// `legalInAnyFormat` for the legal-cards filter, `powerNumeric` /
+/// `toughnessNumeric` / `priceNumeric` / `rarityOrder` for range
+/// filters and ordering, `flavorName` / `artist` for the search
+/// box, `setType` for the set-type filter. Plus all
+/// boolean Scryfall flags (`promo`, `reprint`, `oversized`,
+/// `variation`, `foil`, `nonfoil`, `reserved`, `fullArt`,
+/// `textless`, `booster`, `storySpotlight`, `borderColor`,
+/// `frame`) — they're each ~108k bytes, the per-row overhead is
+/// modest, and dropping them risks ripping out cards UI features
+/// the audit didn't catch. Revisit in a future v8 pass with
+/// per-feature confirmation.
 @DataClassName('CardRow')
 @TableIndex(name: 'idx_card_scryfall_id', columns: {#scryfallId}, unique: true)
-@TableIndex(name: 'idx_card_mtgjson_uuid', columns: {#mtgjsonUuid})
 @TableIndex(name: 'idx_card_oracle_id', columns: {#oracleId})
 @TableIndex(name: 'idx_card_name', columns: {#name})
 @TableIndex(name: 'idx_card_flavor_name', columns: {#flavorName})
@@ -26,7 +46,6 @@ class Cards extends Table {
   IntColumn get id => integer().autoIncrement()();
 
   TextColumn get scryfallId => text()();
-  TextColumn get mtgjsonUuid => text().nullable()();
   TextColumn get oracleId => text()();
   TextColumn get name => text()();
   TextColumn get flavorName => text().nullable()();
@@ -85,14 +104,6 @@ class Cards extends Table {
   BoolColumn get booster => boolean()();
   BoolColumn get storySpotlight => boolean()();
 
-  TextColumn get imageStatus => text()();
-  TextColumn get imageSmall => text().nullable()();
-  TextColumn get imageNormal => text().nullable()();
-  TextColumn get imageLarge => text().nullable()();
-  TextColumn get imagePng => text().nullable()();
-  TextColumn get imageArtCrop => text().nullable()();
-  TextColumn get imageBorderCrop => text().nullable()();
-
   TextColumn get legalStandard => text()();
   TextColumn get legalFuture => text()();
   TextColumn get legalHistoric => text()();
@@ -136,35 +147,21 @@ class Cards extends Table {
   TextColumn get cardFacesJson => text().nullable()();
   TextColumn get rulingsJson => text().nullable()();
 
-  TextColumn get object => text()();
+  /// JSON-encoded `List<String>` — produced mana colors (e.g.
+  /// `["W","U"]`). Used by deck/landbase analysis to detect mana
+  /// fixers; not displayed directly.
+  TextColumn get producedManaJson =>
+      text().withDefault(const Constant('[]'))();
+
   BoolColumn get oversized => boolean()();
   BoolColumn get promo => boolean()();
   BoolColumn get reprint => boolean()();
   BoolColumn get variation => boolean()();
 
-  /// JSON-encoded `List<String>`.
-  TextColumn get gamesJson => text().withDefault(const Constant('[]'))();
-
   BoolColumn get reserved => boolean()();
   BoolColumn get foil => boolean()();
   BoolColumn get nonfoil => boolean()();
 
-  /// JSON-encoded `List<String>`.
-  TextColumn get finishesJson => text().withDefault(const Constant('[]'))();
-
-  /// JSON-encoded `List<String>`.
-  TextColumn get producedManaJson =>
-      text().withDefault(const Constant('[]'))();
-
   IntColumn get edhrecRank => integer().nullable()();
   BoolColumn get isGameChanger => boolean().nullable()();
-
-  /// JSON-encoded `List<String>` — MTGJSON UUIDs of related tokens.
-  TextColumn get relatedTokenIdsJson =>
-      text().withDefault(const Constant('[]'))();
-
-  IntColumn get mtgoId => integer().nullable()();
-  IntColumn get arenaId => integer().nullable()();
-  IntColumn get tcgplayerId => integer().nullable()();
-  IntColumn get cardmarketId => integer().nullable()();
 }

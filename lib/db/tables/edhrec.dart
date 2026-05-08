@@ -48,26 +48,24 @@ class EdhrecPages extends Table {
 
 /// Recommended-card edges from each EDHREC page.
 ///
-/// `WITHOUT ROWID` keyed on `(pageId, cardName)` — the natural unique
-/// pair. Drops the AUTOINC `id` column we never query by, drops the
-/// redundant `(pageId)`-only index (the PK leading column already
-/// covers single-page lookups), and drops the `(cardCategory)` index
-/// that was rarely useful in isolation.
+/// v7: dropped `card_name` (joined from `cards` via `oracle_id`),
+/// replaced `card_category` text with a 1-byte `category` int (see
+/// [EdhrecCategory]), and changed the PK to `(pageId, oracleId,
+/// category)` — the natural unique tuple in EDHREC's data, since
+/// some cards appear in two categories on the same page.
 @DataClassName('EdhrecRecommendationRow')
 @TableIndex(name: 'idx_edhrec_rec_oracle', columns: {#oracleId})
 class EdhrecRecommendations extends Table {
   /// FK → edhrec_pages.id.
   IntColumn get pageId => integer()();
 
-  /// Raw card name from EDHREC.
-  TextColumn get cardName => text()();
+  /// FK → cards.oracleId. Always populated in v7 (verified at
+  /// build time — every recommendation EDHREC returns resolves to a
+  /// card we have in our catalog).
+  TextColumn get oracleId => text()();
 
-  /// FK → cards.oracleId — null when name didn't resolve.
-  TextColumn get oracleId => text().nullable()();
-
-  /// EDHREC's categorisation of the recommendation — e.g. "Top Cards",
-  /// "High Synergy Cards", "Lands". Display-name form.
-  TextColumn get cardCategory => text().nullable()();
+  /// `EdhrecCategory.id` — see `lib/insights/edhrec_categories.dart`.
+  IntColumn get category => integer()();
 
   IntColumn get inclusionCount => integer().nullable()();
   RealColumn get inclusionPercent => real().nullable()();
@@ -75,7 +73,7 @@ class EdhrecRecommendations extends Table {
   IntColumn get rankInCategory => integer().nullable()();
 
   @override
-  Set<Column> get primaryKey => {pageId, cardName};
+  Set<Column> get primaryKey => {pageId, oracleId, category};
 
   @override
   bool get withoutRowId => true;

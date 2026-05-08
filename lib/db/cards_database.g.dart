@@ -23,12 +23,6 @@ class $CardsTable extends Cards with TableInfo<$CardsTable, CardRow> {
   late final GeneratedColumn<String> scryfallId = GeneratedColumn<String>(
       'scryfall_id', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _mtgjsonUuidMeta =
-      const VerificationMeta('mtgjsonUuid');
-  @override
-  late final GeneratedColumn<String> mtgjsonUuid = GeneratedColumn<String>(
-      'mtgjson_uuid', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
   static const VerificationMeta _oracleIdMeta =
       const VerificationMeta('oracleId');
   @override
@@ -270,48 +264,6 @@ class $CardsTable extends Cards with TableInfo<$CardsTable, CardRow> {
       requiredDuringInsert: true,
       defaultConstraints: GeneratedColumn.constraintIsAlways(
           'CHECK ("story_spotlight" IN (0, 1))'));
-  static const VerificationMeta _imageStatusMeta =
-      const VerificationMeta('imageStatus');
-  @override
-  late final GeneratedColumn<String> imageStatus = GeneratedColumn<String>(
-      'image_status', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _imageSmallMeta =
-      const VerificationMeta('imageSmall');
-  @override
-  late final GeneratedColumn<String> imageSmall = GeneratedColumn<String>(
-      'image_small', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
-  static const VerificationMeta _imageNormalMeta =
-      const VerificationMeta('imageNormal');
-  @override
-  late final GeneratedColumn<String> imageNormal = GeneratedColumn<String>(
-      'image_normal', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
-  static const VerificationMeta _imageLargeMeta =
-      const VerificationMeta('imageLarge');
-  @override
-  late final GeneratedColumn<String> imageLarge = GeneratedColumn<String>(
-      'image_large', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
-  static const VerificationMeta _imagePngMeta =
-      const VerificationMeta('imagePng');
-  @override
-  late final GeneratedColumn<String> imagePng = GeneratedColumn<String>(
-      'image_png', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
-  static const VerificationMeta _imageArtCropMeta =
-      const VerificationMeta('imageArtCrop');
-  @override
-  late final GeneratedColumn<String> imageArtCrop = GeneratedColumn<String>(
-      'image_art_crop', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
-  static const VerificationMeta _imageBorderCropMeta =
-      const VerificationMeta('imageBorderCrop');
-  @override
-  late final GeneratedColumn<String> imageBorderCrop = GeneratedColumn<String>(
-      'image_border_crop', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
   static const VerificationMeta _legalStandardMeta =
       const VerificationMeta('legalStandard');
   @override
@@ -502,11 +454,6 @@ class $CardsTable extends Cards with TableInfo<$CardsTable, CardRow> {
   late final GeneratedColumn<String> rulingsJson = GeneratedColumn<String>(
       'rulings_json', aliasedName, true,
       type: DriftSqlType.string, requiredDuringInsert: false);
-  static const VerificationMeta _objectMeta = const VerificationMeta('object');
-  @override
-  late final GeneratedColumn<String> object = GeneratedColumn<String>(
-      'object', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
   static const VerificationMeta _oversizedMeta =
       const VerificationMeta('oversized');
   @override
@@ -542,14 +489,6 @@ class $CardsTable extends Cards with TableInfo<$CardsTable, CardRow> {
       requiredDuringInsert: true,
       defaultConstraints:
           GeneratedColumn.constraintIsAlways('CHECK ("variation" IN (0, 1))'));
-  static const VerificationMeta _gamesJsonMeta =
-      const VerificationMeta('gamesJson');
-  @override
-  late final GeneratedColumn<String> gamesJson = GeneratedColumn<String>(
-      'games_json', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      defaultValue: const Constant('[]'));
   static const VerificationMeta _reservedMeta =
       const VerificationMeta('reserved');
   @override
@@ -576,22 +515,6 @@ class $CardsTable extends Cards with TableInfo<$CardsTable, CardRow> {
       requiredDuringInsert: true,
       defaultConstraints:
           GeneratedColumn.constraintIsAlways('CHECK ("nonfoil" IN (0, 1))'));
-  static const VerificationMeta _finishesJsonMeta =
-      const VerificationMeta('finishesJson');
-  @override
-  late final GeneratedColumn<String> finishesJson = GeneratedColumn<String>(
-      'finishes_json', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      defaultValue: const Constant('[]'));
-  static const VerificationMeta _producedManaJsonMeta =
-      const VerificationMeta('producedManaJson');
-  @override
-  late final GeneratedColumn<String> producedManaJson = GeneratedColumn<String>(
-      'produced_mana_json', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      defaultValue: const Constant('[]'));
   static const VerificationMeta _edhrecRankMeta =
       const VerificationMeta('edhrecRank');
   @override
@@ -607,42 +530,10 @@ class $CardsTable extends Cards with TableInfo<$CardsTable, CardRow> {
       requiredDuringInsert: false,
       defaultConstraints: GeneratedColumn.constraintIsAlways(
           'CHECK ("is_game_changer" IN (0, 1))'));
-  static const VerificationMeta _relatedTokenIdsJsonMeta =
-      const VerificationMeta('relatedTokenIdsJson');
-  @override
-  late final GeneratedColumn<String> relatedTokenIdsJson =
-      GeneratedColumn<String>('related_token_ids_json', aliasedName, false,
-          type: DriftSqlType.string,
-          requiredDuringInsert: false,
-          defaultValue: const Constant('[]'));
-  static const VerificationMeta _mtgoIdMeta = const VerificationMeta('mtgoId');
-  @override
-  late final GeneratedColumn<int> mtgoId = GeneratedColumn<int>(
-      'mtgo_id', aliasedName, true,
-      type: DriftSqlType.int, requiredDuringInsert: false);
-  static const VerificationMeta _arenaIdMeta =
-      const VerificationMeta('arenaId');
-  @override
-  late final GeneratedColumn<int> arenaId = GeneratedColumn<int>(
-      'arena_id', aliasedName, true,
-      type: DriftSqlType.int, requiredDuringInsert: false);
-  static const VerificationMeta _tcgplayerIdMeta =
-      const VerificationMeta('tcgplayerId');
-  @override
-  late final GeneratedColumn<int> tcgplayerId = GeneratedColumn<int>(
-      'tcgplayer_id', aliasedName, true,
-      type: DriftSqlType.int, requiredDuringInsert: false);
-  static const VerificationMeta _cardmarketIdMeta =
-      const VerificationMeta('cardmarketId');
-  @override
-  late final GeneratedColumn<int> cardmarketId = GeneratedColumn<int>(
-      'cardmarket_id', aliasedName, true,
-      type: DriftSqlType.int, requiredDuringInsert: false);
   @override
   List<GeneratedColumn> get $columns => [
         id,
         scryfallId,
-        mtgjsonUuid,
         oracleId,
         name,
         flavorName,
@@ -679,13 +570,6 @@ class $CardsTable extends Cards with TableInfo<$CardsTable, CardRow> {
         textless,
         booster,
         storySpotlight,
-        imageStatus,
-        imageSmall,
-        imageNormal,
-        imageLarge,
-        imagePng,
-        imageArtCrop,
-        imageBorderCrop,
         legalStandard,
         legalFuture,
         legalHistoric,
@@ -717,24 +601,15 @@ class $CardsTable extends Cards with TableInfo<$CardsTable, CardRow> {
         priceNumeric,
         cardFacesJson,
         rulingsJson,
-        object,
         oversized,
         promo,
         reprint,
         variation,
-        gamesJson,
         reserved,
         foil,
         nonfoil,
-        finishesJson,
-        producedManaJson,
         edhrecRank,
-        isGameChanger,
-        relatedTokenIdsJson,
-        mtgoId,
-        arenaId,
-        tcgplayerId,
-        cardmarketId
+        isGameChanger
       ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -756,12 +631,6 @@ class $CardsTable extends Cards with TableInfo<$CardsTable, CardRow> {
               data['scryfall_id']!, _scryfallIdMeta));
     } else if (isInserting) {
       context.missing(_scryfallIdMeta);
-    }
-    if (data.containsKey('mtgjson_uuid')) {
-      context.handle(
-          _mtgjsonUuidMeta,
-          mtgjsonUuid.isAcceptableOrUnknown(
-              data['mtgjson_uuid']!, _mtgjsonUuidMeta));
     }
     if (data.containsKey('oracle_id')) {
       context.handle(_oracleIdMeta,
@@ -979,48 +848,6 @@ class $CardsTable extends Cards with TableInfo<$CardsTable, CardRow> {
     } else if (isInserting) {
       context.missing(_storySpotlightMeta);
     }
-    if (data.containsKey('image_status')) {
-      context.handle(
-          _imageStatusMeta,
-          imageStatus.isAcceptableOrUnknown(
-              data['image_status']!, _imageStatusMeta));
-    } else if (isInserting) {
-      context.missing(_imageStatusMeta);
-    }
-    if (data.containsKey('image_small')) {
-      context.handle(
-          _imageSmallMeta,
-          imageSmall.isAcceptableOrUnknown(
-              data['image_small']!, _imageSmallMeta));
-    }
-    if (data.containsKey('image_normal')) {
-      context.handle(
-          _imageNormalMeta,
-          imageNormal.isAcceptableOrUnknown(
-              data['image_normal']!, _imageNormalMeta));
-    }
-    if (data.containsKey('image_large')) {
-      context.handle(
-          _imageLargeMeta,
-          imageLarge.isAcceptableOrUnknown(
-              data['image_large']!, _imageLargeMeta));
-    }
-    if (data.containsKey('image_png')) {
-      context.handle(_imagePngMeta,
-          imagePng.isAcceptableOrUnknown(data['image_png']!, _imagePngMeta));
-    }
-    if (data.containsKey('image_art_crop')) {
-      context.handle(
-          _imageArtCropMeta,
-          imageArtCrop.isAcceptableOrUnknown(
-              data['image_art_crop']!, _imageArtCropMeta));
-    }
-    if (data.containsKey('image_border_crop')) {
-      context.handle(
-          _imageBorderCropMeta,
-          imageBorderCrop.isAcceptableOrUnknown(
-              data['image_border_crop']!, _imageBorderCropMeta));
-    }
     if (data.containsKey('legal_standard')) {
       context.handle(
           _legalStandardMeta,
@@ -1237,12 +1064,6 @@ class $CardsTable extends Cards with TableInfo<$CardsTable, CardRow> {
           rulingsJson.isAcceptableOrUnknown(
               data['rulings_json']!, _rulingsJsonMeta));
     }
-    if (data.containsKey('object')) {
-      context.handle(_objectMeta,
-          object.isAcceptableOrUnknown(data['object']!, _objectMeta));
-    } else if (isInserting) {
-      context.missing(_objectMeta);
-    }
     if (data.containsKey('oversized')) {
       context.handle(_oversizedMeta,
           oversized.isAcceptableOrUnknown(data['oversized']!, _oversizedMeta));
@@ -1267,10 +1088,6 @@ class $CardsTable extends Cards with TableInfo<$CardsTable, CardRow> {
     } else if (isInserting) {
       context.missing(_variationMeta);
     }
-    if (data.containsKey('games_json')) {
-      context.handle(_gamesJsonMeta,
-          gamesJson.isAcceptableOrUnknown(data['games_json']!, _gamesJsonMeta));
-    }
     if (data.containsKey('reserved')) {
       context.handle(_reservedMeta,
           reserved.isAcceptableOrUnknown(data['reserved']!, _reservedMeta));
@@ -1289,18 +1106,6 @@ class $CardsTable extends Cards with TableInfo<$CardsTable, CardRow> {
     } else if (isInserting) {
       context.missing(_nonfoilMeta);
     }
-    if (data.containsKey('finishes_json')) {
-      context.handle(
-          _finishesJsonMeta,
-          finishesJson.isAcceptableOrUnknown(
-              data['finishes_json']!, _finishesJsonMeta));
-    }
-    if (data.containsKey('produced_mana_json')) {
-      context.handle(
-          _producedManaJsonMeta,
-          producedManaJson.isAcceptableOrUnknown(
-              data['produced_mana_json']!, _producedManaJsonMeta));
-    }
     if (data.containsKey('edhrec_rank')) {
       context.handle(
           _edhrecRankMeta,
@@ -1312,32 +1117,6 @@ class $CardsTable extends Cards with TableInfo<$CardsTable, CardRow> {
           _isGameChangerMeta,
           isGameChanger.isAcceptableOrUnknown(
               data['is_game_changer']!, _isGameChangerMeta));
-    }
-    if (data.containsKey('related_token_ids_json')) {
-      context.handle(
-          _relatedTokenIdsJsonMeta,
-          relatedTokenIdsJson.isAcceptableOrUnknown(
-              data['related_token_ids_json']!, _relatedTokenIdsJsonMeta));
-    }
-    if (data.containsKey('mtgo_id')) {
-      context.handle(_mtgoIdMeta,
-          mtgoId.isAcceptableOrUnknown(data['mtgo_id']!, _mtgoIdMeta));
-    }
-    if (data.containsKey('arena_id')) {
-      context.handle(_arenaIdMeta,
-          arenaId.isAcceptableOrUnknown(data['arena_id']!, _arenaIdMeta));
-    }
-    if (data.containsKey('tcgplayer_id')) {
-      context.handle(
-          _tcgplayerIdMeta,
-          tcgplayerId.isAcceptableOrUnknown(
-              data['tcgplayer_id']!, _tcgplayerIdMeta));
-    }
-    if (data.containsKey('cardmarket_id')) {
-      context.handle(
-          _cardmarketIdMeta,
-          cardmarketId.isAcceptableOrUnknown(
-              data['cardmarket_id']!, _cardmarketIdMeta));
     }
     return context;
   }
@@ -1352,8 +1131,6 @@ class $CardsTable extends Cards with TableInfo<$CardsTable, CardRow> {
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
       scryfallId: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}scryfall_id'])!,
-      mtgjsonUuid: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}mtgjson_uuid']),
       oracleId: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}oracle_id'])!,
       name: attachedDatabase.typeMapping
@@ -1427,20 +1204,6 @@ class $CardsTable extends Cards with TableInfo<$CardsTable, CardRow> {
           .read(DriftSqlType.bool, data['${effectivePrefix}booster'])!,
       storySpotlight: attachedDatabase.typeMapping
           .read(DriftSqlType.bool, data['${effectivePrefix}story_spotlight'])!,
-      imageStatus: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}image_status'])!,
-      imageSmall: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}image_small']),
-      imageNormal: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}image_normal']),
-      imageLarge: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}image_large']),
-      imagePng: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}image_png']),
-      imageArtCrop: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}image_art_crop']),
-      imageBorderCrop: attachedDatabase.typeMapping.read(
-          DriftSqlType.string, data['${effectivePrefix}image_border_crop']),
       legalStandard: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}legal_standard'])!,
       legalFuture: attachedDatabase.typeMapping
@@ -1504,8 +1267,6 @@ class $CardsTable extends Cards with TableInfo<$CardsTable, CardRow> {
           .read(DriftSqlType.string, data['${effectivePrefix}card_faces_json']),
       rulingsJson: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}rulings_json']),
-      object: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}object'])!,
       oversized: attachedDatabase.typeMapping
           .read(DriftSqlType.bool, data['${effectivePrefix}oversized'])!,
       promo: attachedDatabase.typeMapping
@@ -1514,33 +1275,16 @@ class $CardsTable extends Cards with TableInfo<$CardsTable, CardRow> {
           .read(DriftSqlType.bool, data['${effectivePrefix}reprint'])!,
       variation: attachedDatabase.typeMapping
           .read(DriftSqlType.bool, data['${effectivePrefix}variation'])!,
-      gamesJson: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}games_json'])!,
       reserved: attachedDatabase.typeMapping
           .read(DriftSqlType.bool, data['${effectivePrefix}reserved'])!,
       foil: attachedDatabase.typeMapping
           .read(DriftSqlType.bool, data['${effectivePrefix}foil'])!,
       nonfoil: attachedDatabase.typeMapping
           .read(DriftSqlType.bool, data['${effectivePrefix}nonfoil'])!,
-      finishesJson: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}finishes_json'])!,
-      producedManaJson: attachedDatabase.typeMapping.read(
-          DriftSqlType.string, data['${effectivePrefix}produced_mana_json'])!,
       edhrecRank: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}edhrec_rank']),
       isGameChanger: attachedDatabase.typeMapping
           .read(DriftSqlType.bool, data['${effectivePrefix}is_game_changer']),
-      relatedTokenIdsJson: attachedDatabase.typeMapping.read(
-          DriftSqlType.string,
-          data['${effectivePrefix}related_token_ids_json'])!,
-      mtgoId: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}mtgo_id']),
-      arenaId: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}arena_id']),
-      tcgplayerId: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}tcgplayer_id']),
-      cardmarketId: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}cardmarket_id']),
     );
   }
 
@@ -1553,7 +1297,6 @@ class $CardsTable extends Cards with TableInfo<$CardsTable, CardRow> {
 class CardRow extends DataClass implements Insertable<CardRow> {
   final int id;
   final String scryfallId;
-  final String? mtgjsonUuid;
   final String oracleId;
   final String name;
   final String? flavorName;
@@ -1600,13 +1343,6 @@ class CardRow extends DataClass implements Insertable<CardRow> {
   final bool textless;
   final bool booster;
   final bool storySpotlight;
-  final String imageStatus;
-  final String? imageSmall;
-  final String? imageNormal;
-  final String? imageLarge;
-  final String? imagePng;
-  final String? imageArtCrop;
-  final String? imageBorderCrop;
   final String legalStandard;
   final String legalFuture;
   final String legalHistoric;
@@ -1646,36 +1382,18 @@ class CardRow extends DataClass implements Insertable<CardRow> {
   final double? priceNumeric;
   final String? cardFacesJson;
   final String? rulingsJson;
-  final String object;
   final bool oversized;
   final bool promo;
   final bool reprint;
   final bool variation;
-
-  /// JSON-encoded `List<String>`.
-  final String gamesJson;
   final bool reserved;
   final bool foil;
   final bool nonfoil;
-
-  /// JSON-encoded `List<String>`.
-  final String finishesJson;
-
-  /// JSON-encoded `List<String>`.
-  final String producedManaJson;
   final int? edhrecRank;
   final bool? isGameChanger;
-
-  /// JSON-encoded `List<String>` — MTGJSON UUIDs of related tokens.
-  final String relatedTokenIdsJson;
-  final int? mtgoId;
-  final int? arenaId;
-  final int? tcgplayerId;
-  final int? cardmarketId;
   const CardRow(
       {required this.id,
       required this.scryfallId,
-      this.mtgjsonUuid,
       required this.oracleId,
       required this.name,
       this.flavorName,
@@ -1712,13 +1430,6 @@ class CardRow extends DataClass implements Insertable<CardRow> {
       required this.textless,
       required this.booster,
       required this.storySpotlight,
-      required this.imageStatus,
-      this.imageSmall,
-      this.imageNormal,
-      this.imageLarge,
-      this.imagePng,
-      this.imageArtCrop,
-      this.imageBorderCrop,
       required this.legalStandard,
       required this.legalFuture,
       required this.legalHistoric,
@@ -1750,32 +1461,20 @@ class CardRow extends DataClass implements Insertable<CardRow> {
       this.priceNumeric,
       this.cardFacesJson,
       this.rulingsJson,
-      required this.object,
       required this.oversized,
       required this.promo,
       required this.reprint,
       required this.variation,
-      required this.gamesJson,
       required this.reserved,
       required this.foil,
       required this.nonfoil,
-      required this.finishesJson,
-      required this.producedManaJson,
       this.edhrecRank,
-      this.isGameChanger,
-      required this.relatedTokenIdsJson,
-      this.mtgoId,
-      this.arenaId,
-      this.tcgplayerId,
-      this.cardmarketId});
+      this.isGameChanger});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['scryfall_id'] = Variable<String>(scryfallId);
-    if (!nullToAbsent || mtgjsonUuid != null) {
-      map['mtgjson_uuid'] = Variable<String>(mtgjsonUuid);
-    }
     map['oracle_id'] = Variable<String>(oracleId);
     map['name'] = Variable<String>(name);
     if (!nullToAbsent || flavorName != null) {
@@ -1832,25 +1531,6 @@ class CardRow extends DataClass implements Insertable<CardRow> {
     map['textless'] = Variable<bool>(textless);
     map['booster'] = Variable<bool>(booster);
     map['story_spotlight'] = Variable<bool>(storySpotlight);
-    map['image_status'] = Variable<String>(imageStatus);
-    if (!nullToAbsent || imageSmall != null) {
-      map['image_small'] = Variable<String>(imageSmall);
-    }
-    if (!nullToAbsent || imageNormal != null) {
-      map['image_normal'] = Variable<String>(imageNormal);
-    }
-    if (!nullToAbsent || imageLarge != null) {
-      map['image_large'] = Variable<String>(imageLarge);
-    }
-    if (!nullToAbsent || imagePng != null) {
-      map['image_png'] = Variable<String>(imagePng);
-    }
-    if (!nullToAbsent || imageArtCrop != null) {
-      map['image_art_crop'] = Variable<String>(imageArtCrop);
-    }
-    if (!nullToAbsent || imageBorderCrop != null) {
-      map['image_border_crop'] = Variable<String>(imageBorderCrop);
-    }
     map['legal_standard'] = Variable<String>(legalStandard);
     map['legal_future'] = Variable<String>(legalFuture);
     map['legal_historic'] = Variable<String>(legalHistoric);
@@ -1904,35 +1584,18 @@ class CardRow extends DataClass implements Insertable<CardRow> {
     if (!nullToAbsent || rulingsJson != null) {
       map['rulings_json'] = Variable<String>(rulingsJson);
     }
-    map['object'] = Variable<String>(object);
     map['oversized'] = Variable<bool>(oversized);
     map['promo'] = Variable<bool>(promo);
     map['reprint'] = Variable<bool>(reprint);
     map['variation'] = Variable<bool>(variation);
-    map['games_json'] = Variable<String>(gamesJson);
     map['reserved'] = Variable<bool>(reserved);
     map['foil'] = Variable<bool>(foil);
     map['nonfoil'] = Variable<bool>(nonfoil);
-    map['finishes_json'] = Variable<String>(finishesJson);
-    map['produced_mana_json'] = Variable<String>(producedManaJson);
     if (!nullToAbsent || edhrecRank != null) {
       map['edhrec_rank'] = Variable<int>(edhrecRank);
     }
     if (!nullToAbsent || isGameChanger != null) {
       map['is_game_changer'] = Variable<bool>(isGameChanger);
-    }
-    map['related_token_ids_json'] = Variable<String>(relatedTokenIdsJson);
-    if (!nullToAbsent || mtgoId != null) {
-      map['mtgo_id'] = Variable<int>(mtgoId);
-    }
-    if (!nullToAbsent || arenaId != null) {
-      map['arena_id'] = Variable<int>(arenaId);
-    }
-    if (!nullToAbsent || tcgplayerId != null) {
-      map['tcgplayer_id'] = Variable<int>(tcgplayerId);
-    }
-    if (!nullToAbsent || cardmarketId != null) {
-      map['cardmarket_id'] = Variable<int>(cardmarketId);
     }
     return map;
   }
@@ -1941,9 +1604,6 @@ class CardRow extends DataClass implements Insertable<CardRow> {
     return CardsCompanion(
       id: Value(id),
       scryfallId: Value(scryfallId),
-      mtgjsonUuid: mtgjsonUuid == null && nullToAbsent
-          ? const Value.absent()
-          : Value(mtgjsonUuid),
       oracleId: Value(oracleId),
       name: Value(name),
       flavorName: flavorName == null && nullToAbsent
@@ -1998,25 +1658,6 @@ class CardRow extends DataClass implements Insertable<CardRow> {
       textless: Value(textless),
       booster: Value(booster),
       storySpotlight: Value(storySpotlight),
-      imageStatus: Value(imageStatus),
-      imageSmall: imageSmall == null && nullToAbsent
-          ? const Value.absent()
-          : Value(imageSmall),
-      imageNormal: imageNormal == null && nullToAbsent
-          ? const Value.absent()
-          : Value(imageNormal),
-      imageLarge: imageLarge == null && nullToAbsent
-          ? const Value.absent()
-          : Value(imageLarge),
-      imagePng: imagePng == null && nullToAbsent
-          ? const Value.absent()
-          : Value(imagePng),
-      imageArtCrop: imageArtCrop == null && nullToAbsent
-          ? const Value.absent()
-          : Value(imageArtCrop),
-      imageBorderCrop: imageBorderCrop == null && nullToAbsent
-          ? const Value.absent()
-          : Value(imageBorderCrop),
       legalStandard: Value(legalStandard),
       legalFuture: Value(legalFuture),
       legalHistoric: Value(legalHistoric),
@@ -2070,35 +1711,19 @@ class CardRow extends DataClass implements Insertable<CardRow> {
       rulingsJson: rulingsJson == null && nullToAbsent
           ? const Value.absent()
           : Value(rulingsJson),
-      object: Value(object),
       oversized: Value(oversized),
       promo: Value(promo),
       reprint: Value(reprint),
       variation: Value(variation),
-      gamesJson: Value(gamesJson),
       reserved: Value(reserved),
       foil: Value(foil),
       nonfoil: Value(nonfoil),
-      finishesJson: Value(finishesJson),
-      producedManaJson: Value(producedManaJson),
       edhrecRank: edhrecRank == null && nullToAbsent
           ? const Value.absent()
           : Value(edhrecRank),
       isGameChanger: isGameChanger == null && nullToAbsent
           ? const Value.absent()
           : Value(isGameChanger),
-      relatedTokenIdsJson: Value(relatedTokenIdsJson),
-      mtgoId:
-          mtgoId == null && nullToAbsent ? const Value.absent() : Value(mtgoId),
-      arenaId: arenaId == null && nullToAbsent
-          ? const Value.absent()
-          : Value(arenaId),
-      tcgplayerId: tcgplayerId == null && nullToAbsent
-          ? const Value.absent()
-          : Value(tcgplayerId),
-      cardmarketId: cardmarketId == null && nullToAbsent
-          ? const Value.absent()
-          : Value(cardmarketId),
     );
   }
 
@@ -2108,7 +1733,6 @@ class CardRow extends DataClass implements Insertable<CardRow> {
     return CardRow(
       id: serializer.fromJson<int>(json['id']),
       scryfallId: serializer.fromJson<String>(json['scryfallId']),
-      mtgjsonUuid: serializer.fromJson<String?>(json['mtgjsonUuid']),
       oracleId: serializer.fromJson<String>(json['oracleId']),
       name: serializer.fromJson<String>(json['name']),
       flavorName: serializer.fromJson<String?>(json['flavorName']),
@@ -2147,13 +1771,6 @@ class CardRow extends DataClass implements Insertable<CardRow> {
       textless: serializer.fromJson<bool>(json['textless']),
       booster: serializer.fromJson<bool>(json['booster']),
       storySpotlight: serializer.fromJson<bool>(json['storySpotlight']),
-      imageStatus: serializer.fromJson<String>(json['imageStatus']),
-      imageSmall: serializer.fromJson<String?>(json['imageSmall']),
-      imageNormal: serializer.fromJson<String?>(json['imageNormal']),
-      imageLarge: serializer.fromJson<String?>(json['imageLarge']),
-      imagePng: serializer.fromJson<String?>(json['imagePng']),
-      imageArtCrop: serializer.fromJson<String?>(json['imageArtCrop']),
-      imageBorderCrop: serializer.fromJson<String?>(json['imageBorderCrop']),
       legalStandard: serializer.fromJson<String>(json['legalStandard']),
       legalFuture: serializer.fromJson<String>(json['legalFuture']),
       legalHistoric: serializer.fromJson<String>(json['legalHistoric']),
@@ -2187,25 +1804,15 @@ class CardRow extends DataClass implements Insertable<CardRow> {
       priceNumeric: serializer.fromJson<double?>(json['priceNumeric']),
       cardFacesJson: serializer.fromJson<String?>(json['cardFacesJson']),
       rulingsJson: serializer.fromJson<String?>(json['rulingsJson']),
-      object: serializer.fromJson<String>(json['object']),
       oversized: serializer.fromJson<bool>(json['oversized']),
       promo: serializer.fromJson<bool>(json['promo']),
       reprint: serializer.fromJson<bool>(json['reprint']),
       variation: serializer.fromJson<bool>(json['variation']),
-      gamesJson: serializer.fromJson<String>(json['gamesJson']),
       reserved: serializer.fromJson<bool>(json['reserved']),
       foil: serializer.fromJson<bool>(json['foil']),
       nonfoil: serializer.fromJson<bool>(json['nonfoil']),
-      finishesJson: serializer.fromJson<String>(json['finishesJson']),
-      producedManaJson: serializer.fromJson<String>(json['producedManaJson']),
       edhrecRank: serializer.fromJson<int?>(json['edhrecRank']),
       isGameChanger: serializer.fromJson<bool?>(json['isGameChanger']),
-      relatedTokenIdsJson:
-          serializer.fromJson<String>(json['relatedTokenIdsJson']),
-      mtgoId: serializer.fromJson<int?>(json['mtgoId']),
-      arenaId: serializer.fromJson<int?>(json['arenaId']),
-      tcgplayerId: serializer.fromJson<int?>(json['tcgplayerId']),
-      cardmarketId: serializer.fromJson<int?>(json['cardmarketId']),
     );
   }
   @override
@@ -2214,7 +1821,6 @@ class CardRow extends DataClass implements Insertable<CardRow> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'scryfallId': serializer.toJson<String>(scryfallId),
-      'mtgjsonUuid': serializer.toJson<String?>(mtgjsonUuid),
       'oracleId': serializer.toJson<String>(oracleId),
       'name': serializer.toJson<String>(name),
       'flavorName': serializer.toJson<String?>(flavorName),
@@ -2251,13 +1857,6 @@ class CardRow extends DataClass implements Insertable<CardRow> {
       'textless': serializer.toJson<bool>(textless),
       'booster': serializer.toJson<bool>(booster),
       'storySpotlight': serializer.toJson<bool>(storySpotlight),
-      'imageStatus': serializer.toJson<String>(imageStatus),
-      'imageSmall': serializer.toJson<String?>(imageSmall),
-      'imageNormal': serializer.toJson<String?>(imageNormal),
-      'imageLarge': serializer.toJson<String?>(imageLarge),
-      'imagePng': serializer.toJson<String?>(imagePng),
-      'imageArtCrop': serializer.toJson<String?>(imageArtCrop),
-      'imageBorderCrop': serializer.toJson<String?>(imageBorderCrop),
       'legalStandard': serializer.toJson<String>(legalStandard),
       'legalFuture': serializer.toJson<String>(legalFuture),
       'legalHistoric': serializer.toJson<String>(legalHistoric),
@@ -2289,31 +1888,21 @@ class CardRow extends DataClass implements Insertable<CardRow> {
       'priceNumeric': serializer.toJson<double?>(priceNumeric),
       'cardFacesJson': serializer.toJson<String?>(cardFacesJson),
       'rulingsJson': serializer.toJson<String?>(rulingsJson),
-      'object': serializer.toJson<String>(object),
       'oversized': serializer.toJson<bool>(oversized),
       'promo': serializer.toJson<bool>(promo),
       'reprint': serializer.toJson<bool>(reprint),
       'variation': serializer.toJson<bool>(variation),
-      'gamesJson': serializer.toJson<String>(gamesJson),
       'reserved': serializer.toJson<bool>(reserved),
       'foil': serializer.toJson<bool>(foil),
       'nonfoil': serializer.toJson<bool>(nonfoil),
-      'finishesJson': serializer.toJson<String>(finishesJson),
-      'producedManaJson': serializer.toJson<String>(producedManaJson),
       'edhrecRank': serializer.toJson<int?>(edhrecRank),
       'isGameChanger': serializer.toJson<bool?>(isGameChanger),
-      'relatedTokenIdsJson': serializer.toJson<String>(relatedTokenIdsJson),
-      'mtgoId': serializer.toJson<int?>(mtgoId),
-      'arenaId': serializer.toJson<int?>(arenaId),
-      'tcgplayerId': serializer.toJson<int?>(tcgplayerId),
-      'cardmarketId': serializer.toJson<int?>(cardmarketId),
     };
   }
 
   CardRow copyWith(
           {int? id,
           String? scryfallId,
-          Value<String?> mtgjsonUuid = const Value.absent(),
           String? oracleId,
           String? name,
           Value<String?> flavorName = const Value.absent(),
@@ -2350,13 +1939,6 @@ class CardRow extends DataClass implements Insertable<CardRow> {
           bool? textless,
           bool? booster,
           bool? storySpotlight,
-          String? imageStatus,
-          Value<String?> imageSmall = const Value.absent(),
-          Value<String?> imageNormal = const Value.absent(),
-          Value<String?> imageLarge = const Value.absent(),
-          Value<String?> imagePng = const Value.absent(),
-          Value<String?> imageArtCrop = const Value.absent(),
-          Value<String?> imageBorderCrop = const Value.absent(),
           String? legalStandard,
           String? legalFuture,
           String? legalHistoric,
@@ -2388,28 +1970,18 @@ class CardRow extends DataClass implements Insertable<CardRow> {
           Value<double?> priceNumeric = const Value.absent(),
           Value<String?> cardFacesJson = const Value.absent(),
           Value<String?> rulingsJson = const Value.absent(),
-          String? object,
           bool? oversized,
           bool? promo,
           bool? reprint,
           bool? variation,
-          String? gamesJson,
           bool? reserved,
           bool? foil,
           bool? nonfoil,
-          String? finishesJson,
-          String? producedManaJson,
           Value<int?> edhrecRank = const Value.absent(),
-          Value<bool?> isGameChanger = const Value.absent(),
-          String? relatedTokenIdsJson,
-          Value<int?> mtgoId = const Value.absent(),
-          Value<int?> arenaId = const Value.absent(),
-          Value<int?> tcgplayerId = const Value.absent(),
-          Value<int?> cardmarketId = const Value.absent()}) =>
+          Value<bool?> isGameChanger = const Value.absent()}) =>
       CardRow(
         id: id ?? this.id,
         scryfallId: scryfallId ?? this.scryfallId,
-        mtgjsonUuid: mtgjsonUuid.present ? mtgjsonUuid.value : this.mtgjsonUuid,
         oracleId: oracleId ?? this.oracleId,
         name: name ?? this.name,
         flavorName: flavorName.present ? flavorName.value : this.flavorName,
@@ -2450,16 +2022,6 @@ class CardRow extends DataClass implements Insertable<CardRow> {
         textless: textless ?? this.textless,
         booster: booster ?? this.booster,
         storySpotlight: storySpotlight ?? this.storySpotlight,
-        imageStatus: imageStatus ?? this.imageStatus,
-        imageSmall: imageSmall.present ? imageSmall.value : this.imageSmall,
-        imageNormal: imageNormal.present ? imageNormal.value : this.imageNormal,
-        imageLarge: imageLarge.present ? imageLarge.value : this.imageLarge,
-        imagePng: imagePng.present ? imagePng.value : this.imagePng,
-        imageArtCrop:
-            imageArtCrop.present ? imageArtCrop.value : this.imageArtCrop,
-        imageBorderCrop: imageBorderCrop.present
-            ? imageBorderCrop.value
-            : this.imageBorderCrop,
         legalStandard: legalStandard ?? this.legalStandard,
         legalFuture: legalFuture ?? this.legalFuture,
         legalHistoric: legalHistoric ?? this.legalHistoric,
@@ -2499,34 +2061,22 @@ class CardRow extends DataClass implements Insertable<CardRow> {
         cardFacesJson:
             cardFacesJson.present ? cardFacesJson.value : this.cardFacesJson,
         rulingsJson: rulingsJson.present ? rulingsJson.value : this.rulingsJson,
-        object: object ?? this.object,
         oversized: oversized ?? this.oversized,
         promo: promo ?? this.promo,
         reprint: reprint ?? this.reprint,
         variation: variation ?? this.variation,
-        gamesJson: gamesJson ?? this.gamesJson,
         reserved: reserved ?? this.reserved,
         foil: foil ?? this.foil,
         nonfoil: nonfoil ?? this.nonfoil,
-        finishesJson: finishesJson ?? this.finishesJson,
-        producedManaJson: producedManaJson ?? this.producedManaJson,
         edhrecRank: edhrecRank.present ? edhrecRank.value : this.edhrecRank,
         isGameChanger:
             isGameChanger.present ? isGameChanger.value : this.isGameChanger,
-        relatedTokenIdsJson: relatedTokenIdsJson ?? this.relatedTokenIdsJson,
-        mtgoId: mtgoId.present ? mtgoId.value : this.mtgoId,
-        arenaId: arenaId.present ? arenaId.value : this.arenaId,
-        tcgplayerId: tcgplayerId.present ? tcgplayerId.value : this.tcgplayerId,
-        cardmarketId:
-            cardmarketId.present ? cardmarketId.value : this.cardmarketId,
       );
   CardRow copyWithCompanion(CardsCompanion data) {
     return CardRow(
       id: data.id.present ? data.id.value : this.id,
       scryfallId:
           data.scryfallId.present ? data.scryfallId.value : this.scryfallId,
-      mtgjsonUuid:
-          data.mtgjsonUuid.present ? data.mtgjsonUuid.value : this.mtgjsonUuid,
       oracleId: data.oracleId.present ? data.oracleId.value : this.oracleId,
       name: data.name.present ? data.name.value : this.name,
       flavorName:
@@ -2590,21 +2140,6 @@ class CardRow extends DataClass implements Insertable<CardRow> {
       storySpotlight: data.storySpotlight.present
           ? data.storySpotlight.value
           : this.storySpotlight,
-      imageStatus:
-          data.imageStatus.present ? data.imageStatus.value : this.imageStatus,
-      imageSmall:
-          data.imageSmall.present ? data.imageSmall.value : this.imageSmall,
-      imageNormal:
-          data.imageNormal.present ? data.imageNormal.value : this.imageNormal,
-      imageLarge:
-          data.imageLarge.present ? data.imageLarge.value : this.imageLarge,
-      imagePng: data.imagePng.present ? data.imagePng.value : this.imagePng,
-      imageArtCrop: data.imageArtCrop.present
-          ? data.imageArtCrop.value
-          : this.imageArtCrop,
-      imageBorderCrop: data.imageBorderCrop.present
-          ? data.imageBorderCrop.value
-          : this.imageBorderCrop,
       legalStandard: data.legalStandard.present
           ? data.legalStandard.value
           : this.legalStandard,
@@ -2682,36 +2217,18 @@ class CardRow extends DataClass implements Insertable<CardRow> {
           : this.cardFacesJson,
       rulingsJson:
           data.rulingsJson.present ? data.rulingsJson.value : this.rulingsJson,
-      object: data.object.present ? data.object.value : this.object,
       oversized: data.oversized.present ? data.oversized.value : this.oversized,
       promo: data.promo.present ? data.promo.value : this.promo,
       reprint: data.reprint.present ? data.reprint.value : this.reprint,
       variation: data.variation.present ? data.variation.value : this.variation,
-      gamesJson: data.gamesJson.present ? data.gamesJson.value : this.gamesJson,
       reserved: data.reserved.present ? data.reserved.value : this.reserved,
       foil: data.foil.present ? data.foil.value : this.foil,
       nonfoil: data.nonfoil.present ? data.nonfoil.value : this.nonfoil,
-      finishesJson: data.finishesJson.present
-          ? data.finishesJson.value
-          : this.finishesJson,
-      producedManaJson: data.producedManaJson.present
-          ? data.producedManaJson.value
-          : this.producedManaJson,
       edhrecRank:
           data.edhrecRank.present ? data.edhrecRank.value : this.edhrecRank,
       isGameChanger: data.isGameChanger.present
           ? data.isGameChanger.value
           : this.isGameChanger,
-      relatedTokenIdsJson: data.relatedTokenIdsJson.present
-          ? data.relatedTokenIdsJson.value
-          : this.relatedTokenIdsJson,
-      mtgoId: data.mtgoId.present ? data.mtgoId.value : this.mtgoId,
-      arenaId: data.arenaId.present ? data.arenaId.value : this.arenaId,
-      tcgplayerId:
-          data.tcgplayerId.present ? data.tcgplayerId.value : this.tcgplayerId,
-      cardmarketId: data.cardmarketId.present
-          ? data.cardmarketId.value
-          : this.cardmarketId,
     );
   }
 
@@ -2720,7 +2237,6 @@ class CardRow extends DataClass implements Insertable<CardRow> {
     return (StringBuffer('CardRow(')
           ..write('id: $id, ')
           ..write('scryfallId: $scryfallId, ')
-          ..write('mtgjsonUuid: $mtgjsonUuid, ')
           ..write('oracleId: $oracleId, ')
           ..write('name: $name, ')
           ..write('flavorName: $flavorName, ')
@@ -2757,13 +2273,6 @@ class CardRow extends DataClass implements Insertable<CardRow> {
           ..write('textless: $textless, ')
           ..write('booster: $booster, ')
           ..write('storySpotlight: $storySpotlight, ')
-          ..write('imageStatus: $imageStatus, ')
-          ..write('imageSmall: $imageSmall, ')
-          ..write('imageNormal: $imageNormal, ')
-          ..write('imageLarge: $imageLarge, ')
-          ..write('imagePng: $imagePng, ')
-          ..write('imageArtCrop: $imageArtCrop, ')
-          ..write('imageBorderCrop: $imageBorderCrop, ')
           ..write('legalStandard: $legalStandard, ')
           ..write('legalFuture: $legalFuture, ')
           ..write('legalHistoric: $legalHistoric, ')
@@ -2795,24 +2304,15 @@ class CardRow extends DataClass implements Insertable<CardRow> {
           ..write('priceNumeric: $priceNumeric, ')
           ..write('cardFacesJson: $cardFacesJson, ')
           ..write('rulingsJson: $rulingsJson, ')
-          ..write('object: $object, ')
           ..write('oversized: $oversized, ')
           ..write('promo: $promo, ')
           ..write('reprint: $reprint, ')
           ..write('variation: $variation, ')
-          ..write('gamesJson: $gamesJson, ')
           ..write('reserved: $reserved, ')
           ..write('foil: $foil, ')
           ..write('nonfoil: $nonfoil, ')
-          ..write('finishesJson: $finishesJson, ')
-          ..write('producedManaJson: $producedManaJson, ')
           ..write('edhrecRank: $edhrecRank, ')
-          ..write('isGameChanger: $isGameChanger, ')
-          ..write('relatedTokenIdsJson: $relatedTokenIdsJson, ')
-          ..write('mtgoId: $mtgoId, ')
-          ..write('arenaId: $arenaId, ')
-          ..write('tcgplayerId: $tcgplayerId, ')
-          ..write('cardmarketId: $cardmarketId')
+          ..write('isGameChanger: $isGameChanger')
           ..write(')'))
         .toString();
   }
@@ -2821,7 +2321,6 @@ class CardRow extends DataClass implements Insertable<CardRow> {
   int get hashCode => Object.hashAll([
         id,
         scryfallId,
-        mtgjsonUuid,
         oracleId,
         name,
         flavorName,
@@ -2858,13 +2357,6 @@ class CardRow extends DataClass implements Insertable<CardRow> {
         textless,
         booster,
         storySpotlight,
-        imageStatus,
-        imageSmall,
-        imageNormal,
-        imageLarge,
-        imagePng,
-        imageArtCrop,
-        imageBorderCrop,
         legalStandard,
         legalFuture,
         legalHistoric,
@@ -2896,24 +2388,15 @@ class CardRow extends DataClass implements Insertable<CardRow> {
         priceNumeric,
         cardFacesJson,
         rulingsJson,
-        object,
         oversized,
         promo,
         reprint,
         variation,
-        gamesJson,
         reserved,
         foil,
         nonfoil,
-        finishesJson,
-        producedManaJson,
         edhrecRank,
-        isGameChanger,
-        relatedTokenIdsJson,
-        mtgoId,
-        arenaId,
-        tcgplayerId,
-        cardmarketId
+        isGameChanger
       ]);
   @override
   bool operator ==(Object other) =>
@@ -2921,7 +2404,6 @@ class CardRow extends DataClass implements Insertable<CardRow> {
       (other is CardRow &&
           other.id == this.id &&
           other.scryfallId == this.scryfallId &&
-          other.mtgjsonUuid == this.mtgjsonUuid &&
           other.oracleId == this.oracleId &&
           other.name == this.name &&
           other.flavorName == this.flavorName &&
@@ -2958,13 +2440,6 @@ class CardRow extends DataClass implements Insertable<CardRow> {
           other.textless == this.textless &&
           other.booster == this.booster &&
           other.storySpotlight == this.storySpotlight &&
-          other.imageStatus == this.imageStatus &&
-          other.imageSmall == this.imageSmall &&
-          other.imageNormal == this.imageNormal &&
-          other.imageLarge == this.imageLarge &&
-          other.imagePng == this.imagePng &&
-          other.imageArtCrop == this.imageArtCrop &&
-          other.imageBorderCrop == this.imageBorderCrop &&
           other.legalStandard == this.legalStandard &&
           other.legalFuture == this.legalFuture &&
           other.legalHistoric == this.legalHistoric &&
@@ -2996,30 +2471,20 @@ class CardRow extends DataClass implements Insertable<CardRow> {
           other.priceNumeric == this.priceNumeric &&
           other.cardFacesJson == this.cardFacesJson &&
           other.rulingsJson == this.rulingsJson &&
-          other.object == this.object &&
           other.oversized == this.oversized &&
           other.promo == this.promo &&
           other.reprint == this.reprint &&
           other.variation == this.variation &&
-          other.gamesJson == this.gamesJson &&
           other.reserved == this.reserved &&
           other.foil == this.foil &&
           other.nonfoil == this.nonfoil &&
-          other.finishesJson == this.finishesJson &&
-          other.producedManaJson == this.producedManaJson &&
           other.edhrecRank == this.edhrecRank &&
-          other.isGameChanger == this.isGameChanger &&
-          other.relatedTokenIdsJson == this.relatedTokenIdsJson &&
-          other.mtgoId == this.mtgoId &&
-          other.arenaId == this.arenaId &&
-          other.tcgplayerId == this.tcgplayerId &&
-          other.cardmarketId == this.cardmarketId);
+          other.isGameChanger == this.isGameChanger);
 }
 
 class CardsCompanion extends UpdateCompanion<CardRow> {
   final Value<int> id;
   final Value<String> scryfallId;
-  final Value<String?> mtgjsonUuid;
   final Value<String> oracleId;
   final Value<String> name;
   final Value<String?> flavorName;
@@ -3056,13 +2521,6 @@ class CardsCompanion extends UpdateCompanion<CardRow> {
   final Value<bool> textless;
   final Value<bool> booster;
   final Value<bool> storySpotlight;
-  final Value<String> imageStatus;
-  final Value<String?> imageSmall;
-  final Value<String?> imageNormal;
-  final Value<String?> imageLarge;
-  final Value<String?> imagePng;
-  final Value<String?> imageArtCrop;
-  final Value<String?> imageBorderCrop;
   final Value<String> legalStandard;
   final Value<String> legalFuture;
   final Value<String> legalHistoric;
@@ -3094,28 +2552,18 @@ class CardsCompanion extends UpdateCompanion<CardRow> {
   final Value<double?> priceNumeric;
   final Value<String?> cardFacesJson;
   final Value<String?> rulingsJson;
-  final Value<String> object;
   final Value<bool> oversized;
   final Value<bool> promo;
   final Value<bool> reprint;
   final Value<bool> variation;
-  final Value<String> gamesJson;
   final Value<bool> reserved;
   final Value<bool> foil;
   final Value<bool> nonfoil;
-  final Value<String> finishesJson;
-  final Value<String> producedManaJson;
   final Value<int?> edhrecRank;
   final Value<bool?> isGameChanger;
-  final Value<String> relatedTokenIdsJson;
-  final Value<int?> mtgoId;
-  final Value<int?> arenaId;
-  final Value<int?> tcgplayerId;
-  final Value<int?> cardmarketId;
   const CardsCompanion({
     this.id = const Value.absent(),
     this.scryfallId = const Value.absent(),
-    this.mtgjsonUuid = const Value.absent(),
     this.oracleId = const Value.absent(),
     this.name = const Value.absent(),
     this.flavorName = const Value.absent(),
@@ -3152,13 +2600,6 @@ class CardsCompanion extends UpdateCompanion<CardRow> {
     this.textless = const Value.absent(),
     this.booster = const Value.absent(),
     this.storySpotlight = const Value.absent(),
-    this.imageStatus = const Value.absent(),
-    this.imageSmall = const Value.absent(),
-    this.imageNormal = const Value.absent(),
-    this.imageLarge = const Value.absent(),
-    this.imagePng = const Value.absent(),
-    this.imageArtCrop = const Value.absent(),
-    this.imageBorderCrop = const Value.absent(),
     this.legalStandard = const Value.absent(),
     this.legalFuture = const Value.absent(),
     this.legalHistoric = const Value.absent(),
@@ -3190,29 +2631,19 @@ class CardsCompanion extends UpdateCompanion<CardRow> {
     this.priceNumeric = const Value.absent(),
     this.cardFacesJson = const Value.absent(),
     this.rulingsJson = const Value.absent(),
-    this.object = const Value.absent(),
     this.oversized = const Value.absent(),
     this.promo = const Value.absent(),
     this.reprint = const Value.absent(),
     this.variation = const Value.absent(),
-    this.gamesJson = const Value.absent(),
     this.reserved = const Value.absent(),
     this.foil = const Value.absent(),
     this.nonfoil = const Value.absent(),
-    this.finishesJson = const Value.absent(),
-    this.producedManaJson = const Value.absent(),
     this.edhrecRank = const Value.absent(),
     this.isGameChanger = const Value.absent(),
-    this.relatedTokenIdsJson = const Value.absent(),
-    this.mtgoId = const Value.absent(),
-    this.arenaId = const Value.absent(),
-    this.tcgplayerId = const Value.absent(),
-    this.cardmarketId = const Value.absent(),
   });
   CardsCompanion.insert({
     this.id = const Value.absent(),
     required String scryfallId,
-    this.mtgjsonUuid = const Value.absent(),
     required String oracleId,
     required String name,
     this.flavorName = const Value.absent(),
@@ -3249,13 +2680,6 @@ class CardsCompanion extends UpdateCompanion<CardRow> {
     required bool textless,
     required bool booster,
     required bool storySpotlight,
-    required String imageStatus,
-    this.imageSmall = const Value.absent(),
-    this.imageNormal = const Value.absent(),
-    this.imageLarge = const Value.absent(),
-    this.imagePng = const Value.absent(),
-    this.imageArtCrop = const Value.absent(),
-    this.imageBorderCrop = const Value.absent(),
     required String legalStandard,
     required String legalFuture,
     required String legalHistoric,
@@ -3287,24 +2711,15 @@ class CardsCompanion extends UpdateCompanion<CardRow> {
     this.priceNumeric = const Value.absent(),
     this.cardFacesJson = const Value.absent(),
     this.rulingsJson = const Value.absent(),
-    required String object,
     required bool oversized,
     required bool promo,
     required bool reprint,
     required bool variation,
-    this.gamesJson = const Value.absent(),
     required bool reserved,
     required bool foil,
     required bool nonfoil,
-    this.finishesJson = const Value.absent(),
-    this.producedManaJson = const Value.absent(),
     this.edhrecRank = const Value.absent(),
     this.isGameChanger = const Value.absent(),
-    this.relatedTokenIdsJson = const Value.absent(),
-    this.mtgoId = const Value.absent(),
-    this.arenaId = const Value.absent(),
-    this.tcgplayerId = const Value.absent(),
-    this.cardmarketId = const Value.absent(),
   })  : scryfallId = Value(scryfallId),
         oracleId = Value(oracleId),
         name = Value(name),
@@ -3325,7 +2740,6 @@ class CardsCompanion extends UpdateCompanion<CardRow> {
         textless = Value(textless),
         booster = Value(booster),
         storySpotlight = Value(storySpotlight),
-        imageStatus = Value(imageStatus),
         legalStandard = Value(legalStandard),
         legalFuture = Value(legalFuture),
         legalHistoric = Value(legalHistoric),
@@ -3345,7 +2759,6 @@ class CardsCompanion extends UpdateCompanion<CardRow> {
         legalOldschool = Value(legalOldschool),
         legalPremodern = Value(legalPremodern),
         legalPredh = Value(legalPredh),
-        object = Value(object),
         oversized = Value(oversized),
         promo = Value(promo),
         reprint = Value(reprint),
@@ -3356,7 +2769,6 @@ class CardsCompanion extends UpdateCompanion<CardRow> {
   static Insertable<CardRow> custom({
     Expression<int>? id,
     Expression<String>? scryfallId,
-    Expression<String>? mtgjsonUuid,
     Expression<String>? oracleId,
     Expression<String>? name,
     Expression<String>? flavorName,
@@ -3393,13 +2805,6 @@ class CardsCompanion extends UpdateCompanion<CardRow> {
     Expression<bool>? textless,
     Expression<bool>? booster,
     Expression<bool>? storySpotlight,
-    Expression<String>? imageStatus,
-    Expression<String>? imageSmall,
-    Expression<String>? imageNormal,
-    Expression<String>? imageLarge,
-    Expression<String>? imagePng,
-    Expression<String>? imageArtCrop,
-    Expression<String>? imageBorderCrop,
     Expression<String>? legalStandard,
     Expression<String>? legalFuture,
     Expression<String>? legalHistoric,
@@ -3431,29 +2836,19 @@ class CardsCompanion extends UpdateCompanion<CardRow> {
     Expression<double>? priceNumeric,
     Expression<String>? cardFacesJson,
     Expression<String>? rulingsJson,
-    Expression<String>? object,
     Expression<bool>? oversized,
     Expression<bool>? promo,
     Expression<bool>? reprint,
     Expression<bool>? variation,
-    Expression<String>? gamesJson,
     Expression<bool>? reserved,
     Expression<bool>? foil,
     Expression<bool>? nonfoil,
-    Expression<String>? finishesJson,
-    Expression<String>? producedManaJson,
     Expression<int>? edhrecRank,
     Expression<bool>? isGameChanger,
-    Expression<String>? relatedTokenIdsJson,
-    Expression<int>? mtgoId,
-    Expression<int>? arenaId,
-    Expression<int>? tcgplayerId,
-    Expression<int>? cardmarketId,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (scryfallId != null) 'scryfall_id': scryfallId,
-      if (mtgjsonUuid != null) 'mtgjson_uuid': mtgjsonUuid,
       if (oracleId != null) 'oracle_id': oracleId,
       if (name != null) 'name': name,
       if (flavorName != null) 'flavor_name': flavorName,
@@ -3492,13 +2887,6 @@ class CardsCompanion extends UpdateCompanion<CardRow> {
       if (textless != null) 'textless': textless,
       if (booster != null) 'booster': booster,
       if (storySpotlight != null) 'story_spotlight': storySpotlight,
-      if (imageStatus != null) 'image_status': imageStatus,
-      if (imageSmall != null) 'image_small': imageSmall,
-      if (imageNormal != null) 'image_normal': imageNormal,
-      if (imageLarge != null) 'image_large': imageLarge,
-      if (imagePng != null) 'image_png': imagePng,
-      if (imageArtCrop != null) 'image_art_crop': imageArtCrop,
-      if (imageBorderCrop != null) 'image_border_crop': imageBorderCrop,
       if (legalStandard != null) 'legal_standard': legalStandard,
       if (legalFuture != null) 'legal_future': legalFuture,
       if (legalHistoric != null) 'legal_historic': legalHistoric,
@@ -3531,32 +2919,21 @@ class CardsCompanion extends UpdateCompanion<CardRow> {
       if (priceNumeric != null) 'price_numeric': priceNumeric,
       if (cardFacesJson != null) 'card_faces_json': cardFacesJson,
       if (rulingsJson != null) 'rulings_json': rulingsJson,
-      if (object != null) 'object': object,
       if (oversized != null) 'oversized': oversized,
       if (promo != null) 'promo': promo,
       if (reprint != null) 'reprint': reprint,
       if (variation != null) 'variation': variation,
-      if (gamesJson != null) 'games_json': gamesJson,
       if (reserved != null) 'reserved': reserved,
       if (foil != null) 'foil': foil,
       if (nonfoil != null) 'nonfoil': nonfoil,
-      if (finishesJson != null) 'finishes_json': finishesJson,
-      if (producedManaJson != null) 'produced_mana_json': producedManaJson,
       if (edhrecRank != null) 'edhrec_rank': edhrecRank,
       if (isGameChanger != null) 'is_game_changer': isGameChanger,
-      if (relatedTokenIdsJson != null)
-        'related_token_ids_json': relatedTokenIdsJson,
-      if (mtgoId != null) 'mtgo_id': mtgoId,
-      if (arenaId != null) 'arena_id': arenaId,
-      if (tcgplayerId != null) 'tcgplayer_id': tcgplayerId,
-      if (cardmarketId != null) 'cardmarket_id': cardmarketId,
     });
   }
 
   CardsCompanion copyWith(
       {Value<int>? id,
       Value<String>? scryfallId,
-      Value<String?>? mtgjsonUuid,
       Value<String>? oracleId,
       Value<String>? name,
       Value<String?>? flavorName,
@@ -3593,13 +2970,6 @@ class CardsCompanion extends UpdateCompanion<CardRow> {
       Value<bool>? textless,
       Value<bool>? booster,
       Value<bool>? storySpotlight,
-      Value<String>? imageStatus,
-      Value<String?>? imageSmall,
-      Value<String?>? imageNormal,
-      Value<String?>? imageLarge,
-      Value<String?>? imagePng,
-      Value<String?>? imageArtCrop,
-      Value<String?>? imageBorderCrop,
       Value<String>? legalStandard,
       Value<String>? legalFuture,
       Value<String>? legalHistoric,
@@ -3631,28 +3001,18 @@ class CardsCompanion extends UpdateCompanion<CardRow> {
       Value<double?>? priceNumeric,
       Value<String?>? cardFacesJson,
       Value<String?>? rulingsJson,
-      Value<String>? object,
       Value<bool>? oversized,
       Value<bool>? promo,
       Value<bool>? reprint,
       Value<bool>? variation,
-      Value<String>? gamesJson,
       Value<bool>? reserved,
       Value<bool>? foil,
       Value<bool>? nonfoil,
-      Value<String>? finishesJson,
-      Value<String>? producedManaJson,
       Value<int?>? edhrecRank,
-      Value<bool?>? isGameChanger,
-      Value<String>? relatedTokenIdsJson,
-      Value<int?>? mtgoId,
-      Value<int?>? arenaId,
-      Value<int?>? tcgplayerId,
-      Value<int?>? cardmarketId}) {
+      Value<bool?>? isGameChanger}) {
     return CardsCompanion(
       id: id ?? this.id,
       scryfallId: scryfallId ?? this.scryfallId,
-      mtgjsonUuid: mtgjsonUuid ?? this.mtgjsonUuid,
       oracleId: oracleId ?? this.oracleId,
       name: name ?? this.name,
       flavorName: flavorName ?? this.flavorName,
@@ -3689,13 +3049,6 @@ class CardsCompanion extends UpdateCompanion<CardRow> {
       textless: textless ?? this.textless,
       booster: booster ?? this.booster,
       storySpotlight: storySpotlight ?? this.storySpotlight,
-      imageStatus: imageStatus ?? this.imageStatus,
-      imageSmall: imageSmall ?? this.imageSmall,
-      imageNormal: imageNormal ?? this.imageNormal,
-      imageLarge: imageLarge ?? this.imageLarge,
-      imagePng: imagePng ?? this.imagePng,
-      imageArtCrop: imageArtCrop ?? this.imageArtCrop,
-      imageBorderCrop: imageBorderCrop ?? this.imageBorderCrop,
       legalStandard: legalStandard ?? this.legalStandard,
       legalFuture: legalFuture ?? this.legalFuture,
       legalHistoric: legalHistoric ?? this.legalHistoric,
@@ -3727,24 +3080,15 @@ class CardsCompanion extends UpdateCompanion<CardRow> {
       priceNumeric: priceNumeric ?? this.priceNumeric,
       cardFacesJson: cardFacesJson ?? this.cardFacesJson,
       rulingsJson: rulingsJson ?? this.rulingsJson,
-      object: object ?? this.object,
       oversized: oversized ?? this.oversized,
       promo: promo ?? this.promo,
       reprint: reprint ?? this.reprint,
       variation: variation ?? this.variation,
-      gamesJson: gamesJson ?? this.gamesJson,
       reserved: reserved ?? this.reserved,
       foil: foil ?? this.foil,
       nonfoil: nonfoil ?? this.nonfoil,
-      finishesJson: finishesJson ?? this.finishesJson,
-      producedManaJson: producedManaJson ?? this.producedManaJson,
       edhrecRank: edhrecRank ?? this.edhrecRank,
       isGameChanger: isGameChanger ?? this.isGameChanger,
-      relatedTokenIdsJson: relatedTokenIdsJson ?? this.relatedTokenIdsJson,
-      mtgoId: mtgoId ?? this.mtgoId,
-      arenaId: arenaId ?? this.arenaId,
-      tcgplayerId: tcgplayerId ?? this.tcgplayerId,
-      cardmarketId: cardmarketId ?? this.cardmarketId,
     );
   }
 
@@ -3756,9 +3100,6 @@ class CardsCompanion extends UpdateCompanion<CardRow> {
     }
     if (scryfallId.present) {
       map['scryfall_id'] = Variable<String>(scryfallId.value);
-    }
-    if (mtgjsonUuid.present) {
-      map['mtgjson_uuid'] = Variable<String>(mtgjsonUuid.value);
     }
     if (oracleId.present) {
       map['oracle_id'] = Variable<String>(oracleId.value);
@@ -3869,27 +3210,6 @@ class CardsCompanion extends UpdateCompanion<CardRow> {
     if (storySpotlight.present) {
       map['story_spotlight'] = Variable<bool>(storySpotlight.value);
     }
-    if (imageStatus.present) {
-      map['image_status'] = Variable<String>(imageStatus.value);
-    }
-    if (imageSmall.present) {
-      map['image_small'] = Variable<String>(imageSmall.value);
-    }
-    if (imageNormal.present) {
-      map['image_normal'] = Variable<String>(imageNormal.value);
-    }
-    if (imageLarge.present) {
-      map['image_large'] = Variable<String>(imageLarge.value);
-    }
-    if (imagePng.present) {
-      map['image_png'] = Variable<String>(imagePng.value);
-    }
-    if (imageArtCrop.present) {
-      map['image_art_crop'] = Variable<String>(imageArtCrop.value);
-    }
-    if (imageBorderCrop.present) {
-      map['image_border_crop'] = Variable<String>(imageBorderCrop.value);
-    }
     if (legalStandard.present) {
       map['legal_standard'] = Variable<String>(legalStandard.value);
     }
@@ -3984,9 +3304,6 @@ class CardsCompanion extends UpdateCompanion<CardRow> {
     if (rulingsJson.present) {
       map['rulings_json'] = Variable<String>(rulingsJson.value);
     }
-    if (object.present) {
-      map['object'] = Variable<String>(object.value);
-    }
     if (oversized.present) {
       map['oversized'] = Variable<bool>(oversized.value);
     }
@@ -3999,9 +3316,6 @@ class CardsCompanion extends UpdateCompanion<CardRow> {
     if (variation.present) {
       map['variation'] = Variable<bool>(variation.value);
     }
-    if (gamesJson.present) {
-      map['games_json'] = Variable<String>(gamesJson.value);
-    }
     if (reserved.present) {
       map['reserved'] = Variable<bool>(reserved.value);
     }
@@ -4011,33 +3325,11 @@ class CardsCompanion extends UpdateCompanion<CardRow> {
     if (nonfoil.present) {
       map['nonfoil'] = Variable<bool>(nonfoil.value);
     }
-    if (finishesJson.present) {
-      map['finishes_json'] = Variable<String>(finishesJson.value);
-    }
-    if (producedManaJson.present) {
-      map['produced_mana_json'] = Variable<String>(producedManaJson.value);
-    }
     if (edhrecRank.present) {
       map['edhrec_rank'] = Variable<int>(edhrecRank.value);
     }
     if (isGameChanger.present) {
       map['is_game_changer'] = Variable<bool>(isGameChanger.value);
-    }
-    if (relatedTokenIdsJson.present) {
-      map['related_token_ids_json'] =
-          Variable<String>(relatedTokenIdsJson.value);
-    }
-    if (mtgoId.present) {
-      map['mtgo_id'] = Variable<int>(mtgoId.value);
-    }
-    if (arenaId.present) {
-      map['arena_id'] = Variable<int>(arenaId.value);
-    }
-    if (tcgplayerId.present) {
-      map['tcgplayer_id'] = Variable<int>(tcgplayerId.value);
-    }
-    if (cardmarketId.present) {
-      map['cardmarket_id'] = Variable<int>(cardmarketId.value);
     }
     return map;
   }
@@ -4047,7 +3339,6 @@ class CardsCompanion extends UpdateCompanion<CardRow> {
     return (StringBuffer('CardsCompanion(')
           ..write('id: $id, ')
           ..write('scryfallId: $scryfallId, ')
-          ..write('mtgjsonUuid: $mtgjsonUuid, ')
           ..write('oracleId: $oracleId, ')
           ..write('name: $name, ')
           ..write('flavorName: $flavorName, ')
@@ -4084,13 +3375,6 @@ class CardsCompanion extends UpdateCompanion<CardRow> {
           ..write('textless: $textless, ')
           ..write('booster: $booster, ')
           ..write('storySpotlight: $storySpotlight, ')
-          ..write('imageStatus: $imageStatus, ')
-          ..write('imageSmall: $imageSmall, ')
-          ..write('imageNormal: $imageNormal, ')
-          ..write('imageLarge: $imageLarge, ')
-          ..write('imagePng: $imagePng, ')
-          ..write('imageArtCrop: $imageArtCrop, ')
-          ..write('imageBorderCrop: $imageBorderCrop, ')
           ..write('legalStandard: $legalStandard, ')
           ..write('legalFuture: $legalFuture, ')
           ..write('legalHistoric: $legalHistoric, ')
@@ -4122,24 +3406,15 @@ class CardsCompanion extends UpdateCompanion<CardRow> {
           ..write('priceNumeric: $priceNumeric, ')
           ..write('cardFacesJson: $cardFacesJson, ')
           ..write('rulingsJson: $rulingsJson, ')
-          ..write('object: $object, ')
           ..write('oversized: $oversized, ')
           ..write('promo: $promo, ')
           ..write('reprint: $reprint, ')
           ..write('variation: $variation, ')
-          ..write('gamesJson: $gamesJson, ')
           ..write('reserved: $reserved, ')
           ..write('foil: $foil, ')
           ..write('nonfoil: $nonfoil, ')
-          ..write('finishesJson: $finishesJson, ')
-          ..write('producedManaJson: $producedManaJson, ')
           ..write('edhrecRank: $edhrecRank, ')
-          ..write('isGameChanger: $isGameChanger, ')
-          ..write('relatedTokenIdsJson: $relatedTokenIdsJson, ')
-          ..write('mtgoId: $mtgoId, ')
-          ..write('arenaId: $arenaId, ')
-          ..write('tcgplayerId: $tcgplayerId, ')
-          ..write('cardmarketId: $cardmarketId')
+          ..write('isGameChanger: $isGameChanger')
           ..write(')'))
         .toString();
   }
@@ -9500,24 +8775,18 @@ class $EdhrecRecommendationsTable extends EdhrecRecommendations
   late final GeneratedColumn<int> pageId = GeneratedColumn<int>(
       'page_id', aliasedName, false,
       type: DriftSqlType.int, requiredDuringInsert: true);
-  static const VerificationMeta _cardNameMeta =
-      const VerificationMeta('cardName');
-  @override
-  late final GeneratedColumn<String> cardName = GeneratedColumn<String>(
-      'card_name', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
   static const VerificationMeta _oracleIdMeta =
       const VerificationMeta('oracleId');
   @override
   late final GeneratedColumn<String> oracleId = GeneratedColumn<String>(
-      'oracle_id', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
-  static const VerificationMeta _cardCategoryMeta =
-      const VerificationMeta('cardCategory');
+      'oracle_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _categoryMeta =
+      const VerificationMeta('category');
   @override
-  late final GeneratedColumn<String> cardCategory = GeneratedColumn<String>(
-      'card_category', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
+  late final GeneratedColumn<int> category = GeneratedColumn<int>(
+      'category', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
   static const VerificationMeta _inclusionCountMeta =
       const VerificationMeta('inclusionCount');
   @override
@@ -9545,9 +8814,8 @@ class $EdhrecRecommendationsTable extends EdhrecRecommendations
   @override
   List<GeneratedColumn> get $columns => [
         pageId,
-        cardName,
         oracleId,
-        cardCategory,
+        category,
         inclusionCount,
         inclusionPercent,
         synergyScore,
@@ -9570,21 +8838,17 @@ class $EdhrecRecommendationsTable extends EdhrecRecommendations
     } else if (isInserting) {
       context.missing(_pageIdMeta);
     }
-    if (data.containsKey('card_name')) {
-      context.handle(_cardNameMeta,
-          cardName.isAcceptableOrUnknown(data['card_name']!, _cardNameMeta));
-    } else if (isInserting) {
-      context.missing(_cardNameMeta);
-    }
     if (data.containsKey('oracle_id')) {
       context.handle(_oracleIdMeta,
           oracleId.isAcceptableOrUnknown(data['oracle_id']!, _oracleIdMeta));
+    } else if (isInserting) {
+      context.missing(_oracleIdMeta);
     }
-    if (data.containsKey('card_category')) {
-      context.handle(
-          _cardCategoryMeta,
-          cardCategory.isAcceptableOrUnknown(
-              data['card_category']!, _cardCategoryMeta));
+    if (data.containsKey('category')) {
+      context.handle(_categoryMeta,
+          category.isAcceptableOrUnknown(data['category']!, _categoryMeta));
+    } else if (isInserting) {
+      context.missing(_categoryMeta);
     }
     if (data.containsKey('inclusion_count')) {
       context.handle(
@@ -9614,7 +8878,7 @@ class $EdhrecRecommendationsTable extends EdhrecRecommendations
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {pageId, cardName};
+  Set<GeneratedColumn> get $primaryKey => {pageId, oracleId, category};
   @override
   EdhrecRecommendationRow map(Map<String, dynamic> data,
       {String? tablePrefix}) {
@@ -9622,12 +8886,10 @@ class $EdhrecRecommendationsTable extends EdhrecRecommendations
     return EdhrecRecommendationRow(
       pageId: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}page_id'])!,
-      cardName: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}card_name'])!,
       oracleId: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}oracle_id']),
-      cardCategory: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}card_category']),
+          .read(DriftSqlType.string, data['${effectivePrefix}oracle_id'])!,
+      category: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}category'])!,
       inclusionCount: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}inclusion_count']),
       inclusionPercent: attachedDatabase.typeMapping.read(
@@ -9653,24 +8915,21 @@ class EdhrecRecommendationRow extends DataClass
   /// FK → edhrec_pages.id.
   final int pageId;
 
-  /// Raw card name from EDHREC.
-  final String cardName;
+  /// FK → cards.oracleId. Always populated in v7 (verified at
+  /// build time — every recommendation EDHREC returns resolves to a
+  /// card we have in our catalog).
+  final String oracleId;
 
-  /// FK → cards.oracleId — null when name didn't resolve.
-  final String? oracleId;
-
-  /// EDHREC's categorisation of the recommendation — e.g. "Top Cards",
-  /// "High Synergy Cards", "Lands". Display-name form.
-  final String? cardCategory;
+  /// `EdhrecCategory.id` — see `lib/insights/edhrec_categories.dart`.
+  final int category;
   final int? inclusionCount;
   final double? inclusionPercent;
   final double? synergyScore;
   final int? rankInCategory;
   const EdhrecRecommendationRow(
       {required this.pageId,
-      required this.cardName,
-      this.oracleId,
-      this.cardCategory,
+      required this.oracleId,
+      required this.category,
       this.inclusionCount,
       this.inclusionPercent,
       this.synergyScore,
@@ -9679,13 +8938,8 @@ class EdhrecRecommendationRow extends DataClass
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['page_id'] = Variable<int>(pageId);
-    map['card_name'] = Variable<String>(cardName);
-    if (!nullToAbsent || oracleId != null) {
-      map['oracle_id'] = Variable<String>(oracleId);
-    }
-    if (!nullToAbsent || cardCategory != null) {
-      map['card_category'] = Variable<String>(cardCategory);
-    }
+    map['oracle_id'] = Variable<String>(oracleId);
+    map['category'] = Variable<int>(category);
     if (!nullToAbsent || inclusionCount != null) {
       map['inclusion_count'] = Variable<int>(inclusionCount);
     }
@@ -9704,13 +8958,8 @@ class EdhrecRecommendationRow extends DataClass
   EdhrecRecommendationsCompanion toCompanion(bool nullToAbsent) {
     return EdhrecRecommendationsCompanion(
       pageId: Value(pageId),
-      cardName: Value(cardName),
-      oracleId: oracleId == null && nullToAbsent
-          ? const Value.absent()
-          : Value(oracleId),
-      cardCategory: cardCategory == null && nullToAbsent
-          ? const Value.absent()
-          : Value(cardCategory),
+      oracleId: Value(oracleId),
+      category: Value(category),
       inclusionCount: inclusionCount == null && nullToAbsent
           ? const Value.absent()
           : Value(inclusionCount),
@@ -9731,9 +8980,8 @@ class EdhrecRecommendationRow extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return EdhrecRecommendationRow(
       pageId: serializer.fromJson<int>(json['pageId']),
-      cardName: serializer.fromJson<String>(json['cardName']),
-      oracleId: serializer.fromJson<String?>(json['oracleId']),
-      cardCategory: serializer.fromJson<String?>(json['cardCategory']),
+      oracleId: serializer.fromJson<String>(json['oracleId']),
+      category: serializer.fromJson<int>(json['category']),
       inclusionCount: serializer.fromJson<int?>(json['inclusionCount']),
       inclusionPercent: serializer.fromJson<double?>(json['inclusionPercent']),
       synergyScore: serializer.fromJson<double?>(json['synergyScore']),
@@ -9745,9 +8993,8 @@ class EdhrecRecommendationRow extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'pageId': serializer.toJson<int>(pageId),
-      'cardName': serializer.toJson<String>(cardName),
-      'oracleId': serializer.toJson<String?>(oracleId),
-      'cardCategory': serializer.toJson<String?>(cardCategory),
+      'oracleId': serializer.toJson<String>(oracleId),
+      'category': serializer.toJson<int>(category),
       'inclusionCount': serializer.toJson<int?>(inclusionCount),
       'inclusionPercent': serializer.toJson<double?>(inclusionPercent),
       'synergyScore': serializer.toJson<double?>(synergyScore),
@@ -9757,19 +9004,16 @@ class EdhrecRecommendationRow extends DataClass
 
   EdhrecRecommendationRow copyWith(
           {int? pageId,
-          String? cardName,
-          Value<String?> oracleId = const Value.absent(),
-          Value<String?> cardCategory = const Value.absent(),
+          String? oracleId,
+          int? category,
           Value<int?> inclusionCount = const Value.absent(),
           Value<double?> inclusionPercent = const Value.absent(),
           Value<double?> synergyScore = const Value.absent(),
           Value<int?> rankInCategory = const Value.absent()}) =>
       EdhrecRecommendationRow(
         pageId: pageId ?? this.pageId,
-        cardName: cardName ?? this.cardName,
-        oracleId: oracleId.present ? oracleId.value : this.oracleId,
-        cardCategory:
-            cardCategory.present ? cardCategory.value : this.cardCategory,
+        oracleId: oracleId ?? this.oracleId,
+        category: category ?? this.category,
         inclusionCount:
             inclusionCount.present ? inclusionCount.value : this.inclusionCount,
         inclusionPercent: inclusionPercent.present
@@ -9784,11 +9028,8 @@ class EdhrecRecommendationRow extends DataClass
       EdhrecRecommendationsCompanion data) {
     return EdhrecRecommendationRow(
       pageId: data.pageId.present ? data.pageId.value : this.pageId,
-      cardName: data.cardName.present ? data.cardName.value : this.cardName,
       oracleId: data.oracleId.present ? data.oracleId.value : this.oracleId,
-      cardCategory: data.cardCategory.present
-          ? data.cardCategory.value
-          : this.cardCategory,
+      category: data.category.present ? data.category.value : this.category,
       inclusionCount: data.inclusionCount.present
           ? data.inclusionCount.value
           : this.inclusionCount,
@@ -9808,9 +9049,8 @@ class EdhrecRecommendationRow extends DataClass
   String toString() {
     return (StringBuffer('EdhrecRecommendationRow(')
           ..write('pageId: $pageId, ')
-          ..write('cardName: $cardName, ')
           ..write('oracleId: $oracleId, ')
-          ..write('cardCategory: $cardCategory, ')
+          ..write('category: $category, ')
           ..write('inclusionCount: $inclusionCount, ')
           ..write('inclusionPercent: $inclusionPercent, ')
           ..write('synergyScore: $synergyScore, ')
@@ -9820,16 +9060,15 @@ class EdhrecRecommendationRow extends DataClass
   }
 
   @override
-  int get hashCode => Object.hash(pageId, cardName, oracleId, cardCategory,
-      inclusionCount, inclusionPercent, synergyScore, rankInCategory);
+  int get hashCode => Object.hash(pageId, oracleId, category, inclusionCount,
+      inclusionPercent, synergyScore, rankInCategory);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is EdhrecRecommendationRow &&
           other.pageId == this.pageId &&
-          other.cardName == this.cardName &&
           other.oracleId == this.oracleId &&
-          other.cardCategory == this.cardCategory &&
+          other.category == this.category &&
           other.inclusionCount == this.inclusionCount &&
           other.inclusionPercent == this.inclusionPercent &&
           other.synergyScore == this.synergyScore &&
@@ -9839,18 +9078,16 @@ class EdhrecRecommendationRow extends DataClass
 class EdhrecRecommendationsCompanion
     extends UpdateCompanion<EdhrecRecommendationRow> {
   final Value<int> pageId;
-  final Value<String> cardName;
-  final Value<String?> oracleId;
-  final Value<String?> cardCategory;
+  final Value<String> oracleId;
+  final Value<int> category;
   final Value<int?> inclusionCount;
   final Value<double?> inclusionPercent;
   final Value<double?> synergyScore;
   final Value<int?> rankInCategory;
   const EdhrecRecommendationsCompanion({
     this.pageId = const Value.absent(),
-    this.cardName = const Value.absent(),
     this.oracleId = const Value.absent(),
-    this.cardCategory = const Value.absent(),
+    this.category = const Value.absent(),
     this.inclusionCount = const Value.absent(),
     this.inclusionPercent = const Value.absent(),
     this.synergyScore = const Value.absent(),
@@ -9858,20 +9095,19 @@ class EdhrecRecommendationsCompanion
   });
   EdhrecRecommendationsCompanion.insert({
     required int pageId,
-    required String cardName,
-    this.oracleId = const Value.absent(),
-    this.cardCategory = const Value.absent(),
+    required String oracleId,
+    required int category,
     this.inclusionCount = const Value.absent(),
     this.inclusionPercent = const Value.absent(),
     this.synergyScore = const Value.absent(),
     this.rankInCategory = const Value.absent(),
   })  : pageId = Value(pageId),
-        cardName = Value(cardName);
+        oracleId = Value(oracleId),
+        category = Value(category);
   static Insertable<EdhrecRecommendationRow> custom({
     Expression<int>? pageId,
-    Expression<String>? cardName,
     Expression<String>? oracleId,
-    Expression<String>? cardCategory,
+    Expression<int>? category,
     Expression<int>? inclusionCount,
     Expression<double>? inclusionPercent,
     Expression<double>? synergyScore,
@@ -9879,9 +9115,8 @@ class EdhrecRecommendationsCompanion
   }) {
     return RawValuesInsertable({
       if (pageId != null) 'page_id': pageId,
-      if (cardName != null) 'card_name': cardName,
       if (oracleId != null) 'oracle_id': oracleId,
-      if (cardCategory != null) 'card_category': cardCategory,
+      if (category != null) 'category': category,
       if (inclusionCount != null) 'inclusion_count': inclusionCount,
       if (inclusionPercent != null) 'inclusion_percent': inclusionPercent,
       if (synergyScore != null) 'synergy_score': synergyScore,
@@ -9891,18 +9126,16 @@ class EdhrecRecommendationsCompanion
 
   EdhrecRecommendationsCompanion copyWith(
       {Value<int>? pageId,
-      Value<String>? cardName,
-      Value<String?>? oracleId,
-      Value<String?>? cardCategory,
+      Value<String>? oracleId,
+      Value<int>? category,
       Value<int?>? inclusionCount,
       Value<double?>? inclusionPercent,
       Value<double?>? synergyScore,
       Value<int?>? rankInCategory}) {
     return EdhrecRecommendationsCompanion(
       pageId: pageId ?? this.pageId,
-      cardName: cardName ?? this.cardName,
       oracleId: oracleId ?? this.oracleId,
-      cardCategory: cardCategory ?? this.cardCategory,
+      category: category ?? this.category,
       inclusionCount: inclusionCount ?? this.inclusionCount,
       inclusionPercent: inclusionPercent ?? this.inclusionPercent,
       synergyScore: synergyScore ?? this.synergyScore,
@@ -9916,14 +9149,11 @@ class EdhrecRecommendationsCompanion
     if (pageId.present) {
       map['page_id'] = Variable<int>(pageId.value);
     }
-    if (cardName.present) {
-      map['card_name'] = Variable<String>(cardName.value);
-    }
     if (oracleId.present) {
       map['oracle_id'] = Variable<String>(oracleId.value);
     }
-    if (cardCategory.present) {
-      map['card_category'] = Variable<String>(cardCategory.value);
+    if (category.present) {
+      map['category'] = Variable<int>(category.value);
     }
     if (inclusionCount.present) {
       map['inclusion_count'] = Variable<int>(inclusionCount.value);
@@ -9944,9 +9174,8 @@ class EdhrecRecommendationsCompanion
   String toString() {
     return (StringBuffer('EdhrecRecommendationsCompanion(')
           ..write('pageId: $pageId, ')
-          ..write('cardName: $cardName, ')
           ..write('oracleId: $oracleId, ')
-          ..write('cardCategory: $cardCategory, ')
+          ..write('category: $category, ')
           ..write('inclusionCount: $inclusionCount, ')
           ..write('inclusionPercent: $inclusionPercent, ')
           ..write('synergyScore: $synergyScore, ')
@@ -10712,8 +9941,6 @@ abstract class _$CardsDatabase extends GeneratedDatabase {
   late final $EdhrecTagLinksTable edhrecTagLinks = $EdhrecTagLinksTable(this);
   late final Index idxCardScryfallId = Index('idx_card_scryfall_id',
       'CREATE UNIQUE INDEX idx_card_scryfall_id ON cards (scryfall_id)');
-  late final Index idxCardMtgjsonUuid = Index('idx_card_mtgjson_uuid',
-      'CREATE INDEX idx_card_mtgjson_uuid ON cards (mtgjson_uuid)');
   late final Index idxCardOracleId = Index('idx_card_oracle_id',
       'CREATE INDEX idx_card_oracle_id ON cards (oracle_id)');
   late final Index idxCardName =
@@ -10841,7 +10068,6 @@ abstract class _$CardsDatabase extends GeneratedDatabase {
         edhrecThemes,
         edhrecTagLinks,
         idxCardScryfallId,
-        idxCardMtgjsonUuid,
         idxCardOracleId,
         idxCardName,
         idxCardFlavorName,
@@ -10898,7 +10124,6 @@ abstract class _$CardsDatabase extends GeneratedDatabase {
 typedef $$CardsTableCreateCompanionBuilder = CardsCompanion Function({
   Value<int> id,
   required String scryfallId,
-  Value<String?> mtgjsonUuid,
   required String oracleId,
   required String name,
   Value<String?> flavorName,
@@ -10935,13 +10160,6 @@ typedef $$CardsTableCreateCompanionBuilder = CardsCompanion Function({
   required bool textless,
   required bool booster,
   required bool storySpotlight,
-  required String imageStatus,
-  Value<String?> imageSmall,
-  Value<String?> imageNormal,
-  Value<String?> imageLarge,
-  Value<String?> imagePng,
-  Value<String?> imageArtCrop,
-  Value<String?> imageBorderCrop,
   required String legalStandard,
   required String legalFuture,
   required String legalHistoric,
@@ -10973,29 +10191,19 @@ typedef $$CardsTableCreateCompanionBuilder = CardsCompanion Function({
   Value<double?> priceNumeric,
   Value<String?> cardFacesJson,
   Value<String?> rulingsJson,
-  required String object,
   required bool oversized,
   required bool promo,
   required bool reprint,
   required bool variation,
-  Value<String> gamesJson,
   required bool reserved,
   required bool foil,
   required bool nonfoil,
-  Value<String> finishesJson,
-  Value<String> producedManaJson,
   Value<int?> edhrecRank,
   Value<bool?> isGameChanger,
-  Value<String> relatedTokenIdsJson,
-  Value<int?> mtgoId,
-  Value<int?> arenaId,
-  Value<int?> tcgplayerId,
-  Value<int?> cardmarketId,
 });
 typedef $$CardsTableUpdateCompanionBuilder = CardsCompanion Function({
   Value<int> id,
   Value<String> scryfallId,
-  Value<String?> mtgjsonUuid,
   Value<String> oracleId,
   Value<String> name,
   Value<String?> flavorName,
@@ -11032,13 +10240,6 @@ typedef $$CardsTableUpdateCompanionBuilder = CardsCompanion Function({
   Value<bool> textless,
   Value<bool> booster,
   Value<bool> storySpotlight,
-  Value<String> imageStatus,
-  Value<String?> imageSmall,
-  Value<String?> imageNormal,
-  Value<String?> imageLarge,
-  Value<String?> imagePng,
-  Value<String?> imageArtCrop,
-  Value<String?> imageBorderCrop,
   Value<String> legalStandard,
   Value<String> legalFuture,
   Value<String> legalHistoric,
@@ -11070,24 +10271,15 @@ typedef $$CardsTableUpdateCompanionBuilder = CardsCompanion Function({
   Value<double?> priceNumeric,
   Value<String?> cardFacesJson,
   Value<String?> rulingsJson,
-  Value<String> object,
   Value<bool> oversized,
   Value<bool> promo,
   Value<bool> reprint,
   Value<bool> variation,
-  Value<String> gamesJson,
   Value<bool> reserved,
   Value<bool> foil,
   Value<bool> nonfoil,
-  Value<String> finishesJson,
-  Value<String> producedManaJson,
   Value<int?> edhrecRank,
   Value<bool?> isGameChanger,
-  Value<String> relatedTokenIdsJson,
-  Value<int?> mtgoId,
-  Value<int?> arenaId,
-  Value<int?> tcgplayerId,
-  Value<int?> cardmarketId,
 });
 
 class $$CardsTableFilterComposer
@@ -11104,9 +10296,6 @@ class $$CardsTableFilterComposer
 
   ColumnFilters<String> get scryfallId => $composableBuilder(
       column: $table.scryfallId, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get mtgjsonUuid => $composableBuilder(
-      column: $table.mtgjsonUuid, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<String> get oracleId => $composableBuilder(
       column: $table.oracleId, builder: (column) => ColumnFilters(column));
@@ -11223,28 +10412,6 @@ class $$CardsTableFilterComposer
       column: $table.storySpotlight,
       builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get imageStatus => $composableBuilder(
-      column: $table.imageStatus, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get imageSmall => $composableBuilder(
-      column: $table.imageSmall, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get imageNormal => $composableBuilder(
-      column: $table.imageNormal, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get imageLarge => $composableBuilder(
-      column: $table.imageLarge, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get imagePng => $composableBuilder(
-      column: $table.imagePng, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get imageArtCrop => $composableBuilder(
-      column: $table.imageArtCrop, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get imageBorderCrop => $composableBuilder(
-      column: $table.imageBorderCrop,
-      builder: (column) => ColumnFilters(column));
-
   ColumnFilters<String> get legalStandard => $composableBuilder(
       column: $table.legalStandard, builder: (column) => ColumnFilters(column));
 
@@ -11347,9 +10514,6 @@ class $$CardsTableFilterComposer
   ColumnFilters<String> get rulingsJson => $composableBuilder(
       column: $table.rulingsJson, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get object => $composableBuilder(
-      column: $table.object, builder: (column) => ColumnFilters(column));
-
   ColumnFilters<bool> get oversized => $composableBuilder(
       column: $table.oversized, builder: (column) => ColumnFilters(column));
 
@@ -11362,9 +10526,6 @@ class $$CardsTableFilterComposer
   ColumnFilters<bool> get variation => $composableBuilder(
       column: $table.variation, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get gamesJson => $composableBuilder(
-      column: $table.gamesJson, builder: (column) => ColumnFilters(column));
-
   ColumnFilters<bool> get reserved => $composableBuilder(
       column: $table.reserved, builder: (column) => ColumnFilters(column));
 
@@ -11374,34 +10535,11 @@ class $$CardsTableFilterComposer
   ColumnFilters<bool> get nonfoil => $composableBuilder(
       column: $table.nonfoil, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get finishesJson => $composableBuilder(
-      column: $table.finishesJson, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get producedManaJson => $composableBuilder(
-      column: $table.producedManaJson,
-      builder: (column) => ColumnFilters(column));
-
   ColumnFilters<int> get edhrecRank => $composableBuilder(
       column: $table.edhrecRank, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<bool> get isGameChanger => $composableBuilder(
       column: $table.isGameChanger, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get relatedTokenIdsJson => $composableBuilder(
-      column: $table.relatedTokenIdsJson,
-      builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<int> get mtgoId => $composableBuilder(
-      column: $table.mtgoId, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<int> get arenaId => $composableBuilder(
-      column: $table.arenaId, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<int> get tcgplayerId => $composableBuilder(
-      column: $table.tcgplayerId, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<int> get cardmarketId => $composableBuilder(
-      column: $table.cardmarketId, builder: (column) => ColumnFilters(column));
 }
 
 class $$CardsTableOrderingComposer
@@ -11418,9 +10556,6 @@ class $$CardsTableOrderingComposer
 
   ColumnOrderings<String> get scryfallId => $composableBuilder(
       column: $table.scryfallId, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get mtgjsonUuid => $composableBuilder(
-      column: $table.mtgjsonUuid, builder: (column) => ColumnOrderings(column));
 
   ColumnOrderings<String> get oracleId => $composableBuilder(
       column: $table.oracleId, builder: (column) => ColumnOrderings(column));
@@ -11540,29 +10675,6 @@ class $$CardsTableOrderingComposer
       column: $table.storySpotlight,
       builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get imageStatus => $composableBuilder(
-      column: $table.imageStatus, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get imageSmall => $composableBuilder(
-      column: $table.imageSmall, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get imageNormal => $composableBuilder(
-      column: $table.imageNormal, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get imageLarge => $composableBuilder(
-      column: $table.imageLarge, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get imagePng => $composableBuilder(
-      column: $table.imagePng, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get imageArtCrop => $composableBuilder(
-      column: $table.imageArtCrop,
-      builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get imageBorderCrop => $composableBuilder(
-      column: $table.imageBorderCrop,
-      builder: (column) => ColumnOrderings(column));
-
   ColumnOrderings<String> get legalStandard => $composableBuilder(
       column: $table.legalStandard,
       builder: (column) => ColumnOrderings(column));
@@ -11675,9 +10787,6 @@ class $$CardsTableOrderingComposer
   ColumnOrderings<String> get rulingsJson => $composableBuilder(
       column: $table.rulingsJson, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get object => $composableBuilder(
-      column: $table.object, builder: (column) => ColumnOrderings(column));
-
   ColumnOrderings<bool> get oversized => $composableBuilder(
       column: $table.oversized, builder: (column) => ColumnOrderings(column));
 
@@ -11690,9 +10799,6 @@ class $$CardsTableOrderingComposer
   ColumnOrderings<bool> get variation => $composableBuilder(
       column: $table.variation, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get gamesJson => $composableBuilder(
-      column: $table.gamesJson, builder: (column) => ColumnOrderings(column));
-
   ColumnOrderings<bool> get reserved => $composableBuilder(
       column: $table.reserved, builder: (column) => ColumnOrderings(column));
 
@@ -11702,36 +10808,11 @@ class $$CardsTableOrderingComposer
   ColumnOrderings<bool> get nonfoil => $composableBuilder(
       column: $table.nonfoil, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get finishesJson => $composableBuilder(
-      column: $table.finishesJson,
-      builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get producedManaJson => $composableBuilder(
-      column: $table.producedManaJson,
-      builder: (column) => ColumnOrderings(column));
-
   ColumnOrderings<int> get edhrecRank => $composableBuilder(
       column: $table.edhrecRank, builder: (column) => ColumnOrderings(column));
 
   ColumnOrderings<bool> get isGameChanger => $composableBuilder(
       column: $table.isGameChanger,
-      builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get relatedTokenIdsJson => $composableBuilder(
-      column: $table.relatedTokenIdsJson,
-      builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<int> get mtgoId => $composableBuilder(
-      column: $table.mtgoId, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<int> get arenaId => $composableBuilder(
-      column: $table.arenaId, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<int> get tcgplayerId => $composableBuilder(
-      column: $table.tcgplayerId, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<int> get cardmarketId => $composableBuilder(
-      column: $table.cardmarketId,
       builder: (column) => ColumnOrderings(column));
 }
 
@@ -11749,9 +10830,6 @@ class $$CardsTableAnnotationComposer
 
   GeneratedColumn<String> get scryfallId => $composableBuilder(
       column: $table.scryfallId, builder: (column) => column);
-
-  GeneratedColumn<String> get mtgjsonUuid => $composableBuilder(
-      column: $table.mtgjsonUuid, builder: (column) => column);
 
   GeneratedColumn<String> get oracleId =>
       $composableBuilder(column: $table.oracleId, builder: (column) => column);
@@ -11861,27 +10939,6 @@ class $$CardsTableAnnotationComposer
   GeneratedColumn<bool> get storySpotlight => $composableBuilder(
       column: $table.storySpotlight, builder: (column) => column);
 
-  GeneratedColumn<String> get imageStatus => $composableBuilder(
-      column: $table.imageStatus, builder: (column) => column);
-
-  GeneratedColumn<String> get imageSmall => $composableBuilder(
-      column: $table.imageSmall, builder: (column) => column);
-
-  GeneratedColumn<String> get imageNormal => $composableBuilder(
-      column: $table.imageNormal, builder: (column) => column);
-
-  GeneratedColumn<String> get imageLarge => $composableBuilder(
-      column: $table.imageLarge, builder: (column) => column);
-
-  GeneratedColumn<String> get imagePng =>
-      $composableBuilder(column: $table.imagePng, builder: (column) => column);
-
-  GeneratedColumn<String> get imageArtCrop => $composableBuilder(
-      column: $table.imageArtCrop, builder: (column) => column);
-
-  GeneratedColumn<String> get imageBorderCrop => $composableBuilder(
-      column: $table.imageBorderCrop, builder: (column) => column);
-
   GeneratedColumn<String> get legalStandard => $composableBuilder(
       column: $table.legalStandard, builder: (column) => column);
 
@@ -11975,9 +11032,6 @@ class $$CardsTableAnnotationComposer
   GeneratedColumn<String> get rulingsJson => $composableBuilder(
       column: $table.rulingsJson, builder: (column) => column);
 
-  GeneratedColumn<String> get object =>
-      $composableBuilder(column: $table.object, builder: (column) => column);
-
   GeneratedColumn<bool> get oversized =>
       $composableBuilder(column: $table.oversized, builder: (column) => column);
 
@@ -11990,9 +11044,6 @@ class $$CardsTableAnnotationComposer
   GeneratedColumn<bool> get variation =>
       $composableBuilder(column: $table.variation, builder: (column) => column);
 
-  GeneratedColumn<String> get gamesJson =>
-      $composableBuilder(column: $table.gamesJson, builder: (column) => column);
-
   GeneratedColumn<bool> get reserved =>
       $composableBuilder(column: $table.reserved, builder: (column) => column);
 
@@ -12002,32 +11053,11 @@ class $$CardsTableAnnotationComposer
   GeneratedColumn<bool> get nonfoil =>
       $composableBuilder(column: $table.nonfoil, builder: (column) => column);
 
-  GeneratedColumn<String> get finishesJson => $composableBuilder(
-      column: $table.finishesJson, builder: (column) => column);
-
-  GeneratedColumn<String> get producedManaJson => $composableBuilder(
-      column: $table.producedManaJson, builder: (column) => column);
-
   GeneratedColumn<int> get edhrecRank => $composableBuilder(
       column: $table.edhrecRank, builder: (column) => column);
 
   GeneratedColumn<bool> get isGameChanger => $composableBuilder(
       column: $table.isGameChanger, builder: (column) => column);
-
-  GeneratedColumn<String> get relatedTokenIdsJson => $composableBuilder(
-      column: $table.relatedTokenIdsJson, builder: (column) => column);
-
-  GeneratedColumn<int> get mtgoId =>
-      $composableBuilder(column: $table.mtgoId, builder: (column) => column);
-
-  GeneratedColumn<int> get arenaId =>
-      $composableBuilder(column: $table.arenaId, builder: (column) => column);
-
-  GeneratedColumn<int> get tcgplayerId => $composableBuilder(
-      column: $table.tcgplayerId, builder: (column) => column);
-
-  GeneratedColumn<int> get cardmarketId => $composableBuilder(
-      column: $table.cardmarketId, builder: (column) => column);
 }
 
 class $$CardsTableTableManager extends RootTableManager<
@@ -12055,7 +11085,6 @@ class $$CardsTableTableManager extends RootTableManager<
           updateCompanionCallback: ({
             Value<int> id = const Value.absent(),
             Value<String> scryfallId = const Value.absent(),
-            Value<String?> mtgjsonUuid = const Value.absent(),
             Value<String> oracleId = const Value.absent(),
             Value<String> name = const Value.absent(),
             Value<String?> flavorName = const Value.absent(),
@@ -12092,13 +11121,6 @@ class $$CardsTableTableManager extends RootTableManager<
             Value<bool> textless = const Value.absent(),
             Value<bool> booster = const Value.absent(),
             Value<bool> storySpotlight = const Value.absent(),
-            Value<String> imageStatus = const Value.absent(),
-            Value<String?> imageSmall = const Value.absent(),
-            Value<String?> imageNormal = const Value.absent(),
-            Value<String?> imageLarge = const Value.absent(),
-            Value<String?> imagePng = const Value.absent(),
-            Value<String?> imageArtCrop = const Value.absent(),
-            Value<String?> imageBorderCrop = const Value.absent(),
             Value<String> legalStandard = const Value.absent(),
             Value<String> legalFuture = const Value.absent(),
             Value<String> legalHistoric = const Value.absent(),
@@ -12130,29 +11152,19 @@ class $$CardsTableTableManager extends RootTableManager<
             Value<double?> priceNumeric = const Value.absent(),
             Value<String?> cardFacesJson = const Value.absent(),
             Value<String?> rulingsJson = const Value.absent(),
-            Value<String> object = const Value.absent(),
             Value<bool> oversized = const Value.absent(),
             Value<bool> promo = const Value.absent(),
             Value<bool> reprint = const Value.absent(),
             Value<bool> variation = const Value.absent(),
-            Value<String> gamesJson = const Value.absent(),
             Value<bool> reserved = const Value.absent(),
             Value<bool> foil = const Value.absent(),
             Value<bool> nonfoil = const Value.absent(),
-            Value<String> finishesJson = const Value.absent(),
-            Value<String> producedManaJson = const Value.absent(),
             Value<int?> edhrecRank = const Value.absent(),
             Value<bool?> isGameChanger = const Value.absent(),
-            Value<String> relatedTokenIdsJson = const Value.absent(),
-            Value<int?> mtgoId = const Value.absent(),
-            Value<int?> arenaId = const Value.absent(),
-            Value<int?> tcgplayerId = const Value.absent(),
-            Value<int?> cardmarketId = const Value.absent(),
           }) =>
               CardsCompanion(
             id: id,
             scryfallId: scryfallId,
-            mtgjsonUuid: mtgjsonUuid,
             oracleId: oracleId,
             name: name,
             flavorName: flavorName,
@@ -12189,13 +11201,6 @@ class $$CardsTableTableManager extends RootTableManager<
             textless: textless,
             booster: booster,
             storySpotlight: storySpotlight,
-            imageStatus: imageStatus,
-            imageSmall: imageSmall,
-            imageNormal: imageNormal,
-            imageLarge: imageLarge,
-            imagePng: imagePng,
-            imageArtCrop: imageArtCrop,
-            imageBorderCrop: imageBorderCrop,
             legalStandard: legalStandard,
             legalFuture: legalFuture,
             legalHistoric: legalHistoric,
@@ -12227,29 +11232,19 @@ class $$CardsTableTableManager extends RootTableManager<
             priceNumeric: priceNumeric,
             cardFacesJson: cardFacesJson,
             rulingsJson: rulingsJson,
-            object: object,
             oversized: oversized,
             promo: promo,
             reprint: reprint,
             variation: variation,
-            gamesJson: gamesJson,
             reserved: reserved,
             foil: foil,
             nonfoil: nonfoil,
-            finishesJson: finishesJson,
-            producedManaJson: producedManaJson,
             edhrecRank: edhrecRank,
             isGameChanger: isGameChanger,
-            relatedTokenIdsJson: relatedTokenIdsJson,
-            mtgoId: mtgoId,
-            arenaId: arenaId,
-            tcgplayerId: tcgplayerId,
-            cardmarketId: cardmarketId,
           ),
           createCompanionCallback: ({
             Value<int> id = const Value.absent(),
             required String scryfallId,
-            Value<String?> mtgjsonUuid = const Value.absent(),
             required String oracleId,
             required String name,
             Value<String?> flavorName = const Value.absent(),
@@ -12286,13 +11281,6 @@ class $$CardsTableTableManager extends RootTableManager<
             required bool textless,
             required bool booster,
             required bool storySpotlight,
-            required String imageStatus,
-            Value<String?> imageSmall = const Value.absent(),
-            Value<String?> imageNormal = const Value.absent(),
-            Value<String?> imageLarge = const Value.absent(),
-            Value<String?> imagePng = const Value.absent(),
-            Value<String?> imageArtCrop = const Value.absent(),
-            Value<String?> imageBorderCrop = const Value.absent(),
             required String legalStandard,
             required String legalFuture,
             required String legalHistoric,
@@ -12324,29 +11312,19 @@ class $$CardsTableTableManager extends RootTableManager<
             Value<double?> priceNumeric = const Value.absent(),
             Value<String?> cardFacesJson = const Value.absent(),
             Value<String?> rulingsJson = const Value.absent(),
-            required String object,
             required bool oversized,
             required bool promo,
             required bool reprint,
             required bool variation,
-            Value<String> gamesJson = const Value.absent(),
             required bool reserved,
             required bool foil,
             required bool nonfoil,
-            Value<String> finishesJson = const Value.absent(),
-            Value<String> producedManaJson = const Value.absent(),
             Value<int?> edhrecRank = const Value.absent(),
             Value<bool?> isGameChanger = const Value.absent(),
-            Value<String> relatedTokenIdsJson = const Value.absent(),
-            Value<int?> mtgoId = const Value.absent(),
-            Value<int?> arenaId = const Value.absent(),
-            Value<int?> tcgplayerId = const Value.absent(),
-            Value<int?> cardmarketId = const Value.absent(),
           }) =>
               CardsCompanion.insert(
             id: id,
             scryfallId: scryfallId,
-            mtgjsonUuid: mtgjsonUuid,
             oracleId: oracleId,
             name: name,
             flavorName: flavorName,
@@ -12383,13 +11361,6 @@ class $$CardsTableTableManager extends RootTableManager<
             textless: textless,
             booster: booster,
             storySpotlight: storySpotlight,
-            imageStatus: imageStatus,
-            imageSmall: imageSmall,
-            imageNormal: imageNormal,
-            imageLarge: imageLarge,
-            imagePng: imagePng,
-            imageArtCrop: imageArtCrop,
-            imageBorderCrop: imageBorderCrop,
             legalStandard: legalStandard,
             legalFuture: legalFuture,
             legalHistoric: legalHistoric,
@@ -12421,24 +11392,15 @@ class $$CardsTableTableManager extends RootTableManager<
             priceNumeric: priceNumeric,
             cardFacesJson: cardFacesJson,
             rulingsJson: rulingsJson,
-            object: object,
             oversized: oversized,
             promo: promo,
             reprint: reprint,
             variation: variation,
-            gamesJson: gamesJson,
             reserved: reserved,
             foil: foil,
             nonfoil: nonfoil,
-            finishesJson: finishesJson,
-            producedManaJson: producedManaJson,
             edhrecRank: edhrecRank,
             isGameChanger: isGameChanger,
-            relatedTokenIdsJson: relatedTokenIdsJson,
-            mtgoId: mtgoId,
-            arenaId: arenaId,
-            tcgplayerId: tcgplayerId,
-            cardmarketId: cardmarketId,
           ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
@@ -15028,9 +13990,8 @@ typedef $$EdhrecPagesTableProcessedTableManager = ProcessedTableManager<
 typedef $$EdhrecRecommendationsTableCreateCompanionBuilder
     = EdhrecRecommendationsCompanion Function({
   required int pageId,
-  required String cardName,
-  Value<String?> oracleId,
-  Value<String?> cardCategory,
+  required String oracleId,
+  required int category,
   Value<int?> inclusionCount,
   Value<double?> inclusionPercent,
   Value<double?> synergyScore,
@@ -15039,9 +14000,8 @@ typedef $$EdhrecRecommendationsTableCreateCompanionBuilder
 typedef $$EdhrecRecommendationsTableUpdateCompanionBuilder
     = EdhrecRecommendationsCompanion Function({
   Value<int> pageId,
-  Value<String> cardName,
-  Value<String?> oracleId,
-  Value<String?> cardCategory,
+  Value<String> oracleId,
+  Value<int> category,
   Value<int?> inclusionCount,
   Value<double?> inclusionPercent,
   Value<double?> synergyScore,
@@ -15060,14 +14020,11 @@ class $$EdhrecRecommendationsTableFilterComposer
   ColumnFilters<int> get pageId => $composableBuilder(
       column: $table.pageId, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get cardName => $composableBuilder(
-      column: $table.cardName, builder: (column) => ColumnFilters(column));
-
   ColumnFilters<String> get oracleId => $composableBuilder(
       column: $table.oracleId, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get cardCategory => $composableBuilder(
-      column: $table.cardCategory, builder: (column) => ColumnFilters(column));
+  ColumnFilters<int> get category => $composableBuilder(
+      column: $table.category, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<int> get inclusionCount => $composableBuilder(
       column: $table.inclusionCount,
@@ -15097,15 +14054,11 @@ class $$EdhrecRecommendationsTableOrderingComposer
   ColumnOrderings<int> get pageId => $composableBuilder(
       column: $table.pageId, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get cardName => $composableBuilder(
-      column: $table.cardName, builder: (column) => ColumnOrderings(column));
-
   ColumnOrderings<String> get oracleId => $composableBuilder(
       column: $table.oracleId, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get cardCategory => $composableBuilder(
-      column: $table.cardCategory,
-      builder: (column) => ColumnOrderings(column));
+  ColumnOrderings<int> get category => $composableBuilder(
+      column: $table.category, builder: (column) => ColumnOrderings(column));
 
   ColumnOrderings<int> get inclusionCount => $composableBuilder(
       column: $table.inclusionCount,
@@ -15136,14 +14089,11 @@ class $$EdhrecRecommendationsTableAnnotationComposer
   GeneratedColumn<int> get pageId =>
       $composableBuilder(column: $table.pageId, builder: (column) => column);
 
-  GeneratedColumn<String> get cardName =>
-      $composableBuilder(column: $table.cardName, builder: (column) => column);
-
   GeneratedColumn<String> get oracleId =>
       $composableBuilder(column: $table.oracleId, builder: (column) => column);
 
-  GeneratedColumn<String> get cardCategory => $composableBuilder(
-      column: $table.cardCategory, builder: (column) => column);
+  GeneratedColumn<int> get category =>
+      $composableBuilder(column: $table.category, builder: (column) => column);
 
   GeneratedColumn<int> get inclusionCount => $composableBuilder(
       column: $table.inclusionCount, builder: (column) => column);
@@ -15190,9 +14140,8 @@ class $$EdhrecRecommendationsTableTableManager extends RootTableManager<
                   $db: db, $table: table),
           updateCompanionCallback: ({
             Value<int> pageId = const Value.absent(),
-            Value<String> cardName = const Value.absent(),
-            Value<String?> oracleId = const Value.absent(),
-            Value<String?> cardCategory = const Value.absent(),
+            Value<String> oracleId = const Value.absent(),
+            Value<int> category = const Value.absent(),
             Value<int?> inclusionCount = const Value.absent(),
             Value<double?> inclusionPercent = const Value.absent(),
             Value<double?> synergyScore = const Value.absent(),
@@ -15200,9 +14149,8 @@ class $$EdhrecRecommendationsTableTableManager extends RootTableManager<
           }) =>
               EdhrecRecommendationsCompanion(
             pageId: pageId,
-            cardName: cardName,
             oracleId: oracleId,
-            cardCategory: cardCategory,
+            category: category,
             inclusionCount: inclusionCount,
             inclusionPercent: inclusionPercent,
             synergyScore: synergyScore,
@@ -15210,9 +14158,8 @@ class $$EdhrecRecommendationsTableTableManager extends RootTableManager<
           ),
           createCompanionCallback: ({
             required int pageId,
-            required String cardName,
-            Value<String?> oracleId = const Value.absent(),
-            Value<String?> cardCategory = const Value.absent(),
+            required String oracleId,
+            required int category,
             Value<int?> inclusionCount = const Value.absent(),
             Value<double?> inclusionPercent = const Value.absent(),
             Value<double?> synergyScore = const Value.absent(),
@@ -15220,9 +14167,8 @@ class $$EdhrecRecommendationsTableTableManager extends RootTableManager<
           }) =>
               EdhrecRecommendationsCompanion.insert(
             pageId: pageId,
-            cardName: cardName,
             oracleId: oracleId,
-            cardCategory: cardCategory,
+            category: category,
             inclusionCount: inclusionCount,
             inclusionPercent: inclusionPercent,
             synergyScore: synergyScore,

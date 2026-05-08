@@ -324,9 +324,9 @@ Future<void> _mergeShard(
     );
     await db.customStatement(
       'INSERT OR IGNORE INTO main.edhrec_recommendations '
-      '(page_id, oracle_id, card_name, card_category, '
+      '(page_id, oracle_id, category, '
       ' inclusion_count, inclusion_percent, synergy_score, rank_in_category) '
-      'SELECT pr.main_id, sr.oracle_id, sr.card_name, sr.card_category, '
+      'SELECT pr.main_id, sr.oracle_id, sr.category, '
       ' sr.inclusion_count, sr.inclusion_percent, '
       ' sr.synergy_score, sr.rank_in_category '
       'FROM $attachAlias.edhrec_recommendations sr '
@@ -485,9 +485,9 @@ Future<Map<String, int>> _carryOverFromPrev(
     final recsBefore = await _countTable(db, 'edhrec_recommendations');
     await db.customStatement(
       'INSERT OR IGNORE INTO main.edhrec_recommendations '
-      '(page_id, oracle_id, card_name, card_category, '
+      '(page_id, oracle_id, category, '
       ' inclusion_count, inclusion_percent, synergy_score, rank_in_category) '
-      'SELECT r.main_id, sr.oracle_id, sr.card_name, sr.card_category, '
+      'SELECT r.main_id, sr.oracle_id, sr.category, '
       ' sr.inclusion_count, sr.inclusion_percent, '
       ' sr.synergy_score, sr.rank_in_category '
       'FROM prev.edhrec_recommendations sr '

@@ -56,7 +56,7 @@ class CardsDatabase extends _$CardsDatabase {
   CardsDatabase(super.executor);
 
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 7;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -192,6 +192,116 @@ class CardsDatabase extends _$CardsDatabase {
                 .customStatement('ALTER TABLE cards DROP COLUMN uri');
             await m.database
                 .customStatement('ALTER TABLE cards DROP COLUMN scryfall_uri');
+          }
+          // v6 → v7: deeper bundle slimming.
+          //
+          // edhrec_recommendations: drop `card_name` (joined from
+          // cards via oracle_id), replace `card_category TEXT` with
+          // `category INTEGER` (1-byte enum, see EdhrecCategory),
+          // tighten `oracle_id` to NOT NULL, change PK to
+          // `(page_id, oracle_id, category)` so a card appearing in
+          // multiple categories on the same page produces multiple
+          // rows. Rows with NULL oracle_id or unmapped categories
+          // are dropped (verified zero in the v6 dataset).
+          //
+          // cards: drop 31 columns the client only ever assigned to
+          // its model and never read (audit captured in tables/cards.dart).
+          if (from < 7) {
+            await m.database.customStatement(
+              'CREATE TABLE edhrec_recommendations_new ('
+              'page_id INTEGER NOT NULL, '
+              'oracle_id TEXT NOT NULL, '
+              'category INTEGER NOT NULL, '
+              'inclusion_count INTEGER, '
+              'inclusion_percent REAL, '
+              'synergy_score REAL, '
+              'rank_in_category INTEGER, '
+              'PRIMARY KEY (page_id, oracle_id, category)'
+              ') WITHOUT ROWID',
+            );
+            // Map display-name categories → enum int. Rows with NULL
+            // oracle_id, NULL/unknown card_category, or duplicate PK
+            // are dropped.
+            await m.database.customStatement(
+              'INSERT OR IGNORE INTO edhrec_recommendations_new '
+              '(page_id, oracle_id, category, inclusion_count, '
+              ' inclusion_percent, synergy_score, rank_in_category) '
+              'SELECT page_id, oracle_id, '
+              "  CASE card_category "
+              "    WHEN 'Top Commanders' THEN 0 "
+              "    WHEN 'New Commanders' THEN 1 "
+              "    WHEN 'Top Cards' THEN 2 "
+              "    WHEN 'High Synergy Cards' THEN 3 "
+              "    WHEN 'High Lift Cards' THEN 4 "
+              "    WHEN 'Game Changers' THEN 5 "
+              "    WHEN 'New Cards' THEN 6 "
+              "    WHEN 'Creatures' THEN 7 "
+              "    WHEN 'Instants' THEN 8 "
+              "    WHEN 'Sorceries' THEN 9 "
+              "    WHEN 'Enchantments' THEN 10 "
+              "    WHEN 'Mana Artifacts' THEN 11 "
+              "    WHEN 'Utility Artifacts' THEN 12 "
+              "    WHEN 'Utility Lands' THEN 13 "
+              "    WHEN 'Lands' THEN 14 "
+              "    WHEN 'Planeswalkers' THEN 15 "
+              "    WHEN 'Battles' THEN 16 "
+              '  END AS category, '
+              ' inclusion_count, inclusion_percent, synergy_score, '
+              ' rank_in_category '
+              'FROM edhrec_recommendations '
+              'WHERE oracle_id IS NOT NULL '
+              '  AND card_category IS NOT NULL '
+              '  AND card_category IN ('
+              "    'Top Commanders', 'New Commanders', 'Top Cards', "
+              "    'High Synergy Cards', 'High Lift Cards', "
+              "    'Game Changers', 'New Cards', 'Creatures', "
+              "    'Instants', 'Sorceries', 'Enchantments', "
+              "    'Mana Artifacts', 'Utility Artifacts', "
+              "    'Utility Lands', 'Lands', 'Planeswalkers', "
+              "    'Battles')",
+            );
+            await m.database
+                .customStatement('DROP TABLE edhrec_recommendations');
+            await m.database.customStatement(
+              'ALTER TABLE edhrec_recommendations_new '
+              'RENAME TO edhrec_recommendations',
+            );
+            await m.database.customStatement(
+              'CREATE INDEX IF NOT EXISTS idx_edhrec_rec_oracle '
+              'ON edhrec_recommendations (oracle_id)',
+            );
+
+            // Cards table: drop 17 columns the client never reads.
+            // Kept the ones used in raw Drift queries (digital,
+            // powerNumeric, toughnessNumeric, legalInAnyFormat,
+            // rarityOrder, priceNumeric, flavorName, artist, setType,
+            // and all the boolean printing flags).
+            const dropCardCols = [
+              'mtgjson_uuid',
+              'image_status',
+              'image_small',
+              'image_normal',
+              'image_large',
+              'image_png',
+              'image_art_crop',
+              'image_border_crop',
+              'object',
+              'games_json',
+              'finishes_json',
+              'related_token_ids_json',
+              'mtgo_id',
+              'arena_id',
+              'tcgplayer_id',
+              'cardmarket_id',
+            ];
+            for (final col in dropCardCols) {
+              await m.database
+                  .customStatement('ALTER TABLE cards DROP COLUMN $col');
+            }
+            // Explicit index drop for the only column we removed
+            // that had a dedicated index.
+            await m.database.customStatement(
+                'DROP INDEX IF EXISTS idx_card_mtgjson_uuid');
           }
         },
       );

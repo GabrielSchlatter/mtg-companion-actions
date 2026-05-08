@@ -5,6 +5,7 @@ import 'package:drift/drift.dart' show InsertMode, Value, Variable;
 import 'package:http/http.dart' as http;
 
 import '../db/cards_database.dart';
+import 'edhrec_categories.dart';
 
 /// EDHREC crawler.
 ///
@@ -715,10 +716,16 @@ Future<_PageIngestStats> _ingestPage(
   final cardlists = jsonDict?['cardlists'] as List<dynamic>? ?? const [];
   for (final cardlist in cardlists) {
     if (cardlist is! Map<String, dynamic>) continue;
-    final category = cardlist['header']?.toString() ?? 'Other';
-    if (keepCategories.isNotEmpty && !keepCategories.contains(category)) {
+    final categoryDisplay = cardlist['header']?.toString() ?? 'Other';
+    if (keepCategories.isNotEmpty &&
+        !keepCategories.contains(categoryDisplay)) {
       continue;
     }
+    // v7: drop recs whose category isn't in our enum — those are
+    // headers we don't ship anyway. The 17-value enum covers every
+    // category we kept in `_kEdhrecCategoryWhitelist`.
+    final categoryEnum = EdhrecCategory.fromDisplayName(categoryDisplay);
+    if (categoryEnum == null) continue;
     final cardviews = cardlist['cardviews'] as List<dynamic>? ?? const [];
     var rank = 0;
     for (final cv in cardviews) {
@@ -726,6 +733,10 @@ Future<_PageIngestStats> _ingestPage(
       rank++;
       final name = cv['name']?.toString() ?? '';
       if (name.isEmpty) continue;
+      // v7: must resolve to a card we have — recs without an oracle
+      // would be unjoinable (we no longer ship `card_name`).
+      final oracleId = _resolveName(name, nameToOracleId);
+      if (oracleId == null) continue;
       final numDecks = _asInt(cv['num_decks']);
       final potentialDecks = _asInt(cv['potential_decks']);
       double? inclusionPercent;
@@ -735,9 +746,8 @@ Future<_PageIngestStats> _ingestPage(
 
       pendingRecs.add(
         _PendingRec(
-          oracleId: _resolveName(name, nameToOracleId),
-          cardName: name,
-          cardCategory: category,
+          oracleId: oracleId,
+          category: categoryEnum.id,
           inclusionCount: numDecks,
           inclusionPercent: inclusionPercent,
           synergyScore: _parseDouble(cv['synergy']),
@@ -896,9 +906,8 @@ Future<_PageIngestStats> _ingestPage(
                 .map(
                   (p) => EdhrecRecommendationsCompanion.insert(
                     pageId: pageId,
-                    oracleId: Value(p.oracleId),
-                    cardName: p.cardName,
-                    cardCategory: Value(p.cardCategory),
+                    oracleId: p.oracleId,
+                    category: p.category,
                     inclusionCount: Value(p.inclusionCount),
                     inclusionPercent: Value(p.inclusionPercent),
                     synergyScore: Value(p.synergyScore),
@@ -906,9 +915,10 @@ Future<_PageIngestStats> _ingestPage(
                   ),
                 )
                 .toList(),
-            // Same (page_id, card_name) duplicate handling — EDHREC
-            // sometimes lists a card under two categories on a page;
-            // INSERT OR IGNORE keeps the first one we saw.
+            // PK is (page_id, oracle_id, category) — duplicates within
+            // a single category collapse, but the same card showing up
+            // in two distinct categories on the same page produces two
+            // rows (different PK).
             mode: InsertMode.insertOrIgnore,
           ),
         );
@@ -968,17 +978,15 @@ Future<_PageIngestStats> _ingestPage(
 }
 
 class _PendingRec {
-  final String? oracleId;
-  final String cardName;
-  final String? cardCategory;
+  final String oracleId;
+  final int category;
   final int? inclusionCount;
   final double? inclusionPercent;
   final double? synergyScore;
   final int? rankInCategory;
   _PendingRec({
     required this.oracleId,
-    required this.cardName,
-    required this.cardCategory,
+    required this.category,
     required this.inclusionCount,
     required this.inclusionPercent,
     required this.synergyScore,
